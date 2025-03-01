@@ -49,3 +49,12 @@ local.properties
 .externalNativeBuild
 .cxx
 local.properties
+
+#IDE specifics
+.idea/
+.vscode/
+
+#eclipse metadata
+.project
+.settings/
+
