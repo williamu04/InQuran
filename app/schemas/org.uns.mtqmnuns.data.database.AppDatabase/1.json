@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2e5c41ffe69654ebbec19e3b72711d32",
+    "identityHash": "52a9ec111265c1c82df076fb17a60e88",
     "entities": [
       {
         "tableName": "surah",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `nameLatin` TEXT NOT NULL, `nameIndo` TEXT NOT NULL, `description` TEXT NOT NULL, `totalAyah` TEXT NOT NULL, `place` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `nameLatin` TEXT NOT NULL, `nameIndo` TEXT NOT NULL, `description` TEXT NOT NULL, `totalAyah` INTEGER NOT NULL, `place` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -41,7 +41,7 @@
           {
             "fieldPath": "totalAyah",
             "columnName": "totalAyah",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -130,7 +130,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e5c41ffe69654ebbec19e3b72711d32')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '52a9ec111265c1c82df076fb17a60e88')"
     ]
   }
 }

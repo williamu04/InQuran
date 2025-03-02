@@ -5,6 +5,7 @@ import androidx.room.*
 @Entity(tableName = "surah")
 data class Surah (
     @PrimaryKey 
+    @ColumnInfo(name = "id")        
     val id: Int,
 
     @ColumnInfo(name = "name")        
@@ -20,7 +21,7 @@ data class Surah (
     val description: String,
 
     @ColumnInfo(name = "totalAyah")   
-    val totalAyah: String,
+    val totalAyah: Int,
 
     @ColumnInfo(name = "place")       
     val place: String,
