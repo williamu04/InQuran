@@ -1,4 +1,4 @@
-package org.uns.mtqmnuns.data.database;
+package org.uns.mtqmnuns.data.local
 
 import androidx.room.*;
 import android.content.Context;
