@@ -12,6 +12,10 @@ import org.uns.mtqmnuns.data.entity.*;
 // Penjelasan object Context : https://stackoverflow.com/questions/3572463/what-is-context-on-android
 @Database(entities = [Surah::class, Ayah::class], version = 1)
 public abstract class AppDatabase : RoomDatabase() {
+    // DAO disini
+    public abstract fun surahDao(): SurahDao
+    public abstract fun ayahDao(): AyahDao
+
     companion object {
         @Volatile
         private var instance: AppDatabase? = null
