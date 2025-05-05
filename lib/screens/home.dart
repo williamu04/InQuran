@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child : Column(
@@ -50,31 +51,33 @@ Widget homeMenu() {
           ),
           child: Container(
             height: 60.0,
-            padding: const EdgeInsets.symmetric(horizontal: 14.0), // Outer padding
-            child: Row(
-              mainAxisSize: MainAxisSize.min, // Important: to prevent Row from expanding full width
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.book,
-                  color: Colors.white,
-                  size: 24.0,
-                ),
-                const SizedBox(width: 10.0), // Reduced spacing between icon and text
-                Expanded(
-                  child: Text(
-                    menuItems[0],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Plus Jakarta',
-                    ),
-                    overflow: TextOverflow.ellipsis, // Allow text to wrap
-                    softWrap: false, // Enable wrapping to the next line
+            padding: const EdgeInsets.symmetric(horizontal: 16.0), // padding kiri-kanan
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    LucideIcons.bookOpen,
+                    color: Colors.white,
+                    size: 24.0,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10.0),
+                  Flexible(
+                    child: Text(
+                      menuItems[0],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Plus Jakarta',
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -114,24 +117,26 @@ Widget homeMenu() {
                 crossAxisAlignment: CrossAxisAlignment.center, // untuk vertikal center
                 children: [
                   const Icon(
-                    Icons.book,
+                    LucideIcons.bookOpen,
                     color: Colors.white,
                     size: 24.0,
                   ),
                   const SizedBox(width: 10.0), // jarak dari icon ke teks
-                  Expanded( // biar teks isi sisa ruang
+                  Expanded(
                     child: Text(
                       menuItems[index + 1],
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12.0,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w900,
                         fontFamily: 'Plus Jakarta',
                       ),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
+                      softWrap: true,
+                      overflow: TextOverflow.visible, // atau hilangkan sama sekali
+                      maxLines: 2, // opsional, batasi maksimal 2 baris
                     ),
                   ),
+                  const SizedBox(width: 10.0), // jarak dari teks ke ujung kanan
                 ],
               ),
             ),
