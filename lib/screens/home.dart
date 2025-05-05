@@ -8,7 +8,6 @@ class HomeScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      padding: EdgeInsets.all(16),
       child : Column(
         children: [
           homeTitle(),
@@ -21,7 +20,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 Widget homeMenu() {
-  return Expanded(
+  return Flexible(
     child: Container(
     ),
   );
@@ -29,7 +28,7 @@ Widget homeMenu() {
 
 
 Widget homeTitle() {
-  return Expanded(
+  return Flexible(
     child: Container(
     ),
   );
