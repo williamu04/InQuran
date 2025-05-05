@@ -94,3 +94,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts: 
+    - family: Plus Jakarta
+      fonts:
+        - asset: fonts/plus_jakarta.ttf
+        - weight: 700
