@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:go_router/go_router.dart';
@@ -16,8 +15,10 @@ final GoRouter _router = GoRouter(
       routes: [
         GoRoute(
           path: '/home',
-          builder: (context, state) => const HomeScreen(),
-        ),
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: HomeScreen(),
+          ),
+        )
 
         // other routes
 
@@ -43,20 +44,13 @@ class MyApp extends StatelessWidget {
 
 class MainScaffold extends StatelessWidget {
   final Widget child;
-
   const MainScaffold({super.key, required this.child});
-
-  static final _routes = ['/home']; // route list for other screen
 
   @override
   Widget build(BuildContext context) {
-    final location = GoRouterState.of(context).uri.toString();
-    final index = _routes.indexWhere((r) => location.startsWith(r));
-
     return Scaffold(
       appBar: topBar(),
       body: child,
-      bottomNavigationBar: bottomNavBar(),
     );
   }
 }
