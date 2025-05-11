@@ -12,7 +12,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
     currentIndex = 1;
   } else if (currentRoute == '/') {
     currentIndex = 2;
-  } else if (currentRoute == '/donation') {
+  } else if (currentRoute == '/favorite') {
     currentIndex = 3;
   } else if (currentRoute == '/profile') {
     currentIndex = 4;
@@ -34,15 +34,16 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
         child: Container(
-          color: Colors.white,
+          color: Color(0xFFF5F9FE), 
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: BottomNavigationBar(
             elevation: 0,
             mouseCursor: SystemMouseCursors.basic,
             type: BottomNavigationBarType.fixed,
             currentIndex: currentIndex,  
-            selectedItemColor: Color(0xFF8A3FFC), // purple
-            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.transparent, 
+            selectedItemColor: Color(0xFF3B1D77), // purple
+            unselectedItemColor: Colors.grey, 
             selectedFontSize: 0,
             unselectedFontSize: 0,
             onTap: (index) {
