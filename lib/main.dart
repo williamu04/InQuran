@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/screens/book.dart';
-import 'package:mtqmnuns/screens/donation.dart';
+import 'package:mtqmnuns/screens/favorite.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/screens/profile.dart';
@@ -37,9 +37,9 @@ final GoRouter _router = GoRouter(
           ),
         ),
         GoRoute(
-          path:'/donation',
+          path:'/favorite',
           pageBuilder: (context, state) => const NoTransitionPage(
-            child: DonationScreen(),
+            child: FavoriteScreen(),
           ),
         ),
         GoRoute(

@@ -57,7 +57,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
                   context.go('/');
                   break;
                 case 3:
-                  context.go('/donation');
+                  context.go('/favorite');
                   break;
                 case 4:
                   context.go('/profile');
@@ -68,7 +68,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
               BottomNavigationBarItem(icon: Icon(LucideIcons.bookOpen), label: ''),
               BottomNavigationBarItem(icon: Icon(LucideIcons.search), label: ''),
               BottomNavigationBarItem(icon: Icon(LucideIcons.home), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism_outlined), label: ''),
+              BottomNavigationBarItem(icon: Icon(LucideIcons.heart), label: ''),
               BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: ''),
             ],
           ),
