@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class DonationScreen extends StatelessWidget {
-  const DonationScreen({super.key});
+class FavoriteScreen extends StatelessWidget {
+  const FavoriteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class DonationScreen extends StatelessWidget {
       child : Column(
         children: [
           Center(
-            child: Text("Donation")
+            child: Text("Favorite")
           )
         ],
 

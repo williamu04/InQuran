@@ -12,7 +12,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
     currentIndex = 1;
   } else if (currentRoute == '/') {
     currentIndex = 2;
-  } else if (currentRoute == '/donation') {
+  } else if (currentRoute == '/favorite') {
     currentIndex = 3;
   } else if (currentRoute == '/profile') {
     currentIndex = 4;
@@ -34,15 +34,16 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
         child: Container(
-          color: Colors.white,
+          color: Color(0xFFF5F9FE), 
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: BottomNavigationBar(
             elevation: 0,
             mouseCursor: SystemMouseCursors.basic,
             type: BottomNavigationBarType.fixed,
             currentIndex: currentIndex,  
-            selectedItemColor: Color(0xFF8A3FFC), // purple
-            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.transparent, 
+            selectedItemColor: Color(0xFF3B1D77), // purple
+            unselectedItemColor: Colors.grey, 
             selectedFontSize: 0,
             unselectedFontSize: 0,
             onTap: (index) {
@@ -57,7 +58,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
                   context.go('/');
                   break;
                 case 3:
-                  context.go('/donation');
+                  context.go('/favorite');
                   break;
                 case 4:
                   context.go('/profile');
@@ -68,7 +69,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
               BottomNavigationBarItem(icon: Icon(LucideIcons.bookOpen), label: ''),
               BottomNavigationBarItem(icon: Icon(LucideIcons.search), label: ''),
               BottomNavigationBarItem(icon: Icon(LucideIcons.home), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism_outlined), label: ''),
+              BottomNavigationBarItem(icon: Icon(LucideIcons.heart), label: ''),
               BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: ''),
             ],
           ),
