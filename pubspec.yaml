@@ -41,6 +41,7 @@ dependencies:
   sqlite3: ^2.7.5
   sqlite3_flutter_libs: ^0.5.31
   go_router: ^15.0.0
+  lucide_icons: ^0.257.0
 
 dev_dependencies:
   flutter_test:
@@ -94,3 +95,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts: 
+    - family: Plus Jakarta
+      fonts:
+        - asset: fonts/plus_jakarta.ttf
+        - weight: 700
