@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 void main() => runApp(MyApp());
 
 final GoRouter _router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/',
   routes: [
     ShellRoute(
       builder: (context, state, child) {
@@ -15,14 +15,37 @@ final GoRouter _router = GoRouter(
       },
       routes: [
         GoRoute(
-          path: '/home',
+          path: '/',
           pageBuilder: (context, state) => const NoTransitionPage(
             child: HomeScreen(),
           ),
-        )
+        ),
+        GoRoute(
+          path:'/book',
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: HomeScreen(),
+          ),
+        ),
+        GoRoute(
+          path:'/search',
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: HomeScreen(),
+          ),
 
-        // other routes
+        ),
+        GoRoute(
+          path:'/donation',
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: HomeScreen(),
+          ),
 
+        ),
+        GoRoute(
+          path:'/profile',
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: HomeScreen(),
+          ),
+        ),
       ],
     ),
   ],
@@ -37,6 +60,9 @@ class MyApp extends StatelessWidget {
       routerConfig: _router,
       theme: ThemeData(
         splashFactory: NoSplash.splashFactory,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.light(),
       ),
