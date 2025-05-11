@@ -14,7 +14,6 @@ class SearchScreen extends StatelessWidget {
             child: Text("Search")
           )
         ],
-
       ),
     );
   }

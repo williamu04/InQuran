@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 Widget bottomNavBar(BuildContext context, GoRouterState state) {
   final  currentRoute = state.uri.toString();
@@ -64,11 +65,11 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
               }
             },
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: ''),
+              BottomNavigationBarItem(icon: Icon(LucideIcons.bookOpen), label: ''),
+              BottomNavigationBarItem(icon: Icon(LucideIcons.search), label: ''),
+              BottomNavigationBarItem(icon: Icon(LucideIcons.home), label: ''),
               BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism_outlined), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ''),
+              BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: ''),
             ],
           ),
         ),
