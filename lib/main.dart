@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +11,7 @@ final GoRouter _router = GoRouter(
   routes: [
     ShellRoute(
       builder: (context, state, child) {
-        return MainScaffold(child: child);
+        return MainScaffold(context: context, state: state, child: child);
       },
       routes: [
         GoRoute(
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: _router,
       theme: ThemeData(
+        splashFactory: NoSplash.splashFactory,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.light(),
       ),
@@ -44,13 +46,17 @@ class MyApp extends StatelessWidget {
 
 class MainScaffold extends StatelessWidget {
   final Widget child;
-  const MainScaffold({super.key, required this.child});
+  final BuildContext context;
+  final GoRouterState state;
+  const MainScaffold({super.key, required this.child, required this.context, required this.state});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       appBar: topBar(),
       body: child,
-    );
+      bottomNavigationBar: bottomNavBar(context, state),
+    );    
   }
 }
