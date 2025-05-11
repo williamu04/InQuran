@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/components/side_menu.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,13 +16,11 @@ final GoRouter _router = GoRouter(
       routes: [
         GoRoute(
           path: '/home',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: HomeScreen(),
-          ),
-        )
+          pageBuilder:
+              (context, state) => const NoTransitionPage(child: HomeScreen()),
+        ),
 
         // other routes
-
       ],
     ),
   ],
@@ -48,9 +47,6 @@ class MainScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: topBar(),
-      body: child,
-    );
+    return Scaffold(appBar: topBar(context), drawer: SideMenu(), body: child);
   }
 }

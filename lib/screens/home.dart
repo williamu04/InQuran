@@ -5,31 +5,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      child : Column(
-        children: [
-          homeTitle(),
-          homeMenu()
-        ],
-
-      ),
-    );
+    return Scaffold(drawer: Drawer(), body: Container());
   }
 }
 
 Widget homeMenu() {
-  return Flexible(
-    child: Container(
-    ),
-  );
+  return Flexible(child: Container());
 }
 
-
 Widget homeTitle() {
-  return Flexible(
-    child: Container(
-    ),
-  );
+  return Flexible(child: Container());
 }
