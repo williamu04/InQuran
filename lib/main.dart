@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/components/side_menu.dart';
 
 void main() => runApp(MyApp());
 
@@ -47,6 +46,6 @@ class MainScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: topBar(context), drawer: SideMenu(), body: child);
+    return Scaffold(appBar: topBar(context), body: child);
   }
 }
