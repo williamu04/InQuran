@@ -1,54 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
-import 'package:mtqmnuns/screens/book.dart';
-import 'package:mtqmnuns/screens/favorite.dart';
-import 'package:mtqmnuns/screens/home.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/screens/profile.dart';
-import 'package:mtqmnuns/screens/search.dart';
+import 'package:mtqmnuns/config/route.dart';
 
 void main() => runApp(MyApp());
 
 final GoRouter _router = GoRouter(
-  initialLocation: '/',
+  initialLocation: AppRoutes.home.path,
   routes: [
     ShellRoute(
       builder: (context, state, child) {
         return MainScaffold(context: context, state: state, child: child);
       },
-      routes: [
-        GoRoute(
-          path: '/',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: HomeScreen(),
+      routes: AppRoutes.all.map(
+        (route) => GoRoute(
+          path: route.path,
+          pageBuilder: (context, state) => NoTransitionPage(
+            child: route.screen,
           ),
         ),
-        GoRoute(
-          path:'/book',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: BookScreen(),
-          ),
-        ),
-        GoRoute(
-          path:'/search',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: SearchScreen(),
-          ),
-        ),
-        GoRoute(
-          path:'/favorite',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: FavoriteScreen(),
-          ),
-        ),
-        GoRoute(
-          path:'/profile',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: ProfileScreen(),
-          ),
-        ),
-      ],
+      ).toList()
     ),
   ],
 );
@@ -87,12 +59,9 @@ class MainScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Define the list of routes that need top padding
-    final List<String> paddedUri = ['/book'];
-
+    final List<String> paddedUri = [AppRoutes.book.path];
     final bool shouldPadTop = paddedUri.contains(state.uri.toString());
-    final double topPadding = shouldPadTop
-        ? MediaQuery.of(context).padding.top + kToolbarHeight
-        : 0;
+    final double topPadding = shouldPadTop ? MediaQuery.of(context).padding.top + kToolbarHeight : 0;
 
     return Scaffold(
       extendBody: true,
