@@ -3,7 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/profile.dart';
 import 'package:mtqmnuns/screens/search.dart';
-import 'package:mtqmnuns/screens/favorite.dart';
+import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/home.dart';
 
 class AppRouteConfig {
@@ -37,10 +37,10 @@ class AppRoutes {
     icon: LucideIcons.search,
   );
 
-  static const favorite = AppRouteConfig(
-    path: '/favorite',
-    screen: FavoriteScreen(),
-    icon: LucideIcons.heart,
+  static const duas = AppRouteConfig(
+    path: '/duas',
+    screen: DuasScreen(),
+    icon: Icons.volunteer_activism_outlined,
   );
 
   static const profile = AppRouteConfig(
@@ -53,7 +53,7 @@ class AppRoutes {
     book,
     search,
     home,
-    favorite,
+    duas,
     profile,
   ];
 }

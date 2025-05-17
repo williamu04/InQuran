@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class FavoriteScreen extends StatelessWidget {
-  const FavoriteScreen({super.key});
+class DuasScreen extends StatelessWidget {
+  const DuasScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class FavoriteScreen extends StatelessWidget {
       child : Column(
         children: [
           Center(
-            child: Text("Favorite")
+            child: Text("duas")
           )
         ],
 
