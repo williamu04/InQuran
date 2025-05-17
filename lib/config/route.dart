@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/profile.dart';
 import 'package:mtqmnuns/screens/search.dart';
@@ -22,7 +22,7 @@ class AppRoutes {
   static const home = AppRouteConfig(
     path: '/',
     screen: HomeScreen(),
-    icon: LucideIcons.home,
+    icon: LucideIcons.house,
   );
 
   static const book = AppRouteConfig(
@@ -48,6 +48,46 @@ class AppRoutes {
     screen: ProfileScreen(),
     icon: LucideIcons.user,
   );
+
+  static const prayer = AppRouteConfig(
+    path: '/',
+    screen: HomeScreen(), // Placeholder, replace with actual screen
+    icon: LucideIcons.hourglass,
+  );
+
+  static const qibla = AppRouteConfig(
+    path: '/',
+    screen: HomeScreen(), // Placeholder, replace with actual screen
+    icon: LucideIcons.compass,
+  );
+
+  static const favorites = AppRouteConfig(
+    path: '/',
+    screen: HomeScreen(), // Placeholder, replace with actual screen
+    icon: LucideIcons.bookMarked,
+  );
+
+  static const calendar = AppRouteConfig(
+    path: '/',
+    screen: HomeScreen(), // Placeholder, replace with actual screen
+    icon: LucideIcons.calendar,
+  );
+
+  static const etc = AppRouteConfig(
+    path: '/',
+    screen: HomeScreen(),
+    icon: LucideIcons.bell
+  );
+
+  static const List<AppRouteConfig> homeMenu = [
+    book,
+    duas,
+    prayer,
+    qibla,
+    favorites,
+    calendar,
+    etc,
+  ];
 
   static const List<AppRouteConfig> bottomNav = [
     book,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/config/route.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,75 +14,81 @@ class HomeScreen extends StatelessWidget {
       child : Column(
         children: [
           homeTitle(),
-          homeMenu()
+          homeMenu(
+            context: context,
+            menuItems: [
+              {'text': 'The Holy Quran', 'icon': LucideIcons.bookOpen, 'route': AppRoutes.book.path},
+              {'text': 'Duas Collection', 'icon': LucideIcons.handHeart, 'route': AppRoutes.duas.path},
+              {'text': 'Prayer Times', 'icon': LucideIcons.hourglass, 'route': AppRoutes.prayer.path},
+              {'text': 'Prayer Qibla', 'icon': LucideIcons.compass, 'route': AppRoutes.qibla.path},
+              {'text': 'Favorites', 'icon': LucideIcons.bookMarked, 'route': AppRoutes.favorites.path},
+              {'text': 'Calendar', 'icon': LucideIcons.calendar, 'route': AppRoutes.calendar.path},
+              {'text': 'Etc', 'icon': LucideIcons.bellRing, 'route': AppRoutes.etc.path},
+              ],
+          )
         ],
-
       ),
     );
   }
 }
 
-Widget homeMenu() {
-  // List of menu items
-  final List<String> menuItems = [
-    'The Holy Quran',
-    'Duas Collection',
-    'Prayer Times',
-    'Prayer Qibla',
-    'Favourites',
-    'Etc',
-    'Etc',
-  ];
-
+Widget homeMenu({
+  required BuildContext context,
+  required List<Map<String, dynamic>> menuItems,
+}) {
   return Container(
-    padding: const EdgeInsets.only(left: 40.0, right: 40.0, top: 55.0, bottom: 38.0),
+    padding: const EdgeInsets.only(left: 40.0, right: 40.0, top: 55.0),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Full-width button for the first item
-        ElevatedButton(
-          onPressed: () {
-            print('${menuItems[0]} pressed');
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF672CBC),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
+        if (menuItems.isNotEmpty)
+          ElevatedButton(
+            onPressed: () {
+              final routePath = menuItems[0]['route'] ?? '';
+              if (routePath.isNotEmpty) {
+                context.go(routePath);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF672CBC),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              padding: EdgeInsets.zero, // Important: to control padding
             ),
-            padding: EdgeInsets.zero, // Important: to control padding
-          ),
-          child: Container(
-            height: 60.0,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0), // padding kiri-kanan
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    LucideIcons.bookOpen,
-                    color: Colors.white,
-                    size: 24.0,
-                  ),
-                  const SizedBox(width: 10.0),
-                  Flexible(
-                    child: Text(
-                      menuItems[0],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: 'Plus Jakarta',
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
+            child: Container(
+              height: 60.0,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      menuItems[0]['icon'] ?? LucideIcons.bookOpen,
+                      color: Colors.white,
+                      size: 24.0,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 10.0),
+                    Flexible(
+                      child: Text(
+                        menuItems[0]['text'] ?? '',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Plus Jakarta',
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
         const SizedBox(height: 16.0),
         // Grid for the remaining items
         GridView.builder(
@@ -94,52 +102,53 @@ Widget homeMenu() {
           ),
           itemCount: menuItems.length - 1,
           itemBuilder: (context, index) {
-            // Calculate row index (0-based) for the grid items
             int rowIndex = index ~/ 2 + 1;
             Color buttonColor = rowIndex % 2 == 0
                 ? const Color(0xFF672CBC)
                 : const Color(0xFF3B1D77);
 
             return ElevatedButton(
-            onPressed: () {
-              print('${menuItems[index + 1]} pressed');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: buttonColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
+              onPressed: () {
+                final routePath = menuItems[index + 1]['route'] ?? '';
+                if (routePath.isNotEmpty) {
+                  context.go(routePath);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                padding: EdgeInsets.zero,
               ),
-              padding: EdgeInsets.zero, // penting agar kita kontrol penuh padding
-            ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14.0), // padding luar
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center, // untuk vertikal center
-                children: [
-                  const Icon(
-                    LucideIcons.bookOpen,
-                    color: Colors.white,
-                    size: 24.0,
-                  ),
-                  const SizedBox(width: 10.0), // jarak dari icon ke teks
-                  Expanded(
-                    child: Text(
-                      menuItems[index + 1],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: 'Plus Jakarta',
-                      ),
-                      softWrap: true,
-                      overflow: TextOverflow.visible, // atau hilangkan sama sekali
-                      maxLines: 2, // opsional, batasi maksimal 2 baris
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      menuItems[index + 1]['icon'] ?? LucideIcons.bookOpen,
+                      color: Colors.white,
+                      size: 24.0,
                     ),
-                  ),
-                  const SizedBox(width: 10.0), // jarak dari teks ke ujung kanan
-                ],
+                    const SizedBox(width: 10.0),
+                    Expanded(
+                      child: Text(
+                        menuItems[index + 1]['text'] ?? '',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Plus Jakarta',
+                        ),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
             );
           },
         ),
@@ -147,6 +156,8 @@ Widget homeMenu() {
     ),
   );
 }
+
+
 
 Widget homeTitle() {
   return Flexible(
