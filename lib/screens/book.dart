@@ -10,6 +10,7 @@ class BookScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 24),
       height: double.infinity,
       child : Column(
         children: [

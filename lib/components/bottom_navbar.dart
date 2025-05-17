@@ -19,7 +19,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
   }
 
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+    padding: const EdgeInsets.symmetric(vertical: 24, horizontal:36),
     child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
