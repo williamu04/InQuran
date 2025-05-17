@@ -38,9 +38,9 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
             selectedFontSize: 0,
             unselectedFontSize: 0,
             onTap: (index) {
-              context.go(AppRoutes.all[index].path);
+              context.go(AppRoutes.bottomNav[index].path);
             },
-            items: AppRoutes.all.map((route) {
+            items: AppRoutes.bottomNav.map((route) {
               return BottomNavigationBarItem(
                 icon: Icon(route.icon),
                 label: '',

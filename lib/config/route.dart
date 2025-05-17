@@ -49,6 +49,14 @@ class AppRoutes {
     icon: LucideIcons.user,
   );
 
+  static const List<AppRouteConfig> bottomNav = [
+    book,
+    search,
+    home,
+    duas,
+    profile,
+  ];
+
   static const List<AppRouteConfig> all = [
     book,
     search,
