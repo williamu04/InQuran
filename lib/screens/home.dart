@@ -148,7 +148,6 @@ Widget homeMenu() {
   );
 }
 
-
 Widget homeTitle() {
   return Flexible(
     child: Container(

@@ -76,15 +76,44 @@ class MainScaffold extends StatelessWidget {
   final Widget child;
   final BuildContext context;
   final GoRouterState state;
-  const MainScaffold({super.key, required this.child, required this.context, required this.state});
+
+  const MainScaffold({
+    super.key,
+    required this.child,
+    required this.context,
+    required this.state,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Define the list of routes that need top padding
+    final List<String> paddedUri = ['/book'];
+
+    final bool shouldPadTop = paddedUri.contains(state.uri.toString());
+    final double topPadding = shouldPadTop
+        ? MediaQuery.of(context).padding.top + kToolbarHeight
+        : 0;
+
     return Scaffold(
       extendBody: true,
-      appBar: topBar(),
-      body: child,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Padding(
+              padding: EdgeInsets.only(top: topPadding),
+              child: child,
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: topBar(context, state),
+          ),
+        ],
+      ),
       bottomNavigationBar: bottomNavBar(context, state),
-    );    
+    );
   }
 }
+
