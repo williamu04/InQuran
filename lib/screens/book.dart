@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mtqmnuns/components/search_box.dart';
 
-enum SurahViewMode {
-  surah, juz
-}
+enum SurahViewMode { surah, juz }
+
 class BookScreen extends StatelessWidget {
   const BookScreen({super.key});
 
@@ -12,22 +12,9 @@ class BookScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 24),
       height: double.infinity,
-      child : Column(
-        children: [
-          searchBox(),
-          SurahWidget()
-        ],
-
-      ),
+      child: Column(children: [searchBox(), Expanded(child: SurahWidget())]),
     );
   }
-}
-
-Widget searchBox() {
-  return Container(
-
-  );
-
 }
 
 class SurahWidget extends StatefulWidget {
@@ -38,8 +25,7 @@ class SurahWidget extends StatefulWidget {
 }
 
 class _SurahWidgetState extends State<SurahWidget> {
-
-  SurahViewMode currentMode = SurahViewMode.surah;  // Surah as Default
+  SurahViewMode currentMode = SurahViewMode.surah; // Surah as Default
 
   void _switchToSurahMode() {
     setState(() {
@@ -55,12 +41,7 @@ class _SurahWidgetState extends State<SurahWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        surahNavContainer(),
-        surahContainer()
-      ],
-    );
+    return Column(children: [surahNavContainer(), surahContainer()]);
   }
 
   Widget surahNavContainer() {
@@ -95,19 +76,10 @@ class _SurahWidgetState extends State<SurahWidget> {
   }
 
   Widget surahViewMode() {
-    return Column(
-      children: [
-        Text('Surah View'),
-      ],
-    );
+    return Column(children: [Text('Surah View')]);
   }
 
   Widget juzViewMode() {
-    return Column(
-      children: [
-        Text('Juz View'),
-      ],
-    );
+    return Column(children: [Text('Juz View')]);
   }
 }
-
