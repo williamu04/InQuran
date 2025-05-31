@@ -63,25 +63,27 @@ class MainScaffold extends StatelessWidget {
     final bool shouldPadTop = paddedUri.contains(state.uri.toString());
     final double topPadding = shouldPadTop ? MediaQuery.of(context).padding.top + kToolbarHeight : 0;
 
-    return Scaffold(
-      extendBody: true,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Padding(
-              padding: EdgeInsets.only(top: topPadding),
-              child: child,
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Padding(
+                padding: EdgeInsets.only(top: topPadding),
+                child: child,
+              ),
             ),
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: topBar(context, state),
-          ),
-        ],
-      ),
-      bottomNavigationBar: bottomNavBar(context, state),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: topBar(context, state),
+            ),
+          ],
+        ),
+        bottomNavigationBar: bottomNavBar(context, state),
+      )
     );
   }
 }
