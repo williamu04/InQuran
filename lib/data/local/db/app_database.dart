@@ -11,9 +11,12 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:mtqmnuns/data/entity/surah.dart';
 import 'package:mtqmnuns/data/entity/ayah.dart';
 
+import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
+import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
+
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Surah, Ayah])
+@DriftDatabase(tables: [Surah, Ayah], daos: [SurahDao, AyahDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
   static final AppDatabase _instance = AppDatabase._internal();
@@ -21,6 +24,9 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase() { 
     return _instance;
   }
+
+  late final SurahDao surahDao = SurahDao(this);
+  late final AyahDao ayahDao = AyahDao(this);
 
   @override
   int get schemaVersion => 1;
