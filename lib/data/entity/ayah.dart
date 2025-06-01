@@ -7,6 +7,8 @@ class Ayah extends Table {
   TextColumn get ayahText => text()();
   TextColumn get indoText => text()();
   TextColumn get readText => text()();
+  IntColumn get juz => integer()();
+  IntColumn get ayahNumber => integer()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
