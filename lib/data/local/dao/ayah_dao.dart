@@ -13,6 +13,5 @@ class AyahDao extends DatabaseAccessor<AppDatabase> with _$AyahDaoMixin {
   Future<List<AyahData>> getAyahsBySurahId(int surahId) {
     return (select(ayah)..where((tbl) => tbl.surahId.equals(surahId))).get();
   }
-
 }
 

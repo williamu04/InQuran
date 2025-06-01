@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/search_box.dart';
+import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 enum SurahViewMode { surah, juz }
 
@@ -80,6 +82,37 @@ class _SurahWidgetState extends State<SurahWidget> {
   }
 
   Widget juzViewMode() {
-    return Column(children: [Text('Juz View')]);
+    Future<List<Map<String, dynamic>>> fetchJuzInfo() async {
+      return AppDatabase().juzDao.getJuzInfo(AppDatabase().surahDao);
+    }
+    
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: fetchJuzInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Error: ${snapshot.error}"));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text("No data available"));
+        }
+
+        final juzList = snapshot.data!;
+
+        return ListView.builder(
+          itemCount: juzList.length,
+          itemBuilder: (context, index) {
+            final juz = juzList[index];
+            return ListTile(
+              title: Text('Juz ${juz['juz']}'),
+              subtitle: Text(
+                'Start: ${juz['startSurah']?.name} Ayah ${juz['startAyah']?.ayahNumber} '
+                '→ End: ${juz['endSurah']?.name} Ayah ${juz['endAyah']?.ayahNumber}',
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

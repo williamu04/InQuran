@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart' as p;
@@ -21,9 +22,13 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
   static final AppDatabase _instance = AppDatabase._internal();
 
-  factory AppDatabase() { 
+  factory AppDatabase() {
     return _instance;
   }
+
+  late final SurahDao surahDao = SurahDao(this);
+  late final AyahDao ayahDao = AyahDao(this);
+  late final JuzDao juzDao = JuzDao(this);
 
   @override
   int get schemaVersion => 2;
@@ -35,29 +40,31 @@ LazyDatabase _openConnection() {
     // for your app.
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
-    
+
     // DELETE: Force delete existing database to recreate with new schema
     if (await file.exists()) {
       await file.delete();
     }
-    
+
     // ALWAYS copy fresh database from assets (since we deleted the old one)
     final blob = await rootBundle.load('assets/databases/quran.db');
     final buffer = blob.buffer;
-    await file.writeAsBytes(buffer.asUint8List(blob.offsetInBytes, blob.lengthInBytes));
-    
+    await file.writeAsBytes(
+      buffer.asUint8List(blob.offsetInBytes, blob.lengthInBytes),
+    );
+
     // Also work around limitations on old Android versions
     if (Platform.isAndroid) {
       await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
     }
-    
+
     // Make sqlite3 pick a more suitable location for temporary files - the
     // one from the system may be inaccessible due to sandboxing.
     final cachebase = (await getTemporaryDirectory()).path;
     // We can't access /tmp on Android, which sqlite3 would try by default.
     // Explicitly tell it about the correct temporary directory.
     sqlite3.tempDirectory = cachebase;
-    
+
     return NativeDatabase.createInBackground(file);
   });
 }
