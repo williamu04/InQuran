@@ -42,7 +42,7 @@ class _SurahWidgetState extends State<SurahWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [surahNavContainer(), surahContainer()]);
+    return ListView(children: [surahNavContainer(), surahContainer()]);
   }
 
   Widget surahNavContainer() {
@@ -124,24 +124,30 @@ class _SurahWidgetState extends State<SurahWidget> {
                     children: [
                       Row(
                         children: [
-                          Container(
+                          SizedBox(
                             width: 40,
                             height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.purple.shade800,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${juz['juz']}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/img/star.png',
+                                  width: 40,
+                                  height: 40,
+                                  fit: BoxFit.cover,
                                 ),
-                              ),
+                                Text(
+                                  '${juz['juz']}',
+                                  style: const TextStyle(
+                                    color: Color(0xFF672CBC),
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+
                           const SizedBox(width: 16.0),
                           Text(
                             'Juz ${juz['juz']}',
@@ -156,7 +162,7 @@ class _SurahWidgetState extends State<SurahWidget> {
                       const SizedBox(height: 16.0),
 
                       // Conditional rendering
-                      if (sameSurah)
+                      if (sameSurah) ...[
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -164,31 +170,41 @@ class _SurahWidgetState extends State<SurahWidget> {
                               '${startSurah?.nameLatin}',
                               style: const TextStyle(
                                 fontSize: 16.0,
-                                color: Colors.black87,
+                                color: Colors.grey,
                               ),
                             ),
                             Text(
                               'Verse ${startAyah?.ayahNumber} - ${endAyah?.ayahNumber}',
                               style: const TextStyle(
                                 fontSize: 14.0,
-                                color: Colors.grey,
+                                color: Color(0xFF672CBC),
                               ),
                             ),
                           ],
-                        )
+                        ),
+                        SizedBox(height: 16.0),
+                        Divider(
+                          color: Colors.grey.shade400,
+                          thickness: 1.0
+                        ),
+                      ]
                       else ...[
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               '${startSurah?.nameLatin}',
-                              style: const TextStyle(fontSize: 16.0, color: Colors.black87),
+                              style: const TextStyle(fontSize: 16.0, color: Colors.grey),
                             ),
                             Text(
                               'Verse ${startAyah?.ayahNumber} - ${startSurah?.totalAyah}',
-                              style: const TextStyle(fontSize: 14.0, color: Colors.grey),
+                              style: const TextStyle(fontSize: 14.0, color: Color(0xFF672CBC)),
                             ),
                           ],
+                        ),
+                        Divider(
+                          color: Colors.grey.shade300,
+                          thickness: 0.6,
                         ),
                         const SizedBox(height: 8.0),
                         Row(
@@ -196,14 +212,19 @@ class _SurahWidgetState extends State<SurahWidget> {
                           children: [
                             Text(
                               '${endSurah?.nameLatin}',
-                              style: const TextStyle(fontSize: 16.0, color: Colors.black87),
+                              style: const TextStyle(fontSize: 16.0, color: Colors.grey),
                             ),
                             Text(
                               'Verse 1 - ${endAyah?.ayahNumber}',
-                              style: const TextStyle(fontSize: 14.0, color: Colors.grey),
+                              style: const TextStyle(fontSize: 14.0, color: Color(0xFF672CBC)),
                             ),
                           ],
                         ),
+                      const SizedBox(height: 16.0),
+                      Divider(
+                        color: Colors.grey.shade400,
+                        thickness: 0.8
+                      )
                       ]
                     ],
                   ),
