@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/search_box.dart';
-import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 enum SurahViewMode { surah, juz }
@@ -85,7 +84,7 @@ class _SurahWidgetState extends State<SurahWidget> {
     Future<List<Map<String, dynamic>>> fetchJuzInfo() async {
       return AppDatabase().juzDao.getJuzInfo(AppDatabase().surahDao);
     }
-    
+
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: fetchJuzInfo(),
       builder: (context, snapshot) {
@@ -99,18 +98,119 @@ class _SurahWidgetState extends State<SurahWidget> {
 
         final juzList = snapshot.data!;
 
-        return ListView.builder(
-          itemCount: juzList.length,
-          itemBuilder: (context, index) {
-            final juz = juzList[index];
-            return ListTile(
-              title: Text('Juz ${juz['juz']}'),
-              subtitle: Text(
-                'Start: ${juz['startSurah']?.name} Ayah ${juz['startAyah']?.ayahNumber} '
-                '→ End: ${juz['endSurah']?.name} Ayah ${juz['endAyah']?.ayahNumber}',
-              ),
-            );
-          },
+          return SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: ListView.builder(
+              padding: EdgeInsets.only(top: 0, bottom: MediaQuery.of(context).padding.bottom + 220.0,),
+              itemCount: juzList.length,
+              itemBuilder: (context, index) {
+              final juz = juzList[index];
+              final startSurah = juz['startSurah'];
+              final endSurah = juz['endSurah'];
+              final startAyah = juz['startAyah'];
+              final endAyah = juz['endAyah'];
+              final sameSurah = startSurah?.nameLatin == endSurah?.nameLatin;
+
+              return Card(
+                elevation: 0,
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.purple.shade800,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${juz['juz']}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16.0),
+                          Text(
+                            'Juz ${juz['juz']}',
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+
+                      // Conditional rendering
+                      if (sameSurah)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${startSurah?.nameLatin}',
+                              style: const TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              'Verse ${startAyah?.ayahNumber} - ${endAyah?.ayahNumber}',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        )
+                      else ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${startSurah?.nameLatin}',
+                              style: const TextStyle(fontSize: 16.0, color: Colors.black87),
+                            ),
+                            Text(
+                              'Verse ${startAyah?.ayahNumber} - ${startSurah?.totalAyah}',
+                              style: const TextStyle(fontSize: 14.0, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${endSurah?.nameLatin}',
+                              style: const TextStyle(fontSize: 16.0, color: Colors.black87),
+                            ),
+                            Text(
+                              'Verse 1 - ${endAyah?.ayahNumber}',
+                              style: const TextStyle(fontSize: 14.0, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ]
+                    ],
+                  ),
+                ),
+              );
+            }
+          )
         );
       },
     );

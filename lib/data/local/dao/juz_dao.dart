@@ -7,23 +7,23 @@ part 'juz_dao.g.dart';
 
 @DriftAccessor(tables: [Ayah])
 class JuzDao extends DatabaseAccessor<AppDatabase> with _$JuzDaoMixin {
-  JuzDao(AppDatabase db) : super(db);
+  JuzDao(super.db);
 
   Future<List<Map<String, AyahData>>> getJuzBoundaries() async {
     final result = <Map<String, AyahData>>[];
 
     for (int i = 1; i <= 30; i++) {
-      final firstAyah = await (select(ayah)
+      // Get all ayahs for the current juz, ordered by id
+      final ayahs = await (select(ayah)
             ..where((tbl) => tbl.juz.equals(i))
             ..orderBy([(tbl) => OrderingTerm(expression: tbl.id)]))
-          .getSingleOrNull();
+          .get();
 
-      final lastAyah = await (select(ayah)
-            ..where((tbl) => tbl.juz.equals(i))
-            ..orderBy([(tbl) => OrderingTerm(expression: tbl.id, mode: OrderingMode.desc)]))
-          .getSingleOrNull();
+      if (ayahs.isEmpty) continue;
 
-      if (firstAyah == null || lastAyah == null) continue;
+      // First and last ayahs for the juz
+      final firstAyah = ayahs.first;
+      final lastAyah = ayahs.last;
 
       result.add({'start': firstAyah, 'end': lastAyah});
     }
