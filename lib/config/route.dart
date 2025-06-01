@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
+import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
@@ -36,7 +39,7 @@ class AppRoutes {
   static const book = AppRouteConfig(
     text: 'The Holy Quran',
     path: '/book',
-    screen: BookScreen(),
+    screen:  BookScreen(),
     icon: LucideIcons.bookOpen,
   );
 

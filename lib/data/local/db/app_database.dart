@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart' as p;
@@ -27,6 +28,7 @@ class AppDatabase extends _$AppDatabase {
 
   late final SurahDao surahDao = SurahDao(this);
   late final AyahDao ayahDao = AyahDao(this);
+  late final JuzDao juzDao = JuzDao(this);
 
   @override
   int get schemaVersion => 2;
