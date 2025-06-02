@@ -65,6 +65,7 @@ class MainScaffold extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         extendBody: true,
         body: Stack(
           children: [
