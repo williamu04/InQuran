@@ -462,7 +462,7 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
@@ -473,9 +473,9 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
   late final GeneratedColumn<int> surahId = GeneratedColumn<int>(
     'surahId',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES surah (id)',
     ),
@@ -487,9 +487,9 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
   late final GeneratedColumn<String> ayahText = GeneratedColumn<String>(
     'ayahText',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _indoTextMeta = const VerificationMeta(
     'indoText',
@@ -498,9 +498,9 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
   late final GeneratedColumn<String> indoText = GeneratedColumn<String>(
     'indoText',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _readTextMeta = const VerificationMeta(
     'readText',
@@ -509,18 +509,18 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
   late final GeneratedColumn<String> readText = GeneratedColumn<String>(
     'readText',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _juzMeta = const VerificationMeta('juz');
   @override
   late final GeneratedColumn<int> juz = GeneratedColumn<int>(
     'juz',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _ayahNumberMeta = const VerificationMeta(
     'ayahNumber',
@@ -529,9 +529,9 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
   late final GeneratedColumn<int> ayahNumber = GeneratedColumn<int>(
     'ayahNumber',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -563,36 +563,48 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
         _surahIdMeta,
         surahId.isAcceptableOrUnknown(data['surahId']!, _surahIdMeta),
       );
+    } else if (isInserting) {
+      context.missing(_surahIdMeta);
     }
     if (data.containsKey('ayahText')) {
       context.handle(
         _ayahTextMeta,
         ayahText.isAcceptableOrUnknown(data['ayahText']!, _ayahTextMeta),
       );
+    } else if (isInserting) {
+      context.missing(_ayahTextMeta);
     }
     if (data.containsKey('indoText')) {
       context.handle(
         _indoTextMeta,
         indoText.isAcceptableOrUnknown(data['indoText']!, _indoTextMeta),
       );
+    } else if (isInserting) {
+      context.missing(_indoTextMeta);
     }
     if (data.containsKey('readText')) {
       context.handle(
         _readTextMeta,
         readText.isAcceptableOrUnknown(data['readText']!, _readTextMeta),
       );
+    } else if (isInserting) {
+      context.missing(_readTextMeta);
     }
     if (data.containsKey('juz')) {
       context.handle(
         _juzMeta,
         juz.isAcceptableOrUnknown(data['juz']!, _juzMeta),
       );
+    } else if (isInserting) {
+      context.missing(_juzMeta);
     }
     if (data.containsKey('ayahNumber')) {
       context.handle(
         _ayahNumberMeta,
         ayahNumber.isAcceptableOrUnknown(data['ayahNumber']!, _ayahNumberMeta),
       );
+    } else if (isInserting) {
+      context.missing(_ayahNumberMeta);
     }
     return context;
   }
@@ -603,34 +615,41 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
   AyahData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AyahData(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      ),
-      surahId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}surahId'],
-      ),
-      ayahText: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}ayahText'],
-      ),
-      indoText: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}indoText'],
-      ),
-      readText: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}readText'],
-      ),
-      juz: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}juz'],
-      ),
-      ayahNumber: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}ayahNumber'],
-      ),
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      surahId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}surahId'],
+          )!,
+      ayahText:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}ayahText'],
+          )!,
+      indoText:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}indoText'],
+          )!,
+      readText:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}readText'],
+          )!,
+      juz:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}juz'],
+          )!,
+      ayahNumber:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}ayahNumber'],
+          )!,
     );
   }
 
@@ -641,73 +660,44 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
 }
 
 class AyahData extends DataClass implements Insertable<AyahData> {
-  final int? id;
-  final int? surahId;
-  final String? ayahText;
-  final String? indoText;
-  final String? readText;
-  final int? juz;
-  final int? ayahNumber;
+  final int id;
+  final int surahId;
+  final String ayahText;
+  final String indoText;
+  final String readText;
+  final int juz;
+  final int ayahNumber;
   const AyahData({
-    this.id,
-    this.surahId,
-    this.ayahText,
-    this.indoText,
-    this.readText,
-    this.juz,
-    this.ayahNumber,
+    required this.id,
+    required this.surahId,
+    required this.ayahText,
+    required this.indoText,
+    required this.readText,
+    required this.juz,
+    required this.ayahNumber,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
-    }
-    if (!nullToAbsent || surahId != null) {
-      map['surahId'] = Variable<int>(surahId);
-    }
-    if (!nullToAbsent || ayahText != null) {
-      map['ayahText'] = Variable<String>(ayahText);
-    }
-    if (!nullToAbsent || indoText != null) {
-      map['indoText'] = Variable<String>(indoText);
-    }
-    if (!nullToAbsent || readText != null) {
-      map['readText'] = Variable<String>(readText);
-    }
-    if (!nullToAbsent || juz != null) {
-      map['juz'] = Variable<int>(juz);
-    }
-    if (!nullToAbsent || ayahNumber != null) {
-      map['ayahNumber'] = Variable<int>(ayahNumber);
-    }
+    map['id'] = Variable<int>(id);
+    map['surahId'] = Variable<int>(surahId);
+    map['ayahText'] = Variable<String>(ayahText);
+    map['indoText'] = Variable<String>(indoText);
+    map['readText'] = Variable<String>(readText);
+    map['juz'] = Variable<int>(juz);
+    map['ayahNumber'] = Variable<int>(ayahNumber);
     return map;
   }
 
   AyahCompanion toCompanion(bool nullToAbsent) {
     return AyahCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      surahId:
-          surahId == null && nullToAbsent
-              ? const Value.absent()
-              : Value(surahId),
-      ayahText:
-          ayahText == null && nullToAbsent
-              ? const Value.absent()
-              : Value(ayahText),
-      indoText:
-          indoText == null && nullToAbsent
-              ? const Value.absent()
-              : Value(indoText),
-      readText:
-          readText == null && nullToAbsent
-              ? const Value.absent()
-              : Value(readText),
-      juz: juz == null && nullToAbsent ? const Value.absent() : Value(juz),
-      ayahNumber:
-          ayahNumber == null && nullToAbsent
-              ? const Value.absent()
-              : Value(ayahNumber),
+      id: Value(id),
+      surahId: Value(surahId),
+      ayahText: Value(ayahText),
+      indoText: Value(indoText),
+      readText: Value(readText),
+      juz: Value(juz),
+      ayahNumber: Value(ayahNumber),
     );
   }
 
@@ -717,45 +707,45 @@ class AyahData extends DataClass implements Insertable<AyahData> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AyahData(
-      id: serializer.fromJson<int?>(json['id']),
-      surahId: serializer.fromJson<int?>(json['surahId']),
-      ayahText: serializer.fromJson<String?>(json['ayahText']),
-      indoText: serializer.fromJson<String?>(json['indoText']),
-      readText: serializer.fromJson<String?>(json['readText']),
-      juz: serializer.fromJson<int?>(json['juz']),
-      ayahNumber: serializer.fromJson<int?>(json['ayahNumber']),
+      id: serializer.fromJson<int>(json['id']),
+      surahId: serializer.fromJson<int>(json['surahId']),
+      ayahText: serializer.fromJson<String>(json['ayahText']),
+      indoText: serializer.fromJson<String>(json['indoText']),
+      readText: serializer.fromJson<String>(json['readText']),
+      juz: serializer.fromJson<int>(json['juz']),
+      ayahNumber: serializer.fromJson<int>(json['ayahNumber']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int?>(id),
-      'surahId': serializer.toJson<int?>(surahId),
-      'ayahText': serializer.toJson<String?>(ayahText),
-      'indoText': serializer.toJson<String?>(indoText),
-      'readText': serializer.toJson<String?>(readText),
-      'juz': serializer.toJson<int?>(juz),
-      'ayahNumber': serializer.toJson<int?>(ayahNumber),
+      'id': serializer.toJson<int>(id),
+      'surahId': serializer.toJson<int>(surahId),
+      'ayahText': serializer.toJson<String>(ayahText),
+      'indoText': serializer.toJson<String>(indoText),
+      'readText': serializer.toJson<String>(readText),
+      'juz': serializer.toJson<int>(juz),
+      'ayahNumber': serializer.toJson<int>(ayahNumber),
     };
   }
 
   AyahData copyWith({
-    Value<int?> id = const Value.absent(),
-    Value<int?> surahId = const Value.absent(),
-    Value<String?> ayahText = const Value.absent(),
-    Value<String?> indoText = const Value.absent(),
-    Value<String?> readText = const Value.absent(),
-    Value<int?> juz = const Value.absent(),
-    Value<int?> ayahNumber = const Value.absent(),
+    int? id,
+    int? surahId,
+    String? ayahText,
+    String? indoText,
+    String? readText,
+    int? juz,
+    int? ayahNumber,
   }) => AyahData(
-    id: id.present ? id.value : this.id,
-    surahId: surahId.present ? surahId.value : this.surahId,
-    ayahText: ayahText.present ? ayahText.value : this.ayahText,
-    indoText: indoText.present ? indoText.value : this.indoText,
-    readText: readText.present ? readText.value : this.readText,
-    juz: juz.present ? juz.value : this.juz,
-    ayahNumber: ayahNumber.present ? ayahNumber.value : this.ayahNumber,
+    id: id ?? this.id,
+    surahId: surahId ?? this.surahId,
+    ayahText: ayahText ?? this.ayahText,
+    indoText: indoText ?? this.indoText,
+    readText: readText ?? this.readText,
+    juz: juz ?? this.juz,
+    ayahNumber: ayahNumber ?? this.ayahNumber,
   );
   AyahData copyWithCompanion(AyahCompanion data) {
     return AyahData(
@@ -801,13 +791,13 @@ class AyahData extends DataClass implements Insertable<AyahData> {
 }
 
 class AyahCompanion extends UpdateCompanion<AyahData> {
-  final Value<int?> id;
-  final Value<int?> surahId;
-  final Value<String?> ayahText;
-  final Value<String?> indoText;
-  final Value<String?> readText;
-  final Value<int?> juz;
-  final Value<int?> ayahNumber;
+  final Value<int> id;
+  final Value<int> surahId;
+  final Value<String> ayahText;
+  final Value<String> indoText;
+  final Value<String> readText;
+  final Value<int> juz;
+  final Value<int> ayahNumber;
   const AyahCompanion({
     this.id = const Value.absent(),
     this.surahId = const Value.absent(),
@@ -819,13 +809,18 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
   });
   AyahCompanion.insert({
     this.id = const Value.absent(),
-    this.surahId = const Value.absent(),
-    this.ayahText = const Value.absent(),
-    this.indoText = const Value.absent(),
-    this.readText = const Value.absent(),
-    this.juz = const Value.absent(),
-    this.ayahNumber = const Value.absent(),
-  });
+    required int surahId,
+    required String ayahText,
+    required String indoText,
+    required String readText,
+    required int juz,
+    required int ayahNumber,
+  }) : surahId = Value(surahId),
+       ayahText = Value(ayahText),
+       indoText = Value(indoText),
+       readText = Value(readText),
+       juz = Value(juz),
+       ayahNumber = Value(ayahNumber);
   static Insertable<AyahData> custom({
     Expression<int>? id,
     Expression<int>? surahId,
@@ -847,13 +842,13 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
   }
 
   AyahCompanion copyWith({
-    Value<int?>? id,
-    Value<int?>? surahId,
-    Value<String?>? ayahText,
-    Value<String?>? indoText,
-    Value<String?>? readText,
-    Value<int?>? juz,
-    Value<int?>? ayahNumber,
+    Value<int>? id,
+    Value<int>? surahId,
+    Value<String>? ayahText,
+    Value<String>? indoText,
+    Value<String>? readText,
+    Value<int>? juz,
+    Value<int>? ayahNumber,
   }) {
     return AyahCompanion(
       id: id ?? this.id,
@@ -1257,23 +1252,23 @@ typedef $$SurahTableProcessedTableManager =
     >;
 typedef $$AyahTableCreateCompanionBuilder =
     AyahCompanion Function({
-      Value<int?> id,
-      Value<int?> surahId,
-      Value<String?> ayahText,
-      Value<String?> indoText,
-      Value<String?> readText,
-      Value<int?> juz,
-      Value<int?> ayahNumber,
+      Value<int> id,
+      required int surahId,
+      required String ayahText,
+      required String indoText,
+      required String readText,
+      required int juz,
+      required int ayahNumber,
     });
 typedef $$AyahTableUpdateCompanionBuilder =
     AyahCompanion Function({
-      Value<int?> id,
-      Value<int?> surahId,
-      Value<String?> ayahText,
-      Value<String?> indoText,
-      Value<String?> readText,
-      Value<int?> juz,
-      Value<int?> ayahNumber,
+      Value<int> id,
+      Value<int> surahId,
+      Value<String> ayahText,
+      Value<String> indoText,
+      Value<String> readText,
+      Value<int> juz,
+      Value<int> ayahNumber,
     });
 
 final class $$AyahTableReferences
@@ -1283,9 +1278,9 @@ final class $$AyahTableReferences
   static $SurahTable _surahIdTable(_$AppDatabase db) =>
       db.surah.createAlias($_aliasNameGenerator(db.ayah.surahId, db.surah.id));
 
-  $$SurahTableProcessedTableManager? get surahId {
-    final $_column = $_itemColumn<int>('surahId');
-    if ($_column == null) return null;
+  $$SurahTableProcessedTableManager get surahId {
+    final $_column = $_itemColumn<int>('surahId')!;
+
     final manager = $$SurahTableTableManager(
       $_db,
       $_db.surah,
@@ -1503,13 +1498,13 @@ class $$AyahTableTableManager
               () => $$AyahTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int?> id = const Value.absent(),
-                Value<int?> surahId = const Value.absent(),
-                Value<String?> ayahText = const Value.absent(),
-                Value<String?> indoText = const Value.absent(),
-                Value<String?> readText = const Value.absent(),
-                Value<int?> juz = const Value.absent(),
-                Value<int?> ayahNumber = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<int> surahId = const Value.absent(),
+                Value<String> ayahText = const Value.absent(),
+                Value<String> indoText = const Value.absent(),
+                Value<String> readText = const Value.absent(),
+                Value<int> juz = const Value.absent(),
+                Value<int> ayahNumber = const Value.absent(),
               }) => AyahCompanion(
                 id: id,
                 surahId: surahId,
@@ -1521,13 +1516,13 @@ class $$AyahTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<int?> id = const Value.absent(),
-                Value<int?> surahId = const Value.absent(),
-                Value<String?> ayahText = const Value.absent(),
-                Value<String?> indoText = const Value.absent(),
-                Value<String?> readText = const Value.absent(),
-                Value<int?> juz = const Value.absent(),
-                Value<int?> ayahNumber = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                required int surahId,
+                required String ayahText,
+                required String indoText,
+                required String readText,
+                required int juz,
+                required int ayahNumber,
               }) => AyahCompanion.insert(
                 id: id,
                 surahId: surahId,
