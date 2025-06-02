@@ -80,10 +80,31 @@ class MainScaffold extends StatelessWidget {
               right: 0,
               child: topBar(context, state),
             ),
+
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                height: 100, 
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.purple.withOpacity(0.1),  // stronger purple near bottom
+                      Colors.purple.withOpacity(0.15),  // strongest purple at the very bottom
+                    ],
+                    stops: [0.2, 0.7, 0.9], 
+                  ),
+                ),              
+              ),
+            ),
           ],
         ),
         bottomNavigationBar: bottomNavBar(context, state),
-      )
+      ),
     );
   }
 }

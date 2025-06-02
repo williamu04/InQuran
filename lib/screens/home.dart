@@ -7,17 +7,21 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child : Column(
-        children: [
-          homeTitle(),
-          homeMenu(
-            context: context,
-            menuItems: AppRoutes.homeMenu
-          )
-        ],
+    return Padding(
+      padding: EdgeInsets.only(bottom: 115),
+      child: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            homeTitle(),
+            homeMenu(
+              context: context,
+              menuItems: AppRoutes.homeMenu,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -28,7 +32,7 @@ Widget homeMenu({
   required List<AppRouteConfig> menuItems,
 }) {
   return Container(
-    padding: const EdgeInsets.only(left: 40.0, right: 40.0, top: 55.0),
+    padding: const EdgeInsets.only(left: 40.0, right: 40.0, top: 40),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -148,9 +152,9 @@ Widget homeMenu({
 }
 
 Widget homeTitle() {
-  return Flexible(
+  return Expanded(
     child: Container(
-      padding: const EdgeInsets.only(top: 100, left: 40, right: 40, bottom: 40),
+      padding: const EdgeInsets.only(top: 80, left: 40, right: 40, bottom: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
@@ -211,7 +215,7 @@ Widget homeTitle() {
             color: Colors.white38,
           ),
 
-          const SizedBox(height: 16), // Perkecil jarak
+          const SizedBox(height: 24), // Perkecil jarak
 
           // Ayat dan terjemahan
           const Center(
