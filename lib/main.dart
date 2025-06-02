@@ -59,12 +59,13 @@ class MainScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Define the list of routes that need top padding
-    final List<String> paddedUri = [AppRoutes.book.path];
-    final bool shouldPadTop = paddedUri.contains(state.uri.toString());
-    final double topPadding = shouldPadTop ? MediaQuery.of(context).padding.top + kToolbarHeight : 0;
+    String currentPath = state.uri.toString();
+    AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
+    final double topPadding =  currentRoute.isHasPurpleBanner ? 0 : MediaQuery.of(context).padding.top + kToolbarHeight;
 
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         extendBody: true,
         body: Stack(
           children: [
