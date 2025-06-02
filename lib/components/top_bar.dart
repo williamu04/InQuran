@@ -1,15 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/config/route.dart';
 
 PreferredSizeWidget topBar(BuildContext context, GoRouterState state) {
-  final  currentRoute = state.uri.toString();
+  String currentPath = state.uri.toString();
+  AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
+  
+
+
+  Color backgroundColor = Colors.transparent;
+  Color iconColor;
+  Color titleColor;
+  MainAxisAlignment titleAlignment;
+  String title; 
+
+  title = currentRoute.title;
+
+  if (currentRoute.isHasPurpleBanner) {
+    iconColor = Colors.white;
+    titleColor = Colors.white;
+  } else {
+    iconColor = const Color(0xFF7C8BA0);
+    titleColor = const Color(0xFF672CBC);
+  }
+
+  final List<String> centerTitle = [
+            AppRoutes.book.path, 
+            AppRoutes.search.path, 
+            AppRoutes.duas.path, 
+            AppRoutes.profile.path
+            ];
+
+  final bool shouldCenterTitle = centerTitle.contains(state.uri.toString());
+  if (shouldCenterTitle) {
+    titleAlignment = MainAxisAlignment.center;
+  } else {
+    titleAlignment = MainAxisAlignment.start;
+  }
+
 
   return PreferredSize(
-    preferredSize: Size.fromHeight(kToolbarHeight),
+    preferredSize: const Size.fromHeight(kToolbarHeight),
     child: Container(
       padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
-      color: Colors.transparent,
+      color: backgroundColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -17,29 +52,34 @@ PreferredSizeWidget topBar(BuildContext context, GoRouterState state) {
             builder: (context) => IconButton(
               icon: Icon(
                 LucideIcons.alignLeft,
-                color: currentRoute == "/book" ? Color(0xFF7C8BA0) : Colors.white,
+                color: iconColor,
               ),
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
           Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text(
-                  'QuranApp',
-                  style: TextStyle(
-                    fontFamily: "Plus Jakarta",
-                    color: currentRoute == "/book" ? Color(0xFF672CBC) : Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+            child: Row(
+              mainAxisAlignment: titleAlignment,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: "Plus Jakarta",
+                      color: titleColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
           IconButton(
             icon: Icon(
               LucideIcons.settings,
-              color: currentRoute == "/book" ? Color(0xFF7C8BA0) : Colors.white,
+              color: iconColor,
             ),
             onPressed: () {
               // Settings action
@@ -50,3 +90,4 @@ PreferredSizeWidget topBar(BuildContext context, GoRouterState state) {
     ),
   );
 }
+

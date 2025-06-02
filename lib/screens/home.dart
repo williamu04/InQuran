@@ -66,7 +66,7 @@ Widget homeMenu({
                     const SizedBox(width: 10.0),
                     Flexible(
                       child: Text(
-                        menuItems[0].text,
+                        menuItems[0].title,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14.0,
@@ -128,7 +128,7 @@ Widget homeMenu({
                     const SizedBox(width: 10.0),
                     Expanded(
                       child: Text(
-                        item.text,
+                        item.title,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12.0,
