@@ -101,7 +101,7 @@ class _SurahWidgetState extends State<SurahWidget> {
           return SizedBox(
             height: MediaQuery.of(context).size.height,
             child: ListView.builder(
-              padding: EdgeInsets.only(top: 0, bottom: MediaQuery.of(context).padding.bottom + 220.0,),
+              padding: EdgeInsets.only(bottom: 330),
               itemCount: juzList.length,
               itemBuilder: (context, index) {
               final juz = juzList[index];
@@ -118,7 +118,7 @@ class _SurahWidgetState extends State<SurahWidget> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -140,7 +140,7 @@ class _SurahWidgetState extends State<SurahWidget> {
                                   '${juz['juz']}',
                                   style: const TextStyle(
                                     color: Color(0xFF672CBC),
-                                    fontSize: 16.0,
+                                    fontSize: 14.0,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -168,23 +168,23 @@ class _SurahWidgetState extends State<SurahWidget> {
                           children: [
                             Text(
                               '${startSurah?.nameLatin}',
-                              style: const TextStyle(
-                                fontSize: 16.0,
-                                color: Colors.grey,
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.grey.shade600,
                               ),
                             ),
                             Text(
                               'Verse ${startAyah?.ayahNumber} - ${endAyah?.ayahNumber}',
-                              style: const TextStyle(
-                                fontSize: 14.0,
+                              style: TextStyle(
+                                fontSize: 12.0,
                                 color: Color(0xFF672CBC),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 16.0),
+                        SizedBox(height: 8.0),
                         Divider(
-                          color: Colors.grey.shade400,
+                          color: Colors.grey.shade300,
                           thickness: 1.0
                         ),
                       ]
@@ -194,11 +194,11 @@ class _SurahWidgetState extends State<SurahWidget> {
                           children: [
                             Text(
                               '${startSurah?.nameLatin}',
-                              style: const TextStyle(fontSize: 16.0, color: Colors.grey),
+                              style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
                             ),
                             Text(
                               'Verse ${startAyah?.ayahNumber} - ${startSurah?.totalAyah}',
-                              style: const TextStyle(fontSize: 14.0, color: Color(0xFF672CBC)),
+                              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
                             ),
                           ],
                         ),
@@ -206,21 +206,21 @@ class _SurahWidgetState extends State<SurahWidget> {
                           color: Colors.grey.shade300,
                           thickness: 0.6,
                         ),
-                        const SizedBox(height: 8.0),
+                        // const SizedBox(height: 4.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               '${endSurah?.nameLatin}',
-                              style: const TextStyle(fontSize: 16.0, color: Colors.grey),
+                              style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
                             ),
                             Text(
                               'Verse 1 - ${endAyah?.ayahNumber}',
-                              style: const TextStyle(fontSize: 14.0, color: Color(0xFF672CBC)),
+                              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
                             ),
                           ],
                         ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 8.0),
                       Divider(
                         color: Colors.grey.shade400,
                         thickness: 0.8
