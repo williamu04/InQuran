@@ -86,6 +86,27 @@ class MainScaffold extends StatelessWidget {
               right: 0,
               bottom: 0,
               child: Container(
+                height: 200, 
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withOpacity(0),   // fully transparent at the top
+                      Colors.white.withOpacity(0.5), // semi-transparent
+                      Colors.white.withOpacity(1),   // solid white at the bottom
+                    ],
+                    stops: [0.45, 0.6, 0.7], 
+                  ),
+                ),
+              ),
+            ),
+
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
                 height: 100, 
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -98,9 +119,11 @@ class MainScaffold extends StatelessWidget {
                     ],
                     stops: [0.2, 0.7, 0.9], 
                   ),
-                ),              
+                ),
               ),
             ),
+
+
           ],
         ),
         bottomNavigationBar: bottomNavBar(context, state),
