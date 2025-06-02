@@ -11,7 +11,7 @@ class BookScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: 36),
       height: double.infinity,
       child: Column(children: [searchBox(), Expanded(child: SurahWidget())]),
     );
