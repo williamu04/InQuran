@@ -9,6 +9,7 @@ import 'package:mtqmnuns/screens/qibla.dart';
 import 'package:mtqmnuns/screens/search.dart';
 import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/home.dart';
+import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/times.dart';
 
 class AppRouteConfig {
@@ -28,6 +29,14 @@ class AppRouteConfig {
 }
 
 class AppRoutes {
+  static const signUp = AppRouteConfig(
+    title: 'Sign Up',
+    path: '/signup',
+    screen: SignUpScreen(),
+    icon: LucideIcons.user,
+    isHasPurpleBanner: false,
+  );
+
   static const home = AppRouteConfig(
     title: 'QuranApp',
     path: '/',
@@ -136,7 +145,8 @@ class AppRoutes {
     qibla,
     favorites,
     calendar,
-    etc
+    etc,
+    signUp
   ];
 
   static AppRouteConfig getRouteByPath(String path) {
