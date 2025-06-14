@@ -13,7 +13,12 @@ class BookScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 36),
       height: double.infinity,
-      child: Column(children: [searchBox(), Expanded(child: SurahWidget())]),
+      child: Column(children: [
+          SizedBox(height: 4),
+          searchBox(),
+          SizedBox(height: 20),
+          Expanded(child: SurahWidget())
+         ]),
     );
   }
 }
@@ -49,24 +54,60 @@ class _SurahWidgetState extends State<SurahWidget> {
     return Row(
       children: [
         Expanded(
-          child: TextButton(
-            onPressed: () {
-              _switchToSurahMode();
-            },
-            child: Text('Surah'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: _switchToSurahMode,
+                child: Text(
+                  'Surah',
+                  style: TextStyle(
+                    color: currentMode == SurahViewMode.surah
+                        ? Colors.purple
+                        : Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Container(
+                height: 2,
+                color: currentMode == SurahViewMode.surah
+                    ? Colors.purple
+                    : Colors.grey.shade200,
+              ),
+            ],
           ),
         ),
         Expanded(
-          child: TextButton(
-            onPressed: () {
-              _switchToJuzMode();
-            },
-            child: Text('Juz'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: _switchToJuzMode,
+                child: Text(
+                  'Juz',
+                  style: TextStyle(
+                    color: currentMode == SurahViewMode.juz
+                        ? Colors.purple
+                        : Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Container(
+                height: 2,
+                color: currentMode == SurahViewMode.juz
+                    ? Colors.purple
+                    : Colors.grey.shade200,
+              ),
+            ],
           ),
         ),
+          SizedBox(height: 75)
       ],
     );
   }
+
 
   Widget surahContainer() {
     if (currentMode == SurahViewMode.surah) {
