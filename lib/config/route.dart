@@ -10,6 +10,7 @@ import 'package:mtqmnuns/screens/search.dart';
 import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:mtqmnuns/screens/signup.dart';
+import 'package:mtqmnuns/screens/splash_screen.dart';
 import 'package:mtqmnuns/screens/times.dart';
 
 class AppRouteConfig {
@@ -37,6 +38,14 @@ class AppRoutes {
     isHasPurpleBanner: false,
   );
 
+  static const splashScreen = AppRouteConfig(
+    title: 'Splash Screen',
+    path: '/splash',
+    screen: SplashScreen(),
+    icon: LucideIcons.user,
+    isHasPurpleBanner: false,
+  );
+
   static const home = AppRouteConfig(
     title: 'QuranApp',
     path: '/',
@@ -48,7 +57,7 @@ class AppRoutes {
   static const book = AppRouteConfig(
     title: 'The Holy Quran',
     path: '/book',
-    screen:  BookScreen(),
+    screen: BookScreen(),
     icon: LucideIcons.bookOpen,
     isHasPurpleBanner: false,
   );
@@ -146,14 +155,10 @@ class AppRoutes {
     favorites,
     calendar,
     etc,
-    signUp
+    signUp,
   ];
 
   static AppRouteConfig getRouteByPath(String path) {
-    return  AppRoutes.all.firstWhere(
-      (route) => route.path == path
-    );
+    return AppRoutes.all.firstWhere((route) => route.path == path);
   }
-
 }
-
