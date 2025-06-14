@@ -8,5 +8,7 @@ part 'duas_dao.g.dart';
 class DuasDao extends DatabaseAccessor<AppDatabase> with _$DuasDaoMixin {
   DuasDao(super.db);
 
+
   Future<List<Dua>> getAllDuas() => select(duas).get();
+  Future<List<CategoryDua>> getDuasCategory() => select(categoryDuas).get();
 }
