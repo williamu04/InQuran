@@ -1,0 +1,12 @@
+import 'package:drift/drift.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/data/entity/duas.dart';
+
+part 'duas_dao.g.dart';
+
+@DriftAccessor(tables: [Duas])
+class DuasDao extends DatabaseAccessor<AppDatabase> with _$DuasDaoMixin {
+  DuasDao(super.db);
+
+  Future<List<Dua>> getAllDuas() => select(duas).get();
+}
