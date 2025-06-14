@@ -16,10 +16,8 @@ final GoRouter _router = GoRouter(
       routes: AppRoutes.all.map(
         (route) => GoRoute(
           path: route.path,
-          pageBuilder: (context, state) => NoTransitionPage(
-            child: route.screen,
+          pageBuilder: route.pageBuilder,
           ),
-        ),
       ).toList()
     ),
   ],

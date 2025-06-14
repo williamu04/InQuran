@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
@@ -10,114 +11,150 @@ import 'package:mtqmnuns/screens/search.dart';
 import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:mtqmnuns/screens/signup.dart';
+import 'package:mtqmnuns/screens/surah.dart';
 import 'package:mtqmnuns/screens/times.dart';
 
 class AppRouteConfig {
   final String title;
   final String path;
-  final Widget screen;
   final IconData icon;
   final bool isHasPurpleBanner;
+  final Page<dynamic> Function(BuildContext context, GoRouterState state) pageBuilder;
 
   const AppRouteConfig({
     required this.title,
     required this.path,
-    required this.screen,
+    required this.pageBuilder,
     required this.icon,
     required this.isHasPurpleBanner,
   });
 }
 
+
 class AppRoutes {
-  static const signUp = AppRouteConfig(
+  static final signUp = AppRouteConfig(
     title: 'Sign Up',
     path: '/signup',
-    screen: SignUpScreen(),
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: SignUpScreen(),
+    ),
     icon: LucideIcons.user,
     isHasPurpleBanner: false,
   );
 
-  static const home = AppRouteConfig(
+  static final home = AppRouteConfig(
     title: 'QuranApp',
     path: '/',
-    screen: HomeScreen(),
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: HomeScreen(),
+    ),
     icon: LucideIcons.house,
     isHasPurpleBanner: true,
   );
 
-  static const book = AppRouteConfig(
+  static final book = AppRouteConfig(
     title: 'The Holy Quran',
     path: '/book',
-    screen:  BookScreen(),
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: BookScreen(),
+    ),
     icon: LucideIcons.bookOpen,
     isHasPurpleBanner: false,
   );
 
-  static const search = AppRouteConfig(
+  static final search = AppRouteConfig(
     title: 'Explore',
     path: '/search',
-    screen: SearchScreen(),
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: SearchScreen(),
+    ),
     icon: LucideIcons.search,
     isHasPurpleBanner: true,
   );
 
-  static const duas = AppRouteConfig(
+  static final duas = AppRouteConfig(
     title: 'Duas Collection',
     path: '/duas',
-    screen: DuasScreen(),
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: DuasScreen(),
+    ),
     icon: LucideIcons.handHeart,
     isHasPurpleBanner: true,
   );
 
-  static const profile = AppRouteConfig(
+  static final profile = AppRouteConfig(
     title: 'Account Profile',
     path: '/profile',
-    screen: ProfileScreen(),
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: ProfileScreen(),
+    ),
     icon: LucideIcons.user,
     isHasPurpleBanner: true,
   );
 
-  static const prayer = AppRouteConfig(
+  static final prayer = AppRouteConfig(
     title: 'Prayer Times',
     path: '/times',
-    screen: PrayerTimeScreen(), // Placeholder, replace with actual screen
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: PrayerTimeScreen(),
+    ),
     icon: LucideIcons.hourglass,
     isHasPurpleBanner: false,
   );
 
-  static const qibla = AppRouteConfig(
+  static final qibla = AppRouteConfig(
     title: 'Prayer Qibla',
     path: '/qibla',
-    screen: QiblaScreen(), // Placeholder, replace with actual screen
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: QiblaScreen(),
+    ),
     icon: LucideIcons.compass,
     isHasPurpleBanner: false,
   );
 
-  static const favorites = AppRouteConfig(
+  static final favorites = AppRouteConfig(
     title: 'Favorites',
     path: '/favorite',
-    screen: FavoriteScreen(), // Placeholder, replace with actual screen
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: FavoriteScreen(),
+    ),
     icon: LucideIcons.bookMarked,
     isHasPurpleBanner: false,
   );
 
-  static const calendar = AppRouteConfig(
+  static final calendar = AppRouteConfig(
     title: 'Calendar',
     path: '/calendar',
-    screen: CalendarScreen(), // Placeholder, replace with actual screen
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: CalendarScreen(),
+    ),
     icon: LucideIcons.calendar,
     isHasPurpleBanner: false,
   );
 
-  static const etc = AppRouteConfig(
+  static final etc = AppRouteConfig(
     title: 'Etc',
     path: '/etc',
-    screen: EtcScreen(),
+    pageBuilder: (context, state) => NoTransitionPage(
+      child: EtcScreen(),
+    ),
     icon: LucideIcons.bell,
     isHasPurpleBanner: false,
   );
 
-  static const List<AppRouteConfig> homeMenu = [
+  static final surah = AppRouteConfig(
+    title: 'Surah Screen',
+    path: '/surah',
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        child: SurahScreen(state: state),
+      );
+    },
+    icon: LucideIcons.book,
+    isHasPurpleBanner: false,
+  );
+
+  static final List<AppRouteConfig> homeMenu = [
     book,
     duas,
     prayer,
@@ -127,7 +164,7 @@ class AppRoutes {
     etc,
   ];
 
-  static const List<AppRouteConfig> bottomNav = [
+  static final List<AppRouteConfig> bottomNav = [
     book,
     search,
     home,
@@ -135,7 +172,7 @@ class AppRoutes {
     profile,
   ];
 
-  static const List<AppRouteConfig> all = [
+  static final List<AppRouteConfig> all = [
     book,
     search,
     home,
@@ -146,12 +183,14 @@ class AppRoutes {
     favorites,
     calendar,
     etc,
-    signUp
+    signUp,
+    surah
   ];
 
   static AppRouteConfig getRouteByPath(String path) {
+    final cleanPath = Uri.parse(path).path;
     return  AppRoutes.all.firstWhere(
-      (route) => route.path == path
+      (route) => route.path == cleanPath
     );
   }
 
