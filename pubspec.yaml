@@ -72,6 +72,7 @@ flutter:
     - assets/databases/quran.db
     - assets/img/logo.png
     - assets/img/star.png
+    - assets/img/basmala.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -102,3 +103,9 @@ flutter:
     - family: Plus Jakarta
       fonts:
         - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+    - family: Arab Typesetting  
+      fonts:
+      - asset: assets/fonts/ArabTypesetting-Regular.ttf
+    - family: Al Jazeera
+      fonts:
+        - asset: assets/fonts/AlJazeeraArabic-Bold.ttf

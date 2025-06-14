@@ -21,15 +21,8 @@ class _DuasScreenState extends State<DuasScreen> {
   }
 
   @override
-  void dispose() {
-    _db.close(); // pastikan database ditutup saat widget dihancurkan
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Daftar Doa')),
       body: FutureBuilder<List<Dua>>(
         future: _futureDuas,
         builder: (context, snapshot) {
