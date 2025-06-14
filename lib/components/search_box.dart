@@ -4,7 +4,7 @@ Widget searchBox() {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 16),
     decoration: BoxDecoration(
-      color: Colors.grey[200],
+      color: Color(0xFFF5F9FE),
       borderRadius: BorderRadius.circular(12),
     ),
     child: Row(
