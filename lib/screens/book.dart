@@ -69,17 +69,17 @@ class _SurahWidgetState extends State<SurahWidget> {
                   style: TextStyle(
                     color:
                         currentMode == SurahViewMode.surah
-                            ? Colors.purple
+                            ? Color(0xFF672CBC)
                             : Colors.grey,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               Container(
-                height: 2,
+                height: 3,
                 color:
                     currentMode == SurahViewMode.surah
-                        ? Colors.purple
+                        ? Color(0xFF672CBC)
                         : Colors.grey.shade200,
               ),
             ],
@@ -96,23 +96,23 @@ class _SurahWidgetState extends State<SurahWidget> {
                   style: TextStyle(
                     color:
                         currentMode == SurahViewMode.juz
-                            ? Colors.purple
+                            ? Color(0xFF672CBC)
                             : Colors.grey,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               Container(
-                height: 2,
+                height: 3,
                 color:
                     currentMode == SurahViewMode.juz
-                        ? Colors.purple
+                        ? Color(0xFF672CBC)
                         : Colors.grey.shade200,
               ),
             ],
           ),
         ),
-        SizedBox(height: 75)
+        SizedBox(height: 75),
       ],
     );
   }
@@ -128,16 +128,6 @@ class _SurahWidgetState extends State<SurahWidget> {
 
   Widget surahViewMode() {
     // return Column(children: [Text('Surah View')]);
-    final GoRouter router = GoRouter(
-  routes: [
-    GoRoute(
-      path: '/surah',
-      builder: (context, state) => SurahScreen(state: state),
-    ),
-    // Tambahkan route lain sesuai kebutuhan
-  ],
-);
-
 
     // Fetch Surah data from database using correct method name
     Future<List<SurahData>> fetchSurahData() async {
@@ -178,7 +168,7 @@ class _SurahWidgetState extends State<SurahWidget> {
         return SizedBox(
           height: MediaQuery.of(context).size.height,
           child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 330),
+            padding: EdgeInsets.only(bottom: 375),
             itemCount: surahList.length,
             itemBuilder: (context, index) {
               final surah = surahList[index];
@@ -187,12 +177,15 @@ class _SurahWidgetState extends State<SurahWidget> {
                 children: [
                   InkWell(
                     onTap: () {
-                        context.go(
-    Uri(path: AppRoutes.surah.path, queryParameters: {
-      'id': '${surah.id}',
-      'ayah': '1', // Default to first verse
-    }).toString()
-  );
+                      context.go(
+                        Uri(
+                          path: AppRoutes.surah.path,
+                          queryParameters: {
+                            'id': '${surah.id}',
+                            'ayah': '1', // Default to first verse
+                          },
+                        ).toString(),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -219,7 +212,7 @@ class _SurahWidgetState extends State<SurahWidget> {
                                   style: TextStyle(
                                     color:
                                         Color(0xFF3B1D77),
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -236,8 +229,8 @@ class _SurahWidgetState extends State<SurahWidget> {
                                 Text(
                                   surah.nameLatin,
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
                                     color: Color(0xFF3B1D77),
                                   ),
                                 ),
@@ -312,7 +305,7 @@ class _SurahWidgetState extends State<SurahWidget> {
                           Text(
                             surah.name,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF672CBC),
                               fontFamily: 'Al Jazeera'
@@ -327,8 +320,6 @@ class _SurahWidgetState extends State<SurahWidget> {
                     color: Colors.grey[300],
                     height: 1, // Height of the divider
                     thickness: 1, // Thickness of the divider
-                    indent: 16, // Start indent of the divider
-                    endIndent: 16, // End indent of the divider
                   ),
                 ],
               );
@@ -360,7 +351,7 @@ class _SurahWidgetState extends State<SurahWidget> {
         return SizedBox(
           height: MediaQuery.of(context).size.height,
           child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 330),
+            padding: EdgeInsets.only(bottom: 350),
             itemCount: juzList.length,
             itemBuilder: (context, index) {
               final juz = juzList[index];
@@ -398,8 +389,8 @@ class _SurahWidgetState extends State<SurahWidget> {
                                 Text(
                                   '${juz['juz']}',
                                   style: const TextStyle(
-                                    color: Color(0xFF672CBC),
-                                    fontSize: 14.0,
+                                    color: Color(0xFF3B1D77),
+                                    fontSize: 12.0,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
