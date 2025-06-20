@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
@@ -20,6 +21,7 @@ class AppRouteConfig {
   final IconData icon;
   final bool isHasPurpleBanner;
   final Page<dynamic> Function(BuildContext context, GoRouterState state) pageBuilder;
+  final Future<String> Function(GoRouterState)? dynamicTitleBuilder;
 
   const AppRouteConfig({
     required this.title,
@@ -27,6 +29,7 @@ class AppRouteConfig {
     required this.pageBuilder,
     required this.icon,
     required this.isHasPurpleBanner,
+    this.dynamicTitleBuilder,
   });
 }
 
@@ -142,17 +145,25 @@ class AppRoutes {
     isHasPurpleBanner: false,
   );
 
-  static final surah = AppRouteConfig(
-    title: 'Surah Screen',
-    path: '/surah',
-    pageBuilder: (context, state) {
-      return NoTransitionPage(
-        child: SurahScreen(state: state),
-      );
-    },
-    icon: LucideIcons.book,
-    isHasPurpleBanner: false,
-  );
+static final surah = AppRouteConfig(
+  title: 'Surah Screen',
+  path: '/surah',
+  pageBuilder: (context, state) {
+    return NoTransitionPage(
+      child: SurahScreen(state: state),
+    );
+  },
+  icon: LucideIcons.book,
+  isHasPurpleBanner: false,
+
+  dynamicTitleBuilder: (state) async {
+    final id = int.tryParse(state.uri.queryParameters['id'] ?? '');
+    if (id == null) return 'Reading Surah';
+
+    final data = await AppDatabase().surahDao.getSurahById(id);
+    return 'Reading ${data?.nameLatin}';
+  },
+);
 
   static final List<AppRouteConfig> homeMenu = [
     book,

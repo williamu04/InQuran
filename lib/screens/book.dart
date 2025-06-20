@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/search_box.dart';
+import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/screens/surah.dart';
 
 enum SurahViewMode { surah, juz }
 
@@ -13,12 +16,14 @@ class BookScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 36),
       height: double.infinity,
-      child: Column(children: [
+      child: Column(
+        children: [
           SizedBox(height: 4),
           searchBox(),
           SizedBox(height: 20),
-          Expanded(child: SurahWidget())
-         ]),
+          Expanded(child: SurahWidget()),
+        ],
+      ),
     );
   }
 }
@@ -62,18 +67,20 @@ class _SurahWidgetState extends State<SurahWidget> {
                 child: Text(
                   'Surah',
                   style: TextStyle(
-                    color: currentMode == SurahViewMode.surah
-                        ? Colors.purple
-                        : Colors.grey,
-                    fontWeight: FontWeight.w500,
+                    color:
+                        currentMode == SurahViewMode.surah
+                            ? Color(0xFF672CBC)
+                            : Colors.grey,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               Container(
-                height: 2,
-                color: currentMode == SurahViewMode.surah
-                    ? Colors.purple
-                    : Colors.grey.shade200,
+                height: 3,
+                color:
+                    currentMode == SurahViewMode.surah
+                        ? Color(0xFF672CBC)
+                        : Colors.grey.shade200,
               ),
             ],
           ),
@@ -87,23 +94,25 @@ class _SurahWidgetState extends State<SurahWidget> {
                 child: Text(
                   'Juz',
                   style: TextStyle(
-                    color: currentMode == SurahViewMode.juz
-                        ? Colors.purple
-                        : Colors.grey,
-                    fontWeight: FontWeight.w500,
+                    color:
+                        currentMode == SurahViewMode.juz
+                            ? Color(0xFF672CBC)
+                            : Colors.grey,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               Container(
-                height: 2,
-                color: currentMode == SurahViewMode.juz
-                    ? Colors.purple
-                    : Colors.grey.shade200,
+                height: 3,
+                color:
+                    currentMode == SurahViewMode.juz
+                        ? Color(0xFF672CBC)
+                        : Colors.grey.shade200,
               ),
             ],
           ),
         ),
-          SizedBox(height: 75)
+        SizedBox(height: 75),
       ],
     );
   }
@@ -159,7 +168,7 @@ class _SurahWidgetState extends State<SurahWidget> {
         return SizedBox(
           height: MediaQuery.of(context).size.height,
           child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 330),
+            padding: EdgeInsets.only(bottom: 375),
             itemCount: surahList.length,
             itemBuilder: (context, index) {
               final surah = surahList[index];
@@ -168,23 +177,26 @@ class _SurahWidgetState extends State<SurahWidget> {
                 children: [
                   InkWell(
                     onTap: () {
-                      // Navigate to Surah detail page
-                      // You can implement navigation here
-                      print(
-                        'PINDAH KE DETAIL AYAT ${surah.nameLatin} (ID: ${surah.id})',
+                      context.go(
+                        Uri(
+                          path: AppRoutes.surah.path,
+                          queryParameters: {
+                            'id': '${surah.id}',
+                            'ayah': '1', // Default to first verse
+                          },
+                        ).toString(),
                       );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
                         vertical: 12.0,
                       ), // Adjust padding as needed
                       child: Row(
                         children: [
                           // Number Circle with Star Background
                           SizedBox(
-                            width: 45,
-                            height: 45,
+                            width: 40,
+                            height: 40,
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -193,16 +205,14 @@ class _SurahWidgetState extends State<SurahWidget> {
                                   width: 45,
                                   height: 45,
                                   fit: BoxFit.cover,
-                                  color: Color(
-                                    0xFF672CBC,
-                                  ),
+                                  color: Color(0xFF672CBC),
                                 ),
                                 Text(
                                   '${surah.id}',
                                   style: TextStyle(
                                     color:
                                         Color(0xFF3B1D77),
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -219,8 +229,8 @@ class _SurahWidgetState extends State<SurahWidget> {
                                 Text(
                                   surah.nameLatin,
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
                                     color: Color(0xFF3B1D77),
                                   ),
                                 ),
@@ -295,9 +305,10 @@ class _SurahWidgetState extends State<SurahWidget> {
                           Text(
                             surah.name,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF672CBC),
+                              fontFamily: 'Al Jazeera'
                             ),
                           ),
                         ],
@@ -309,8 +320,6 @@ class _SurahWidgetState extends State<SurahWidget> {
                     color: Colors.grey[300],
                     height: 1, // Height of the divider
                     thickness: 1, // Thickness of the divider
-                    indent: 16, // Start indent of the divider
-                    endIndent: 16, // End indent of the divider
                   ),
                 ],
               );
@@ -342,7 +351,7 @@ class _SurahWidgetState extends State<SurahWidget> {
         return SizedBox(
           height: MediaQuery.of(context).size.height,
           child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 330),
+            padding: EdgeInsets.only(bottom: 350),
             itemCount: juzList.length,
             itemBuilder: (context, index) {
               final juz = juzList[index];
@@ -380,8 +389,8 @@ class _SurahWidgetState extends State<SurahWidget> {
                                 Text(
                                   '${juz['juz']}',
                                   style: const TextStyle(
-                                    color: Color(0xFF672CBC),
-                                    fontSize: 14.0,
+                                    color: Color(0xFF3B1D77),
+                                    fontSize: 12.0,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
