@@ -122,10 +122,16 @@ class _SurahWidgetState extends State<SurahWidget> {
 
   }
 
-
   Widget surahContainer() {
     return Consumer<BookViewModel>(
       builder: (context, viewModel, child) {
+        if (viewModel.isLoading) {
+          return const Expanded(
+            child: CircularProgressIndicator(
+              color: Colors.purple,
+            ),
+          );
+        }
         if (viewModel.currentMode == SurahViewMode.surah) {
           return surahViewMode();
         } else {
@@ -140,6 +146,7 @@ class _SurahWidgetState extends State<SurahWidget> {
     return Consumer<BookViewModel>(
       builder: (context, viewModel, _) {
         final surahList = viewModel.filteredSurahs;
+
 
         if (surahList.isEmpty) {
           return const Center(child: Text("No Surah data available"));

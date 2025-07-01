@@ -8,6 +8,9 @@ class BookViewModel extends ChangeNotifier {
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
   SurahViewMode _currentMode = SurahViewMode.surah;
   SurahViewMode get currentMode => _currentMode;
 
@@ -38,6 +41,9 @@ class BookViewModel extends ChangeNotifier {
   }
 
   Future<void> loadData() async {
+    _isLoading = true;
+    notifyListeners();
+
     _allSurahs = await _db.surahDao.getAllSurahs();
     _allJuz = await _db.juzDao.getJuzInfo(_db.surahDao);
 
@@ -50,7 +56,10 @@ class BookViewModel extends ChangeNotifier {
     _verseCounts = Map.fromEntries(counts);
 
     filterData();
+    _isLoading = false;
+    notifyListeners();
   }
+
 
 
 
