@@ -144,108 +144,123 @@ Widget homeMenu({
 Widget homeTitle() {
   return Expanded(
     child: Container(
-      padding: const EdgeInsets.only(top: 80, left: 40, right: 40, bottom: 20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/img/logo.png',
-                height: 40,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Assalamu’alaikum',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontFamily: 'Plus Jakarta',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      'Sebelas Maret',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Plus Jakarta',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Garis horizontal
-          Container(width: double.infinity, height: 1, color: Colors.white38),
-
-          const SizedBox(height: 24),
-          // Ayat dan terjemahan
-          const Center(
-            child: Text(
-              'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
-              'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                height: 1.4,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Center(
-            child: Text(
-              '“Indeed, those who have believed and done righteous deeds - '
-              'the Most Merciful will appoint for them affection.”',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Plus Jakarta',
-                fontSize: 16,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF994EF8),
-                height: 1.4,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Center(
-            child: Text(
-              'Thaha : 96',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Plus Jakarta',
-                fontSize: 16,
-                fontStyle: FontStyle.italic,
-                color: Color(0xFF994EF8),
-              ),
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x50240F4F), // Purple shadow with opacity
+            blurRadius: 15,
+            offset: Offset(0, 12),
           ),
         ],
+      ),
+      child: Container(
+        padding: const EdgeInsets.only(
+          top: 80,
+          left: 40,
+          right: 40,
+          bottom: 20,
+        ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset('assets/img/logo.png', height: 40),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Assalamu'alaikum",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontFamily: 'Plus Jakarta',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Text(
+                        'Sebelas Maret',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Plus Jakarta',
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Garis horizontal
+            Container(width: double.infinity, height: 1, color: Colors.white38),
+            const SizedBox(height: 24),
+            // Ayat dan terjemahan
+            const Center(
+              child: Text(
+                'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
+                'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  height: 1.4,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Center(
+              child: Text(
+                '“Indeed, those who have believed and done righteous deeds - '
+                'the Most Merciful will appoint for them affection.”',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Plus Jakarta',
+                  fontSize: 16,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF994EF8),
+                  height: 1.4,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Center(
+              child: Text(
+                'Thaha : 96',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Plus Jakarta',
+                  fontSize: 16,
+                  fontStyle: FontStyle.italic,
+                  color: Color(0xFF994EF8),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );
