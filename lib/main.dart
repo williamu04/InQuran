@@ -60,9 +60,10 @@ class MainScaffold extends StatelessWidget {
     final String currentPath = state.uri.toString();
     final AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
 
-    final double topPadding = currentRoute.isHasPurpleBanner
+    final double topPadding = (!currentRoute.isHasBar || currentRoute.isHasPurpleBanner)
         ? 0
         : MediaQuery.of(context).padding.top + kToolbarHeight;
+
 
     return SafeArea(
       child: Scaffold(
