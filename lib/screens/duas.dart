@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/data/entity/duas.dart';
 
@@ -35,34 +36,44 @@ class _DuasScreenState extends State<DuasScreen> {
           }
 
           final duas = snapshot.data!;
-          return ListView.builder(
-            itemCount: duas.length,
-            itemBuilder: (context, index) {
-              final dua = duas[index];
-              return ListTile(
-                title: Text(dua.title),
-                subtitle: Text(dua.doaIndo),
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
+
+          return Column(
+            children: [
+              RoundedCard(
+                child: const Text("Doa-doa Harian"), // replace with actual text
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: duas.length,
+                  itemBuilder: (context, index) {
+                    final dua = duas[index];
+                    return ListTile(
                       title: Text(dua.title),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Arab:\n${dua.doaArab}', textAlign: TextAlign.right),
-                          const SizedBox(height: 8),
-                          Text('Latin:\n${dua.doaLatin}'),
-                          const SizedBox(height: 8),
-                          Text('Arti:\n${dua.doaIndo}'),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
+                      subtitle: Text(dua.doaIndo),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: Text(dua.title),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Arab:\n${dua.doaArab}', textAlign: TextAlign.right),
+                                const SizedBox(height: 8),
+                                Text('Latin:\n${dua.doaLatin}'),
+                                const SizedBox(height: 8),
+                                Text('Arti:\n${dua.doaIndo}'),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),

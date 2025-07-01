@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -9,10 +10,11 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      padding: const EdgeInsets.all(24.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          RoundedCard(
+            child: Text('test')
+          ),
           const Text(
             "Profile",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

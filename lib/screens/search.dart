@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -10,6 +11,9 @@ class SearchScreen extends StatelessWidget {
       height: double.infinity,
       child : Column(
         children: [
+          RoundedCard(
+            child: Text('test')
+          ),
           Center(
             child: Text("Search")
           )

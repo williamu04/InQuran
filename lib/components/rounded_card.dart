@@ -8,6 +8,7 @@ Widget RoundedCard({
   List<BoxShadow>? boxShadow,
 }) {
   return Container(
+    width: double.infinity, 
     decoration: BoxDecoration(
       borderRadius: BorderRadius.only(
         bottomLeft: Radius.circular(borderRadius),
