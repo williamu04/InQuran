@@ -3,22 +3,31 @@ import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/screens/splash_screen.dart';
 
 void main() => runApp(MyApp());
 
 final GoRouter _router = GoRouter(
-  initialLocation: AppRoutes.home.path,
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      pageBuilder: (context, state) => NoTransitionPage(child: SplashScreen()),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return MainScaffold(context: context, state: state, child: child);
       },
-      routes: AppRoutes.all.map(
-        (route) => GoRoute(
-          path: route.path,
-          pageBuilder: route.pageBuilder,
-          ),
-      ).toList()
+      routes:
+          AppRoutes.all
+              .map(
+                (route) => GoRoute(
+                  path: route.path,
+                  pageBuilder:
+                      (context, state) => NoTransitionPage(child: route.screen),
+                ),
+              )
+              .toList(),
     ),
   ],
 );
@@ -60,10 +69,10 @@ class MainScaffold extends StatelessWidget {
     final String currentPath = state.uri.toString();
     final AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
 
-    final double topPadding = (!currentRoute.isHasBar || currentRoute.isHasPurpleBanner)
-        ? 0
-        : MediaQuery.of(context).padding.top + kToolbarHeight;
-
+    final double topPadding =
+        (!currentRoute.isHasBar || currentRoute.isHasPurpleBanner)
+            ? 0
+            : MediaQuery.of(context).padding.top + kToolbarHeight;
 
     return SafeArea(
       child: Scaffold(
@@ -79,29 +88,20 @@ class MainScaffold extends StatelessWidget {
             ],
           ],
         ),
-        bottomNavigationBar: currentRoute.isHasBar
-            ? bottomNavBar(context, state)
-            : null,
+        bottomNavigationBar:
+            currentRoute.isHasBar ? bottomNavBar(context, state) : null,
       ),
     );
   }
 
   Widget _buildMainContent(double topPadding) {
     return Positioned.fill(
-      child: Padding(
-        padding: EdgeInsets.only(top: topPadding),
-        child: child,
-      ),
+      child: Padding(padding: EdgeInsets.only(top: topPadding), child: child),
     );
   }
 
   Widget _buildTopBar() {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: topBar(context, state),
-    );
+    return Positioned(top: 0, left: 0, right: 0, child: topBar(context, state));
   }
 
   Widget _buildWhiteGradientOverlay() {
@@ -150,5 +150,3 @@ class MainScaffold extends StatelessWidget {
     );
   }
 }
-
-
