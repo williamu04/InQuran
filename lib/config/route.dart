@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
@@ -21,6 +22,7 @@ class AppRouteConfig {
   final bool isHasPurpleBanner;
   final bool isHasBar;
   final Page<dynamic> Function(BuildContext context, GoRouterState state) pageBuilder;
+  final Future<String> Function(GoRouterState)? dynamicTitleBuilder;
 
   const AppRouteConfig({
     required this.title,
@@ -29,6 +31,7 @@ class AppRouteConfig {
     required this.icon,
     required this.isHasBar,
     required this.isHasPurpleBanner,
+    this.dynamicTitleBuilder,
   });
 }
 

@@ -12,7 +12,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
       : -1;
 
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
+    padding: const EdgeInsets.only(bottom: 24, right: 36, left: 36),
     child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),

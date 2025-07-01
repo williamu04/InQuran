@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
         hoverColor: Colors.transparent,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.light(),
+        fontFamily: 'Plus Jakarta',
       ),
     );
   }
