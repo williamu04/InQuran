@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
 
-PreferredSizeWidget topBar(BuildContext context, GoRouterState state) {
+Widget topBar(BuildContext context, GoRouterState state) {
   String currentPath = state.uri.toString();
   AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
   
@@ -40,54 +40,62 @@ PreferredSizeWidget topBar(BuildContext context, GoRouterState state) {
   }
 
 
-  return PreferredSize(
-    preferredSize: const Size.fromHeight(kToolbarHeight),
-    child: Container(
-      padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
-      color: backgroundColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: Icon(
-                LucideIcons.alignLeft,
-                color: iconColor,
+  return FutureBuilder<String>(
+  future: currentRoute.dynamicTitleBuilder?.call(state) ?? Future.value(currentRoute.title),
+  builder: (context, snapshot) {
+    final title = snapshot.data ?? currentRoute.title;
+
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight),
+      child: Container(
+        padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
+        color: backgroundColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(
+                  LucideIcons.alignLeft,
+                  color: iconColor,
+                ),
+                onPressed: () => Scaffold.of(context).openDrawer(),
               ),
-              onPressed: () => Scaffold.of(context).openDrawer(),
             ),
-          ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: titleAlignment,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: "Plus Jakarta",
-                      color: titleColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+            Expanded(
+              child: Row(
+                mainAxisAlignment: titleAlignment,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontFamily: "Plus Jakarta",
+                        color: titleColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              LucideIcons.settings,
-              color: iconColor,
+            IconButton(
+              icon: Icon(
+                LucideIcons.settings,
+                color: iconColor,
+              ),
+              onPressed: () {
+                // Settings action
+              },
             ),
-            onPressed: () {
-              // Settings action
-            },
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  },
+);
+
 }
 

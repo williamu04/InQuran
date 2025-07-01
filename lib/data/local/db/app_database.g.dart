@@ -903,18 +903,615 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
   }
 }
 
+class $CategoryDuasTable extends CategoryDuas
+    with TableInfo<$CategoryDuasTable, CategoryDua> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CategoryDuasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'categoryDuas';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CategoryDua> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CategoryDua map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CategoryDua(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      name:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}name'],
+          )!,
+    );
+  }
+
+  @override
+  $CategoryDuasTable createAlias(String alias) {
+    return $CategoryDuasTable(attachedDatabase, alias);
+  }
+}
+
+class CategoryDua extends DataClass implements Insertable<CategoryDua> {
+  final int id;
+  final String name;
+  const CategoryDua({required this.id, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  CategoryDuasCompanion toCompanion(bool nullToAbsent) {
+    return CategoryDuasCompanion(id: Value(id), name: Value(name));
+  }
+
+  factory CategoryDua.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CategoryDua(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  CategoryDua copyWith({int? id, String? name}) =>
+      CategoryDua(id: id ?? this.id, name: name ?? this.name);
+  CategoryDua copyWithCompanion(CategoryDuasCompanion data) {
+    return CategoryDua(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CategoryDua(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CategoryDua && other.id == this.id && other.name == this.name);
+}
+
+class CategoryDuasCompanion extends UpdateCompanion<CategoryDua> {
+  final Value<int> id;
+  final Value<String> name;
+  const CategoryDuasCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  CategoryDuasCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+  }) : name = Value(name);
+  static Insertable<CategoryDua> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+    });
+  }
+
+  CategoryDuasCompanion copyWith({Value<int>? id, Value<String>? name}) {
+    return CategoryDuasCompanion(id: id ?? this.id, name: name ?? this.name);
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CategoryDuasCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DuasTable extends Duas with TableInfo<$DuasTable, Dua> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DuasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+    'categoryId',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES categoryDuas (id)',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _doaArabMeta = const VerificationMeta(
+    'doaArab',
+  );
+  @override
+  late final GeneratedColumn<String> doaArab = GeneratedColumn<String>(
+    'doaArab',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _doaLatinMeta = const VerificationMeta(
+    'doaLatin',
+  );
+  @override
+  late final GeneratedColumn<String> doaLatin = GeneratedColumn<String>(
+    'doaLatin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _doaIndoMeta = const VerificationMeta(
+    'doaIndo',
+  );
+  @override
+  late final GeneratedColumn<String> doaIndo = GeneratedColumn<String>(
+    'doaIndo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    categoryId,
+    title,
+    doaArab,
+    doaLatin,
+    doaIndo,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'duas';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Dua> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('categoryId')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['categoryId']!, _categoryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('doaArab')) {
+      context.handle(
+        _doaArabMeta,
+        doaArab.isAcceptableOrUnknown(data['doaArab']!, _doaArabMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_doaArabMeta);
+    }
+    if (data.containsKey('doaLatin')) {
+      context.handle(
+        _doaLatinMeta,
+        doaLatin.isAcceptableOrUnknown(data['doaLatin']!, _doaLatinMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_doaLatinMeta);
+    }
+    if (data.containsKey('doaIndo')) {
+      context.handle(
+        _doaIndoMeta,
+        doaIndo.isAcceptableOrUnknown(data['doaIndo']!, _doaIndoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_doaIndoMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Dua map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Dua(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      categoryId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}categoryId'],
+          )!,
+      title:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}title'],
+          )!,
+      doaArab:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}doaArab'],
+          )!,
+      doaLatin:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}doaLatin'],
+          )!,
+      doaIndo:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}doaIndo'],
+          )!,
+    );
+  }
+
+  @override
+  $DuasTable createAlias(String alias) {
+    return $DuasTable(attachedDatabase, alias);
+  }
+}
+
+class Dua extends DataClass implements Insertable<Dua> {
+  final int id;
+  final int categoryId;
+  final String title;
+  final String doaArab;
+  final String doaLatin;
+  final String doaIndo;
+  const Dua({
+    required this.id,
+    required this.categoryId,
+    required this.title,
+    required this.doaArab,
+    required this.doaLatin,
+    required this.doaIndo,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['categoryId'] = Variable<int>(categoryId);
+    map['title'] = Variable<String>(title);
+    map['doaArab'] = Variable<String>(doaArab);
+    map['doaLatin'] = Variable<String>(doaLatin);
+    map['doaIndo'] = Variable<String>(doaIndo);
+    return map;
+  }
+
+  DuasCompanion toCompanion(bool nullToAbsent) {
+    return DuasCompanion(
+      id: Value(id),
+      categoryId: Value(categoryId),
+      title: Value(title),
+      doaArab: Value(doaArab),
+      doaLatin: Value(doaLatin),
+      doaIndo: Value(doaIndo),
+    );
+  }
+
+  factory Dua.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Dua(
+      id: serializer.fromJson<int>(json['id']),
+      categoryId: serializer.fromJson<int>(json['categoryId']),
+      title: serializer.fromJson<String>(json['title']),
+      doaArab: serializer.fromJson<String>(json['doaArab']),
+      doaLatin: serializer.fromJson<String>(json['doaLatin']),
+      doaIndo: serializer.fromJson<String>(json['doaIndo']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'categoryId': serializer.toJson<int>(categoryId),
+      'title': serializer.toJson<String>(title),
+      'doaArab': serializer.toJson<String>(doaArab),
+      'doaLatin': serializer.toJson<String>(doaLatin),
+      'doaIndo': serializer.toJson<String>(doaIndo),
+    };
+  }
+
+  Dua copyWith({
+    int? id,
+    int? categoryId,
+    String? title,
+    String? doaArab,
+    String? doaLatin,
+    String? doaIndo,
+  }) => Dua(
+    id: id ?? this.id,
+    categoryId: categoryId ?? this.categoryId,
+    title: title ?? this.title,
+    doaArab: doaArab ?? this.doaArab,
+    doaLatin: doaLatin ?? this.doaLatin,
+    doaIndo: doaIndo ?? this.doaIndo,
+  );
+  Dua copyWithCompanion(DuasCompanion data) {
+    return Dua(
+      id: data.id.present ? data.id.value : this.id,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+      title: data.title.present ? data.title.value : this.title,
+      doaArab: data.doaArab.present ? data.doaArab.value : this.doaArab,
+      doaLatin: data.doaLatin.present ? data.doaLatin.value : this.doaLatin,
+      doaIndo: data.doaIndo.present ? data.doaIndo.value : this.doaIndo,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Dua(')
+          ..write('id: $id, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('title: $title, ')
+          ..write('doaArab: $doaArab, ')
+          ..write('doaLatin: $doaLatin, ')
+          ..write('doaIndo: $doaIndo')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, categoryId, title, doaArab, doaLatin, doaIndo);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Dua &&
+          other.id == this.id &&
+          other.categoryId == this.categoryId &&
+          other.title == this.title &&
+          other.doaArab == this.doaArab &&
+          other.doaLatin == this.doaLatin &&
+          other.doaIndo == this.doaIndo);
+}
+
+class DuasCompanion extends UpdateCompanion<Dua> {
+  final Value<int> id;
+  final Value<int> categoryId;
+  final Value<String> title;
+  final Value<String> doaArab;
+  final Value<String> doaLatin;
+  final Value<String> doaIndo;
+  const DuasCompanion({
+    this.id = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.doaArab = const Value.absent(),
+    this.doaLatin = const Value.absent(),
+    this.doaIndo = const Value.absent(),
+  });
+  DuasCompanion.insert({
+    this.id = const Value.absent(),
+    required int categoryId,
+    required String title,
+    required String doaArab,
+    required String doaLatin,
+    required String doaIndo,
+  }) : categoryId = Value(categoryId),
+       title = Value(title),
+       doaArab = Value(doaArab),
+       doaLatin = Value(doaLatin),
+       doaIndo = Value(doaIndo);
+  static Insertable<Dua> custom({
+    Expression<int>? id,
+    Expression<int>? categoryId,
+    Expression<String>? title,
+    Expression<String>? doaArab,
+    Expression<String>? doaLatin,
+    Expression<String>? doaIndo,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (categoryId != null) 'categoryId': categoryId,
+      if (title != null) 'title': title,
+      if (doaArab != null) 'doaArab': doaArab,
+      if (doaLatin != null) 'doaLatin': doaLatin,
+      if (doaIndo != null) 'doaIndo': doaIndo,
+    });
+  }
+
+  DuasCompanion copyWith({
+    Value<int>? id,
+    Value<int>? categoryId,
+    Value<String>? title,
+    Value<String>? doaArab,
+    Value<String>? doaLatin,
+    Value<String>? doaIndo,
+  }) {
+    return DuasCompanion(
+      id: id ?? this.id,
+      categoryId: categoryId ?? this.categoryId,
+      title: title ?? this.title,
+      doaArab: doaArab ?? this.doaArab,
+      doaLatin: doaLatin ?? this.doaLatin,
+      doaIndo: doaIndo ?? this.doaIndo,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (categoryId.present) {
+      map['categoryId'] = Variable<int>(categoryId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (doaArab.present) {
+      map['doaArab'] = Variable<String>(doaArab.value);
+    }
+    if (doaLatin.present) {
+      map['doaLatin'] = Variable<String>(doaLatin.value);
+    }
+    if (doaIndo.present) {
+      map['doaIndo'] = Variable<String>(doaIndo.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DuasCompanion(')
+          ..write('id: $id, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('title: $title, ')
+          ..write('doaArab: $doaArab, ')
+          ..write('doaLatin: $doaLatin, ')
+          ..write('doaIndo: $doaIndo')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $SurahTable surah = $SurahTable(this);
   late final $AyahTable ayah = $AyahTable(this);
+  late final $CategoryDuasTable categoryDuas = $CategoryDuasTable(this);
+  late final $DuasTable duas = $DuasTable(this);
   late final SurahDao surahDao = SurahDao(this as AppDatabase);
   late final AyahDao ayahDao = AyahDao(this as AppDatabase);
+  late final JuzDao juzDao = JuzDao(this as AppDatabase);
+  late final DuasDao duasDao = DuasDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [surah, ayah];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    surah,
+    ayah,
+    categoryDuas,
+    duas,
+  ];
 }
 
 typedef $$SurahTableCreateCompanionBuilder =
@@ -1599,6 +2196,567 @@ typedef $$AyahTableProcessedTableManager =
       AyahData,
       PrefetchHooks Function({bool surahId})
     >;
+typedef $$CategoryDuasTableCreateCompanionBuilder =
+    CategoryDuasCompanion Function({Value<int> id, required String name});
+typedef $$CategoryDuasTableUpdateCompanionBuilder =
+    CategoryDuasCompanion Function({Value<int> id, Value<String> name});
+
+final class $$CategoryDuasTableReferences
+    extends BaseReferences<_$AppDatabase, $CategoryDuasTable, CategoryDua> {
+  $$CategoryDuasTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$DuasTable, List<Dua>> _duasRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.duas,
+    aliasName: $_aliasNameGenerator(db.categoryDuas.id, db.duas.categoryId),
+  );
+
+  $$DuasTableProcessedTableManager get duasRefs {
+    final manager = $$DuasTableTableManager(
+      $_db,
+      $_db.duas,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_duasRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CategoryDuasTableFilterComposer
+    extends Composer<_$AppDatabase, $CategoryDuasTable> {
+  $$CategoryDuasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> duasRefs(
+    Expression<bool> Function($$DuasTableFilterComposer f) f,
+  ) {
+    final $$DuasTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.duas,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DuasTableFilterComposer(
+            $db: $db,
+            $table: $db.duas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CategoryDuasTableOrderingComposer
+    extends Composer<_$AppDatabase, $CategoryDuasTable> {
+  $$CategoryDuasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CategoryDuasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CategoryDuasTable> {
+  $$CategoryDuasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  Expression<T> duasRefs<T extends Object>(
+    Expression<T> Function($$DuasTableAnnotationComposer a) f,
+  ) {
+    final $$DuasTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.duas,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DuasTableAnnotationComposer(
+            $db: $db,
+            $table: $db.duas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CategoryDuasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CategoryDuasTable,
+          CategoryDua,
+          $$CategoryDuasTableFilterComposer,
+          $$CategoryDuasTableOrderingComposer,
+          $$CategoryDuasTableAnnotationComposer,
+          $$CategoryDuasTableCreateCompanionBuilder,
+          $$CategoryDuasTableUpdateCompanionBuilder,
+          (CategoryDua, $$CategoryDuasTableReferences),
+          CategoryDua,
+          PrefetchHooks Function({bool duasRefs})
+        > {
+  $$CategoryDuasTableTableManager(_$AppDatabase db, $CategoryDuasTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$CategoryDuasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$CategoryDuasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () =>
+                  $$CategoryDuasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+              }) => CategoryDuasCompanion(id: id, name: name),
+          createCompanionCallback:
+              ({Value<int> id = const Value.absent(), required String name}) =>
+                  CategoryDuasCompanion.insert(id: id, name: name),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$CategoryDuasTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: ({duasRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (duasRefs) db.duas],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (duasRefs)
+                    await $_getPrefetchedData<
+                      CategoryDua,
+                      $CategoryDuasTable,
+                      Dua
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CategoryDuasTableReferences
+                          ._duasRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$CategoryDuasTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).duasRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) => referencedItems.where(
+                            (e) => e.categoryId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CategoryDuasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CategoryDuasTable,
+      CategoryDua,
+      $$CategoryDuasTableFilterComposer,
+      $$CategoryDuasTableOrderingComposer,
+      $$CategoryDuasTableAnnotationComposer,
+      $$CategoryDuasTableCreateCompanionBuilder,
+      $$CategoryDuasTableUpdateCompanionBuilder,
+      (CategoryDua, $$CategoryDuasTableReferences),
+      CategoryDua,
+      PrefetchHooks Function({bool duasRefs})
+    >;
+typedef $$DuasTableCreateCompanionBuilder =
+    DuasCompanion Function({
+      Value<int> id,
+      required int categoryId,
+      required String title,
+      required String doaArab,
+      required String doaLatin,
+      required String doaIndo,
+    });
+typedef $$DuasTableUpdateCompanionBuilder =
+    DuasCompanion Function({
+      Value<int> id,
+      Value<int> categoryId,
+      Value<String> title,
+      Value<String> doaArab,
+      Value<String> doaLatin,
+      Value<String> doaIndo,
+    });
+
+final class $$DuasTableReferences
+    extends BaseReferences<_$AppDatabase, $DuasTable, Dua> {
+  $$DuasTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CategoryDuasTable _categoryIdTable(_$AppDatabase db) =>
+      db.categoryDuas.createAlias(
+        $_aliasNameGenerator(db.duas.categoryId, db.categoryDuas.id),
+      );
+
+  $$CategoryDuasTableProcessedTableManager get categoryId {
+    final $_column = $_itemColumn<int>('categoryId')!;
+
+    final manager = $$CategoryDuasTableTableManager(
+      $_db,
+      $_db.categoryDuas,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$DuasTableFilterComposer extends Composer<_$AppDatabase, $DuasTable> {
+  $$DuasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get doaArab => $composableBuilder(
+    column: $table.doaArab,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get doaLatin => $composableBuilder(
+    column: $table.doaLatin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get doaIndo => $composableBuilder(
+    column: $table.doaIndo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CategoryDuasTableFilterComposer get categoryId {
+    final $$CategoryDuasTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryDuas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryDuasTableFilterComposer(
+            $db: $db,
+            $table: $db.categoryDuas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DuasTableOrderingComposer extends Composer<_$AppDatabase, $DuasTable> {
+  $$DuasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get doaArab => $composableBuilder(
+    column: $table.doaArab,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get doaLatin => $composableBuilder(
+    column: $table.doaLatin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get doaIndo => $composableBuilder(
+    column: $table.doaIndo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CategoryDuasTableOrderingComposer get categoryId {
+    final $$CategoryDuasTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryDuas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryDuasTableOrderingComposer(
+            $db: $db,
+            $table: $db.categoryDuas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DuasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DuasTable> {
+  $$DuasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get doaArab =>
+      $composableBuilder(column: $table.doaArab, builder: (column) => column);
+
+  GeneratedColumn<String> get doaLatin =>
+      $composableBuilder(column: $table.doaLatin, builder: (column) => column);
+
+  GeneratedColumn<String> get doaIndo =>
+      $composableBuilder(column: $table.doaIndo, builder: (column) => column);
+
+  $$CategoryDuasTableAnnotationComposer get categoryId {
+    final $$CategoryDuasTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryDuas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryDuasTableAnnotationComposer(
+            $db: $db,
+            $table: $db.categoryDuas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DuasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DuasTable,
+          Dua,
+          $$DuasTableFilterComposer,
+          $$DuasTableOrderingComposer,
+          $$DuasTableAnnotationComposer,
+          $$DuasTableCreateCompanionBuilder,
+          $$DuasTableUpdateCompanionBuilder,
+          (Dua, $$DuasTableReferences),
+          Dua,
+          PrefetchHooks Function({bool categoryId})
+        > {
+  $$DuasTableTableManager(_$AppDatabase db, $DuasTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$DuasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$DuasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$DuasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> categoryId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> doaArab = const Value.absent(),
+                Value<String> doaLatin = const Value.absent(),
+                Value<String> doaIndo = const Value.absent(),
+              }) => DuasCompanion(
+                id: id,
+                categoryId: categoryId,
+                title: title,
+                doaArab: doaArab,
+                doaLatin: doaLatin,
+                doaIndo: doaIndo,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int categoryId,
+                required String title,
+                required String doaArab,
+                required String doaLatin,
+                required String doaIndo,
+              }) => DuasCompanion.insert(
+                id: id,
+                categoryId: categoryId,
+                title: title,
+                doaArab: doaArab,
+                doaLatin: doaLatin,
+                doaIndo: doaIndo,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$DuasTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: ({categoryId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                T extends TableManagerState<
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic
+                >
+              >(state) {
+                if (categoryId) {
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.categoryId,
+                            referencedTable: $$DuasTableReferences
+                                ._categoryIdTable(db),
+                            referencedColumn:
+                                $$DuasTableReferences._categoryIdTable(db).id,
+                          )
+                          as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$DuasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DuasTable,
+      Dua,
+      $$DuasTableFilterComposer,
+      $$DuasTableOrderingComposer,
+      $$DuasTableAnnotationComposer,
+      $$DuasTableCreateCompanionBuilder,
+      $$DuasTableUpdateCompanionBuilder,
+      (Dua, $$DuasTableReferences),
+      Dua,
+      PrefetchHooks Function({bool categoryId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1606,4 +2764,7 @@ class $AppDatabaseManager {
   $$SurahTableTableManager get surah =>
       $$SurahTableTableManager(_db, _db.surah);
   $$AyahTableTableManager get ayah => $$AyahTableTableManager(_db, _db.ayah);
+  $$CategoryDuasTableTableManager get categoryDuas =>
+      $$CategoryDuasTableTableManager(_db, _db.categoryDuas);
+  $$DuasTableTableManager get duas => $$DuasTableTableManager(_db, _db.duas);
 }

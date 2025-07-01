@@ -42,6 +42,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.31
   go_router: ^15.0.0
   lucide_icons_flutter: ^3.0.3
+  share_plus: ^11.0.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
     - assets/databases/quran.db
     - assets/img/logo.png
     - assets/img/star.png
+    - assets/img/basmala.png
     - assets/img/logoSplashScreen.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -102,3 +104,9 @@ flutter:
     - family: Plus Jakarta
       fonts:
         - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+    - family: Arab Typesetting
+      fonts:
+        - asset: assets/fonts/ArabTypesetting-Regular.ttf
+    - family: Al Jazeera
+      fonts:
+        - asset: assets/fonts/AlJazeeraArabic-Bold.ttf

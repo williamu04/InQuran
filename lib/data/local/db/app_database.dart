@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:mtqmnuns/data/entity/category_duas.dart';
+import 'package:mtqmnuns/data/entity/duas.dart';
+import 'package:mtqmnuns/data/local/dao/duas_dao.dart';
 import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -17,7 +20,7 @@ import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Surah, Ayah], daos: [SurahDao, AyahDao])
+@DriftDatabase(tables: [Surah, Ayah, Duas, CategoryDuas], daos: [SurahDao, AyahDao, JuzDao, DuasDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
   static final AppDatabase _instance = AppDatabase._internal();
@@ -29,9 +32,10 @@ class AppDatabase extends _$AppDatabase {
   late final SurahDao surahDao = SurahDao(this);
   late final AyahDao ayahDao = AyahDao(this);
   late final JuzDao juzDao = JuzDao(this);
+  late final DuasDao duasDao = DuasDao(this);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 }
 
 LazyDatabase _openConnection() {

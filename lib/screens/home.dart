@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
+import '../components/rounded_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,10 +17,7 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             homeTitle(),
-            homeMenu(
-              context: context,
-              menuItems: AppRoutes.homeMenu,
-            ),
+            homeMenu(context: context, menuItems: AppRoutes.homeMenu),
           ],
         ),
       ),
@@ -58,11 +56,7 @@ Widget homeMenu({
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      menuItems[0].icon,
-                      color: Colors.white,
-                      size: 24.0,
-                    ),
+                    Icon(menuItems[0].icon, color: Colors.white, size: 24.0),
                     const SizedBox(width: 10.0),
                     Flexible(
                       child: Text(
@@ -97,9 +91,10 @@ Widget homeMenu({
           itemCount: menuItems.length - 1,
           itemBuilder: (context, index) {
             int rowIndex = index ~/ 2 + 1;
-            Color buttonColor = rowIndex % 2 == 0
-                ? const Color(0xFF672CBC)
-                : const Color(0xFF3B1D77);
+            Color buttonColor =
+                rowIndex % 2 == 0
+                    ? const Color(0xFF672CBC)
+                    : const Color(0xFF3B1D77);
 
             final item = menuItems[index + 1];
             return ElevatedButton(
@@ -120,11 +115,7 @@ Widget homeMenu({
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      item.icon,
-                      color: Colors.white,
-                      size: 24.0,
-                    ),
+                    Icon(item.icon, color: Colors.white, size: 24.0),
                     const SizedBox(width: 10.0),
                     Expanded(
                       child: Text(
@@ -153,19 +144,7 @@ Widget homeMenu({
 
 Widget homeTitle() {
   return Expanded(
-    child: Container(
-      padding: const EdgeInsets.only(top: 80, left: 40, right: 40, bottom: 20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-      ),
+    child: RoundedCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -173,17 +152,14 @@ Widget homeTitle() {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/img/logo.png',
-                height: 40, // Perkecil ukuran logo
-              ),
+              Image.asset('assets/img/logo.png', height: 40),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text(
-                      'Assalamu’alaikum',
+                      "Assalamu'alaikum",
                       style: TextStyle(
                         color: Colors.white70,
                         fontFamily: 'Plus Jakarta',
@@ -196,7 +172,7 @@ Widget homeTitle() {
                       style: TextStyle(
                         color: Colors.white,
                         fontFamily: 'Plus Jakarta',
-                        fontSize: 20, // Perkecil ukuran teks
+                        fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -207,31 +183,22 @@ Widget homeTitle() {
             ],
           ),
           const SizedBox(height: 16),
-
-          // Garis horizontal
-          Container(
-            width: double.infinity,
-            height: 1,
-            color: Colors.white38,
-          ),
-
-          const SizedBox(height: 24), // Perkecil jarak
-
-          // Ayat dan terjemahan
+          Container(width: double.infinity, height: 1, color: Colors.white38),
+          const SizedBox(height: 24),
           const Center(
             child: Text(
               'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
               'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16, // Perkecil ukuran teks
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
-                height: 1.4, // Tinggi baris untuk estetika
+                height: 1.4,
               ),
             ),
           ),
-          const SizedBox(height: 8), // Perkecil jarak
+          const SizedBox(height: 8),
           const Center(
             child: Text(
               '“Indeed, those who have believed and done righteous deeds - '
@@ -239,7 +206,7 @@ Widget homeTitle() {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Plus Jakarta',
-                fontSize: 10, // Perkecil ukuran teks
+                fontSize: 10,
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.w400,
                 color: Color(0xFF994EF8),
@@ -247,14 +214,14 @@ Widget homeTitle() {
               ),
             ),
           ),
-          const SizedBox(height: 8), // Perkecil jarak
+          const SizedBox(height: 8),
           const Center(
             child: Text(
               'Thaha : 96',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Plus Jakarta',
-                fontSize: 10,
+                fontSize: 12,
                 fontStyle: FontStyle.italic,
                 color: Color(0xFF994EF8),
               ),
@@ -265,4 +232,3 @@ Widget homeTitle() {
     ),
   );
 }
-

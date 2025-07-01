@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -8,16 +10,31 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      child : Column(
+      child: Column(
         children: [
-          Center(
-            child: Text("Profile")
-          )
+          RoundedCard(
+            child: Text('test')
+          ),
+          const Text(
+            "Profile",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () {
+              context.go('/signup');
+            },
+            child: const Text('Go to Signup'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              context.go('/login');
+            },
+            child: const Text('Go to Login'),
+          ),
         ],
-
       ),
     );
   }
 }
-
-
