@@ -16,7 +16,7 @@ import 'package:mtqmnuns/screens/surah.dart';
 import 'package:mtqmnuns/screens/times.dart';
 
 class AppRouteConfig {
-  final String title;
+  String title;
   final String path;
   final IconData icon;
   final bool isHasPurpleBanner;
@@ -24,7 +24,7 @@ class AppRouteConfig {
   final Page<dynamic> Function(BuildContext context, GoRouterState state) pageBuilder;
   final Future<String> Function(GoRouterState)? dynamicTitleBuilder;
 
-  const AppRouteConfig({
+  AppRouteConfig({
     required this.title,
     required this.path,
     required this.pageBuilder,
@@ -34,6 +34,8 @@ class AppRouteConfig {
     this.dynamicTitleBuilder,
   });
 }
+
+
 
 
 class AppRoutes {

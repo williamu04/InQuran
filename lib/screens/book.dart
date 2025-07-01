@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/search_box.dart';
 import 'package:mtqmnuns/config/route.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/screens/surah.dart';
+import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-enum SurahViewMode { surah, juz }
 
 class BookScreen extends StatelessWidget {
   const BookScreen({super.key});
@@ -19,7 +18,7 @@ class BookScreen extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: 4),
-          searchBox(),
+          searchBox(context),
           SizedBox(height: 20),
           Expanded(child: SurahWidget()),
         ],
@@ -36,332 +35,256 @@ class SurahWidget extends StatefulWidget {
 }
 
 class _SurahWidgetState extends State<SurahWidget> {
-  SurahViewMode currentMode = SurahViewMode.surah; // Surah as Default
-
-  void _switchToSurahMode() {
-    setState(() {
-      currentMode = SurahViewMode.surah;
-    });
-  }
-
-  void _switchToJuzMode() {
-    setState(() {
-      currentMode = SurahViewMode.juz;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ListView(children: [surahNavContainer(), surahContainer()]);
-  }
+    final viewModel = context.read<BookViewModel>();
 
-  Widget surahNavContainer() {
-    return Row(
+    return Column(
       children: [
+        // This stays fixed
+        surahNavContainer(viewModel),
+
+        // This scrolls
         Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                onPressed: _switchToSurahMode,
-                child: Text(
-                  'Surah',
-                  style: TextStyle(
-                    color:
-                        currentMode == SurahViewMode.surah
-                            ? Color(0xFF672CBC)
-                            : Colors.grey,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Container(
-                height: 3,
-                color:
-                    currentMode == SurahViewMode.surah
-                        ? Color(0xFF672CBC)
-                        : Colors.grey.shade200,
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: surahContainer(),
           ),
         ),
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                onPressed: _switchToJuzMode,
-                child: Text(
-                  'Juz',
-                  style: TextStyle(
-                    color:
-                        currentMode == SurahViewMode.juz
-                            ? Color(0xFF672CBC)
-                            : Colors.grey,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Container(
-                height: 3,
-                color:
-                    currentMode == SurahViewMode.juz
-                        ? Color(0xFF672CBC)
-                        : Colors.grey.shade200,
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 75),
       ],
     );
   }
 
 
-  Widget surahContainer() {
-    if (currentMode == SurahViewMode.surah) {
-      return surahViewMode();
-    } else {
-      return juzViewMode();
-    }
-  }
-
-  Widget surahViewMode() {
-    // return Column(children: [Text('Surah View')]);
-
-    // Fetch Surah data from database using correct method name
-    Future<List<SurahData>> fetchSurahData() async {
-      return AppDatabase().surahDao.getAllSurahs();
-    }
-
-    // Function to get verse count for each surah using AyahDao
-    Future<int> getVerseCount(int surahId) async {
-      final ayahs = await AppDatabase().ayahDao.getAyahsBySurahId(surahId);
-      return ayahs.length;
-    }
-
-    return FutureBuilder<List<SurahData>>(
-      future: fetchSurahData(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF672CBC)),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              "Error: ${snapshot.error}",
-              style: TextStyle(color: Colors.red[600]),
-            ),
-          );
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
-            child: Text(
-              "No Surah data available",
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          );
-        }
-
-        final surahList = snapshot.data!;
-
-        return SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 375),
-            itemCount: surahList.length,
-            itemBuilder: (context, index) {
-              final surah = surahList[index];
-
-              return Column(
+  Widget surahNavContainer(BookViewModel viewModel) {
+    return Consumer<BookViewModel>(
+      builder: (context, viewModel, child) {
+        return Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      context.go(
-                        Uri(
-                          path: AppRoutes.surah.path,
-                          queryParameters: {
-                            'id': '${surah.id}',
-                            'ayah': '1', // Default to first verse
-                          },
-                        ).toString(),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12.0,
-                      ), // Adjust padding as needed
-                      child: Row(
-                        children: [
-                          // Number Circle with Star Background
-                          SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/img/star.png',
-                                  width: 45,
-                                  height: 45,
-                                  fit: BoxFit.cover,
-                                  color: Color(0xFF672CBC),
-                                ),
-                                Text(
-                                  '${surah.id}',
-                                  style: TextStyle(
-                                    color:
-                                        Color(0xFF3B1D77),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 16),
-
-                          // Surah Info
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  surah.nameLatin,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF3B1D77),
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                FutureBuilder<int>(
-                                  future: getVerseCount(surah.id),
-                                  builder: (context, verseSnapshot) {
-                                    if (verseSnapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      // Show loading or use fallback data
-                                      return Row(
-                                        children: [
-                                          Text(
-                                            surah.place,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xFF7C8BA0),
-                                            ),
-                                          ),
-                                          Text(
-                                            ' • ',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xFF7C8BA0),
-                                            ),
-                                          ),
-                                          Text(
-                                            'Loading...', // Indicate loading for verse count
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xFF7C8BA0),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }
-
-                                    final verseCount =
-                                        verseSnapshot.data ?? surah.totalAyah;
-                                    return Row(
-                                      children: [
-                                        Text(
-                                          surah.place,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                        Text(
-                                          ' • ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                        Text(
-                                          '$verseCount Verse${verseCount > 1 ? 's' : ''}',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Arabic Name
-                          Text(
-                            surah.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF672CBC),
-                              fontFamily: 'Al Jazeera'
-                            ),
-                          ),
-                        ],
+                  TextButton(
+                    onPressed: () => viewModel.switchMode(SurahViewMode.surah),
+                    child: Text(
+                      'Surah',
+                      style: TextStyle(
+                        color:
+                            viewModel.currentMode == SurahViewMode.surah
+                                ? Color(0xFF672CBC)
+                                : Colors.grey,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                  // Divider to separate each Surah item
-                  Divider(
-                    color: Colors.grey[300],
-                    height: 1, // Height of the divider
-                    thickness: 1, // Thickness of the divider
+                  Container(
+                    height: 3,
+                    color:
+                        viewModel.currentMode == SurahViewMode.surah
+                            ? Color(0xFF672CBC)
+                            : Colors.grey.shade200,
                   ),
                 ],
-              );
-            },
-          ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton(
+                    onPressed: () => viewModel.switchMode(SurahViewMode.juz),
+                    child: Text(
+                      'Juz',
+                      style: TextStyle(
+                        color:
+                            viewModel.currentMode == SurahViewMode.juz
+                                ? Color(0xFF672CBC)
+                                : Colors.grey,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 3,
+                    color:
+                        viewModel.currentMode == SurahViewMode.juz
+                            ? Color(0xFF672CBC)
+                            : Colors.grey.shade200,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 75),
+          ],
         );
+      }
+    );
+
+  }
+
+
+  Widget surahContainer() {
+    return Consumer<BookViewModel>(
+      builder: (context, viewModel, child) {
+        if (viewModel.currentMode == SurahViewMode.surah) {
+          return surahViewMode();
+        } else {
+          return juzViewMode();
+        }
       },
     );
   }
 
-  Widget juzViewMode() {
-    Future<List<Map<String, dynamic>>> fetchJuzInfo() async {
-      return AppDatabase().juzDao.getJuzInfo(AppDatabase().surahDao);
-    }
 
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: fetchJuzInfo(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text("No data available"));
+  Widget surahViewMode() {
+    return Consumer<BookViewModel>(
+      builder: (context, viewModel, _) {
+        final surahList = viewModel.filteredSurahs;
+
+        if (surahList.isEmpty) {
+          return const Center(child: Text("No Surah data available"));
         }
 
-        final juzList = snapshot.data!;
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.only(bottom: 90),
+          itemCount: surahList.length,
+          itemBuilder: (context, index) {
+            final surah = surahList[index];
+            final verseCount = viewModel.getVerseCount(surah.id);
 
-        return SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 350),
-            itemCount: juzList.length,
-            itemBuilder: (context, index) {
-              final juz = juzList[index];
-              final startSurah = juz['startSurah'];
-              final endSurah = juz['endSurah'];
-              final startAyah = juz['startAyah'];
-              final endAyah = juz['endAyah'];
-              final sameSurah = startSurah?.nameLatin == endSurah?.nameLatin;
+            return Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    AppRoutes.surah.title = 'Reading ${surah.nameLatin}';
+                    context.push(Uri(
+                      path: AppRoutes.surah.path,
+                      queryParameters: {
+                        'id': '${surah.id}',
+                        'ayah': '1',
+                      },
+                    ).toString());
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/img/star.png',
+                                width: 45,
+                                height: 45,
+                                fit: BoxFit.cover,
+                                color: Color(0xFF672CBC),
+                              ),
+                              Text(
+                                '${surah.id}',
+                                style: TextStyle(
+                                  color: Color(0xFF3B1D77),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 16),
 
-              return Card(
+                        // Surah Info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                surah.nameLatin,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF3B1D77),
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Text(
+                                    surah.place,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF7C8BA0),
+                                    ),
+                                  ),
+                                  Text(
+                                    ' • ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF7C8BA0),
+                                    ),
+                                  ),
+                                  Text(
+                                   '$verseCount Verse${verseCount > 1 ? 's' : ''}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF7C8BA0),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Arabic Name
+                        Text(
+                          surah.name,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF672CBC),
+                            fontFamily: 'Al Jazeera'
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Divider(color: Colors.grey[300], height: 1, thickness: 1),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+  Widget juzViewMode() {
+    return Consumer<BookViewModel>(
+      builder: (context, viewModel, _) {
+        final juzList = viewModel.filteredJuz;
+
+        if (juzList.isEmpty) {
+          return const Center(child: Text("No Juz data available"));
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.only(bottom: 90),
+          itemCount: juzList.length,
+          itemBuilder: (context, index) {
+            final juz = juzList[index];
+            final startSurah = juz['startSurah'];
+            final endSurah = juz['endSurah'];
+            final startAyah = juz['startAyah'];
+            final endAyah = juz['endAyah'];
+            final sameSurah = startSurah?.nameLatin == endSurah?.nameLatin;
+
+            return Card(
                 elevation: 0,
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 shape: RoundedRectangleBorder(
@@ -481,9 +404,9 @@ class _SurahWidgetState extends State<SurahWidget> {
                     ],
                   ),
                 ),
-              );
-            },
-          ),
+              // Same rendering code as before
+            );
+          },
         );
       },
     );

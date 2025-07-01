@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
+import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/data/entity/duas.dart';
 

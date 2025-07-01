@@ -3,8 +3,15 @@ import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(
+   ChangeNotifierProvider(
+      create: (_) => BookViewModel(),
+      child: MyApp(),
+  ),
+);
 
 final GoRouter _router = GoRouter(
   initialLocation: AppRoutes.home.path,
@@ -109,18 +116,20 @@ class MainScaffold extends StatelessWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.white.withOpacity(0),
-              Colors.white.withOpacity(0.5),
-              Colors.white.withOpacity(1),
-            ],
-            stops: [0.45, 0.6, 0.7],
+      child: IgnorePointer(
+        child: Container(
+          height: 200,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.white.withOpacity(0),
+                Colors.white.withOpacity(0.5),
+                Colors.white.withOpacity(1),
+              ],
+              stops: [0.45, 0.6, 0.7],
+            ),
           ),
         ),
       ),
@@ -132,18 +141,20 @@ class MainScaffold extends StatelessWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      child: Container(
-        height: 100,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.transparent,
-              Colors.purple.withOpacity(0.1),
-              Colors.purple.withOpacity(0.15),
-            ],
-            stops: [0.2, 0.7, 0.9],
+      child: IgnorePointer(
+        child: Container(
+          height: 100,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.purple.withOpacity(0.1),
+                Colors.purple.withOpacity(0.15),
+              ],
+              stops: [0.2, 0.7, 0.9],
+            ),
           ),
         ),
       ),

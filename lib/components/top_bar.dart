@@ -6,8 +6,6 @@ import 'package:mtqmnuns/config/route.dart';
 Widget topBar(BuildContext context, GoRouterState state) {
   String currentPath = state.uri.toString();
   AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
-  
-
 
   Color backgroundColor = Colors.transparent;
   Color iconColor;
@@ -40,62 +38,54 @@ Widget topBar(BuildContext context, GoRouterState state) {
   }
 
 
-  return FutureBuilder<String>(
-  future: currentRoute.dynamicTitleBuilder?.call(state) ?? Future.value(currentRoute.title),
-  builder: (context, snapshot) {
-    final title = snapshot.data ?? currentRoute.title;
-
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(kToolbarHeight),
-      child: Container(
-        padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
-        color: backgroundColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Builder(
-              builder: (context) => IconButton(
-                icon: Icon(
-                  LucideIcons.alignLeft,
-                  color: iconColor,
-                ),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: titleAlignment,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontFamily: "Plus Jakarta",
-                        color: titleColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
+  return PreferredSize(
+    preferredSize: const Size.fromHeight(kToolbarHeight),
+    child: Container(
+      padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
+      color: backgroundColor,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Builder(
+            builder: (context) => IconButton(
               icon: Icon(
-                LucideIcons.settings,
+                LucideIcons.alignLeft,
                 color: iconColor,
               ),
-              onPressed: () {
-                // Settings action
-              },
+              onPressed: () => Scaffold.of(context).openDrawer(),
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: titleAlignment,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: "Plus Jakarta",
+                      color: titleColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              LucideIcons.settings,
+              color: iconColor,
+            ),
+            onPressed: () {
+              // Settings action
+            },
+          ),
+        ],
       ),
-    );
-  },
-);
-
+    ),
+  );
 }
 
