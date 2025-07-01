@@ -56,10 +56,12 @@ class MainScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define the list of routes that need top padding
-    String currentPath = state.uri.toString();
-    AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
-    final double topPadding =  currentRoute.isHasPurpleBanner ? 0 : MediaQuery.of(context).padding.top + kToolbarHeight;
+    final String currentPath = state.uri.toString();
+    final AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
+
+    final double topPadding = currentRoute.isHasPurpleBanner
+        ? 0
+        : MediaQuery.of(context).padding.top + kToolbarHeight;
 
     return SafeArea(
       child: Scaffold(
@@ -67,67 +69,82 @@ class MainScaffold extends StatelessWidget {
         extendBody: true,
         body: Stack(
           children: [
-            Positioned.fill(
-              child: Padding(
-                padding: EdgeInsets.only(top: topPadding),
-                child: child,
-              ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: topBar(context, state),
-            ),
-
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                height: 200, 
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white.withOpacity(0),   // fully transparent at the top
-                      Colors.white.withOpacity(0.5), // semi-transparent
-                      Colors.white.withOpacity(1),   // solid white at the bottom
-                    ],
-                    stops: [0.45, 0.6, 0.7], 
-                  ),
-                ),
-              ),
-            ),
-
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                height: 100, 
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.purple.withOpacity(0.1),  // stronger purple near bottom
-                      Colors.purple.withOpacity(0.15),  // strongest purple at the very bottom
-                    ],
-                    stops: [0.2, 0.7, 0.9], 
-                  ),
-                ),
-              ),
-            ),
-
-
+            _buildMainContent(topPadding),
+            if (currentRoute.isHasBar) _buildTopBar(),
+            _buildWhiteGradientOverlay(),
+            _buildPurpleGradientOverlay(),
           ],
         ),
-        bottomNavigationBar: bottomNavBar(context, state),
+        bottomNavigationBar: currentRoute.isHasBar
+            ? bottomNavBar(context, state)
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildMainContent(double topPadding) {
+    return Positioned.fill(
+      child: Padding(
+        padding: EdgeInsets.only(top: topPadding),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildTopBar() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: topBar(context, state),
+    );
+  }
+
+  Widget _buildWhiteGradientOverlay() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Container(
+        height: 200,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withOpacity(0),
+              Colors.white.withOpacity(0.5),
+              Colors.white.withOpacity(1),
+            ],
+            stops: [0.45, 0.6, 0.7],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPurpleGradientOverlay() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              Colors.purple.withOpacity(0.1),
+              Colors.purple.withOpacity(0.15),
+            ],
+            stops: [0.2, 0.7, 0.9],
+          ),
+        ),
       ),
     );
   }
 }
+
 

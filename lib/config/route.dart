@@ -19,6 +19,7 @@ class AppRouteConfig {
   final String path;
   final IconData icon;
   final bool isHasPurpleBanner;
+  final bool isHasBar;
   final Page<dynamic> Function(BuildContext context, GoRouterState state) pageBuilder;
 
   const AppRouteConfig({
@@ -26,6 +27,7 @@ class AppRouteConfig {
     required this.path,
     required this.pageBuilder,
     required this.icon,
+    required this.isHasBar,
     required this.isHasPurpleBanner,
   });
 }
@@ -40,6 +42,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.user,
     isHasPurpleBanner: false,
+    isHasBar: false,
   );
 
   static final home = AppRouteConfig(
@@ -50,6 +53,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.house,
     isHasPurpleBanner: true,
+    isHasBar: true,
   );
 
   static final book = AppRouteConfig(
@@ -60,6 +64,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.bookOpen,
     isHasPurpleBanner: false,
+    isHasBar: true,
   );
 
   static final search = AppRouteConfig(
@@ -70,6 +75,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.search,
     isHasPurpleBanner: true,
+    isHasBar: true,
   );
 
   static final duas = AppRouteConfig(
@@ -80,6 +86,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.handHeart,
     isHasPurpleBanner: true,
+    isHasBar: true,
   );
 
   static final profile = AppRouteConfig(
@@ -90,6 +97,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.user,
     isHasPurpleBanner: true,
+    isHasBar: true,
   );
 
   static final prayer = AppRouteConfig(
@@ -100,6 +108,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.hourglass,
     isHasPurpleBanner: false,
+    isHasBar: true,
   );
 
   static final qibla = AppRouteConfig(
@@ -110,6 +119,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.compass,
     isHasPurpleBanner: false,
+    isHasBar: true,
   );
 
   static final favorites = AppRouteConfig(
@@ -120,6 +130,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.bookMarked,
     isHasPurpleBanner: false,
+    isHasBar: true,
   );
 
   static final calendar = AppRouteConfig(
@@ -130,6 +141,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.calendar,
     isHasPurpleBanner: false,
+    isHasBar: true,
   );
 
   static final etc = AppRouteConfig(
@@ -140,6 +152,7 @@ class AppRoutes {
     ),
     icon: LucideIcons.bell,
     isHasPurpleBanner: false,
+    isHasBar: true,
   );
 
   static final surah = AppRouteConfig(
@@ -152,6 +165,7 @@ class AppRoutes {
     },
     icon: LucideIcons.book,
     isHasPurpleBanner: false,
+    isHasBar: true,
   );
 
   static final List<AppRouteConfig> homeMenu = [
