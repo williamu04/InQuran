@@ -22,14 +22,14 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () {
-              context.go('/signup');
+              context.push('/signup');
             },
             child: const Text('Go to Signup'),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              context.go('/login');
+              context.push('/login');
             },
             child: const Text('Go to Login'),
           ),

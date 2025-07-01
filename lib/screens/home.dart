@@ -38,7 +38,7 @@ Widget homeMenu({
           ElevatedButton(
             onPressed: () {
               if (menuItems[0].path.isNotEmpty) {
-                context.go(menuItems[0].path);
+                context.push(menuItems[0].path);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -100,7 +100,7 @@ Widget homeMenu({
             return ElevatedButton(
               onPressed: () {
                 if (item.path.isNotEmpty) {
-                  context.go(item.path);
+                  context.push(item.path);
                 }
               },
               style: ElevatedButton.styleFrom(
