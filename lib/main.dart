@@ -71,9 +71,11 @@ class MainScaffold extends StatelessWidget {
         body: Stack(
           children: [
             _buildMainContent(topPadding),
-            if (currentRoute.isHasBar) _buildTopBar(),
-            _buildWhiteGradientOverlay(),
-            _buildPurpleGradientOverlay(),
+            if (currentRoute.isHasBar) ...[
+              _buildTopBar(),
+              _buildWhiteGradientOverlay(),
+              _buildPurpleGradientOverlay(),
+            ],
           ],
         ),
         bottomNavigationBar: currentRoute.isHasBar
