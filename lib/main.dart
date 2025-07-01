@@ -90,8 +90,8 @@ class MainScaffold extends StatelessWidget {
             if (currentRoute.isHasBar) ...[
               _buildTopBar(),
               _buildWhiteGradientOverlay(),
-              _buildPurpleGradientOverlay(),
             ],
+            _buildPurpleGradientOverlay(),
           ],
         ),
         bottomNavigationBar:

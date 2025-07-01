@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/components/google_auth.dart';
+import 'package:mtqmnuns/components/logo.dart';
+import 'package:mtqmnuns/config/route.dart';
 
 class AppColors {
   static const Color primary = Color(0xFF672CBC);
@@ -16,55 +20,49 @@ class SignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              _buildLogo(),
-              const SizedBox(height: 40),
-              _buildTitle(),
-              const SizedBox(height: 40),
-              const SignUpForm(),
-              const SizedBox(height: 40),
-              _buildAppBranding(),
+      backgroundColor: Colors.white,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFF5EFFB),
+              Colors.white,
             ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                buildLogo(),
+                const SizedBox(height: 40),
+                _buildTitle(),
+                const SizedBox(height: 40),
+                const SignUpForm(),
+                const SizedBox(height: 40),
+                _buildAppBranding(),
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLogo() {
-    return Container(
-      height: 120,
-      width: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Image.asset(
-        'assets/img/logo.png',
-        fit: BoxFit.contain,
-      ),
-    );
-  }
 
   Widget _buildTitle() {
     return const Text(
       'Sign Up',
       style: TextStyle(
-        fontSize: 36,
+        fontSize: 40,
         fontWeight: FontWeight.bold,
         color: AppColors.primary,
+        letterSpacing: -0.5,
       ),
     );
   }
@@ -75,12 +73,13 @@ class SignUpScreen extends StatelessWidget {
         Text(
           'QuranApp',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
+            letterSpacing: -0.5,
           ),
         ),
-        SizedBox(height: 4),
+        SizedBox(height: 8),
         Text(
           'Slogan atau Jargon',
           style: TextStyle(
@@ -104,7 +103,7 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   bool _isPasswordVisible = false;
   bool _isTermsAgreed = false;
   bool _isLoading = false;
@@ -121,32 +120,25 @@ class _SignUpFormState extends State<SignUpForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildGoogleSignUp(),
-        const SizedBox(height: 24),
+        GoogleSignInButton(isLoading: _isLoading, onPressed: _handleGoogleSignUp, text: 'Login with Google'),
+        const SizedBox(height: 32),
         _buildOrDivider(),
-        const SizedBox(height: 24),
+        const SizedBox(height: 32),
         _buildFormFields(),
-        const SizedBox(height: 20),
-        _buildTermsCheckbox(),
         const SizedBox(height: 24),
+        _buildTermsCheckbox(),
+        const SizedBox(height: 32),
         _buildCreateAccountButton(),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         _buildLoginLink(),
       ],
-    );
-  }
-
-  Widget _buildGoogleSignUp() {
-    return GoogleSignInButton(
-      onPressed: _handleGoogleSignUp,
-      isLoading: _isLoading,
     );
   }
 
   Widget _buildOrDivider() {
     return Row(
       children: [
-        const Expanded(child: Divider(color: AppColors.divider)),
+        const Expanded(child: Divider(color: Color(0xFFD1D5DB), thickness: 1)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
@@ -154,10 +146,11 @@ class _SignUpFormState extends State<SignUpForm> {
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),
-        const Expanded(child: Divider(color: AppColors.divider)),
+        const Expanded(child: Divider(color: Color(0xFFD1D5DB), thickness: 1)),
       ],
     );
   }
@@ -170,13 +163,13 @@ class _SignUpFormState extends State<SignUpForm> {
           hintText: 'Name',
           keyboardType: TextInputType.name,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         CustomTextField(
           controller: _emailController,
           hintText: 'Email/Phone Number',
           keyboardType: TextInputType.emailAddress,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         CustomTextField(
           controller: _passwordController,
           hintText: 'Password',
@@ -196,11 +189,39 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Widget _buildCreateAccountButton() {
-    return CustomButton(
-      text: 'Create Account',
-      onPressed: _isTermsAgreed ? _handleCreateAccount : null,
-      isLoading: _isLoading,
-      backgroundColor: AppColors.primary,
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: ElevatedButton(
+        onPressed: (_isTermsAgreed && !_isLoading) ? _handleCreateAccount : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ),
+        child: _isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Text(
+                'Create Account',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
+      ),
     );
   }
 
@@ -213,16 +234,17 @@ class _SignUpFormState extends State<SignUpForm> {
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
+            fontWeight: FontWeight.w400,
           ),
         ),
         GestureDetector(
-          onTap: _navigateToLogin,
+          onTap: () => context.push(AppRoutes.login.path),
           child: const Text(
             'Login',
             style: TextStyle(
               color: AppColors.primary,
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -244,8 +266,9 @@ class _SignUpFormState extends State<SignUpForm> {
 
   Future<void> _handleGoogleSignUp() async {
     setState(() => _isLoading = true);
-    
+
     try {
+      await Future.delayed(const Duration(seconds: 2));
       _showSuccessMessage('Account created successfully with Google!');
     } catch (e) {
       _showErrorMessage('Failed to sign up with Google: ${e.toString()}');
@@ -258,8 +281,8 @@ class _SignUpFormState extends State<SignUpForm> {
     if (!_validateForm()) return;
 
     setState(() => _isLoading = true);
-
     try {
+      await Future.delayed(const Duration(seconds: 2));
       _showSuccessMessage('Account created successfully!');
     } catch (e) {
       _showErrorMessage('Failed to create account: ${e.toString()}');
@@ -284,11 +307,6 @@ class _SignUpFormState extends State<SignUpForm> {
     return true;
   }
 
-  void _navigateToLogin() {
-    // Navigate to login screen
-    Navigator.pushReplacementNamed(context, '/login');
-  }
-
   void _showSuccessMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -307,61 +325,6 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 }
-
-
-class CustomButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-  final Color backgroundColor;
-  final Color textColor;
-
-  const CustomButton({
-    super.key,
-    required this.text,
-    this.onPressed,
-    this.isLoading = false,
-    this.backgroundColor = Colors.blue,
-    this.textColor = Colors.white,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          disabledBackgroundColor: backgroundColor.withOpacity(0.6),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          elevation: 0,
-        ),
-        child: isLoading
-            ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(textColor),
-                ),
-              )
-            : Text(
-                text,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-      ),
-    );
-  }
-}
-
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -384,36 +347,39 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48,
+      height: 52,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         obscureText: isPassword && !isPasswordVisible,
         style: const TextStyle(
-          color: AppColors.textPrimary,
+          color: Color(0xFF374151),
           fontSize: 16,
+          fontWeight: FontWeight.w400,
         ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: AppColors.textSecondary,
+          hintStyle: const TextStyle(
+            color: Color(0xFF9CA3AF),
             fontSize: 16,
+            fontWeight: FontWeight.w400,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
-            vertical: 12,
+            vertical: 16,
           ),
           suffixIcon: isPassword
               ? IconButton(
                   icon: Icon(
-                    isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.textSecondary,
+                    isPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                    color: const Color(0xFF6B7280),
+                    size: 20,
                   ),
                   onPressed: onTogglePasswordVisibility,
                 )
@@ -423,102 +389,6 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
-
-
-class GoogleSignInButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final bool isLoading;
-
-  const GoogleSignInButton({
-    super.key,
-    required this.onPressed,
-    this.isLoading = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: OutlinedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          side: const BorderSide(color: AppColors.border),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildGoogleIcon(),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Sign Up with Google',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-
-  Widget _buildGoogleIcon() {
-    return Container(
-      width: 20,
-      height: 20,
-      child: CustomPaint(
-        painter: GoogleIconPainter(),
-      ),
-    );
-  }
-}
-
-class GoogleIconPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
-
-    // Google "G" icon colors
-    final bluePaint = Paint()..color = const Color(0xFF4285F4);
-    final greenPaint = Paint()..color = const Color(0xFF34A853);
-    final yellowPaint = Paint()..color = const Color(0xFFFBBC05);
-    final redPaint = Paint()..color = const Color(0xFFEA4335);
-
-    // Draw Google icon paths (simplified)
-    final path = Path();
-    
-    // Blue section
-    path.moveTo(size.width * 0.5, 0);
-    path.lineTo(size.width, 0);
-    path.lineTo(size.width, size.height * 0.4);
-    path.lineTo(size.width * 0.5, size.height * 0.4);
-    path.close();
-    canvas.drawPath(path, bluePaint);
-
-    // Draw a simplified Google "G"
-    canvas.drawCircle(
-      Offset(size.width * 0.5, size.height * 0.5),
-      size.width * 0.4,
-      redPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
 
 class TermsCheckbox extends StatelessWidget {
   final bool isChecked;
@@ -535,41 +405,58 @@ class TermsCheckbox extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Checkbox(
-          value: isChecked,
-          onChanged: onChanged,
-          activeColor: AppColors.primary,
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        Transform.scale(
+          scale: 1.1,
+          child: Checkbox(
+            value: isChecked,
+            onChanged: onChanged,
+            activeColor: AppColors.primary,
+            checkColor: Colors.white,
+            side: const BorderSide(
+              color: Color(0xFFD1D5DB),
+              width: 1.5,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 12),
         Expanded(
           child: GestureDetector(
             onTap: () => onChanged(!isChecked),
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 14,
-                  height: 1.4,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    color: Color(0xFF374151),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                  ),
+                  children: [
+                    const TextSpan(text: "I'm agree to The "),
+                    TextSpan(
+                      text: 'Terms of Service',
+                      style: TextStyle(
+                        color: Colors.blue[600],
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const TextSpan(text: ' and '),
+                    TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(
+                        color: Colors.blue[600],
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-                children: [
-                  const TextSpan(text: "I'm agree to The "),
-                  TextSpan(
-                    text: 'Terms of Service',
-                    style: TextStyle(
-                      color: Colors.blue[600],
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                  const TextSpan(text: ' and '),
-                  TextSpan(
-                    text: 'Privacy Policy',
-                    style: TextStyle(
-                      color: Colors.blue[600],
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
@@ -578,4 +465,3 @@ class TermsCheckbox extends StatelessWidget {
     );
   }
 }
-

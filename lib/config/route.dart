@@ -6,6 +6,7 @@ import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
 import 'package:mtqmnuns/screens/favorites.dart';
+import 'package:mtqmnuns/screens/login.dart';
 import 'package:mtqmnuns/screens/profile.dart';
 import 'package:mtqmnuns/screens/qibla.dart';
 import 'package:mtqmnuns/screens/search.dart';
@@ -42,6 +43,15 @@ class AppRoutes {
     title: 'Sign Up',
     path: '/signup',
     pageBuilder: (context, state) => NoTransitionPage(child: SignUpScreen()),
+    icon: LucideIcons.user,
+    isHasPurpleBanner: false,
+    isHasBar: false,
+  );
+
+  static final login = AppRouteConfig(
+    title: 'login',
+    path: '/login',
+    pageBuilder: (context, state) => NoTransitionPage(child: LoginScreen()),
     icon: LucideIcons.user,
     isHasPurpleBanner: false,
     isHasBar: false,
@@ -189,8 +199,10 @@ class AppRoutes {
     calendar,
     etc,
     signUp,
+    login,
     surah,
   ];
+
 
   static AppRouteConfig getRouteByPath(String path) {
     final cleanPath = Uri.parse(path).path;
