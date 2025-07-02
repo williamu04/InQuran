@@ -8,7 +8,8 @@ import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
       providers: [

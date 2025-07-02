@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 
+import 'package:mtqmnuns/config/global.dart';
+import 'package:mtqmnuns/routes/route.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -50,10 +53,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _fadeOutAndNavigate() async {
     await _animationController.reverse();
-
-    if (mounted) {
-      context.go('/');
-    }
+    final isFirst = await GlobalConfig().isFirstLaunch();
+    if (!mounted) return;
+    context.go(isFirst ? AppRoutes.intro.path : AppRoutes.home.path);
   }
 
   @override

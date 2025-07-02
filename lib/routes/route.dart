@@ -5,6 +5,7 @@ import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
 import 'package:mtqmnuns/screens/favorites.dart';
+import 'package:mtqmnuns/screens/intro.dart';
 import 'package:mtqmnuns/screens/login.dart';
 import 'package:mtqmnuns/screens/profile.dart';
 import 'package:mtqmnuns/screens/qibla.dart';
@@ -23,6 +24,15 @@ class AppRoutes {
     path: '/signup',
     pageBuilder: (context, state) => NoTransitionPage(child: SignUpScreen()),
     icon: LucideIcons.user,
+    isHasPurpleBanner: false,
+    isHasBar: false,
+  );
+
+  static final intro = AppRoute(
+    title: 'intro',
+    path: '/intro',
+    pageBuilder: (context, state) => NoTransitionPage(child: IntroScreen()),
+    icon: LucideIcons.listStart,
     isHasPurpleBanner: false,
     isHasBar: false,
   );
@@ -181,6 +191,7 @@ class AppRoutes {
     login,
     surah,
     splashScreen,
+    intro
   ];
 
 
