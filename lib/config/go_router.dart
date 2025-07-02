@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/screens/splash_screen.dart';
 
 typedef ShellBuilder = Widget Function(BuildContext context, GoRouterState state, Widget child);
 

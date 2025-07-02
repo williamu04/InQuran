@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/data/entity/duas.dart';
 
 class DuasScreen extends StatefulWidget {
   const DuasScreen({super.key});
