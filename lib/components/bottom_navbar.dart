@@ -42,7 +42,7 @@ Widget bottomNavBar(BuildContext context, GoRouterState state) {
                   color: isSelected ? const Color(0xFF3B1D77) : Colors.grey,
                 ),
                 onPressed: () {
-                  context.go(route.path);
+                  context.push(route.path);
                 },
               );
             }).toList(),
