@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/route.dart';
 
 
 Widget bottomNavBar(BuildContext context, GoRouterState state) {

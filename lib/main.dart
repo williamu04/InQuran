@@ -2,58 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/config/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:mtqmnuns/screens/splash_screen.dart';
 
-void main() => runApp(
-   ChangeNotifierProvider(
-      create: (_) => BookViewModel(),
-      child: MyApp(),
-  ),
-);
-
-final GoRouter _router = GoRouter(
-  initialLocation: '/splash',
-  routes: [
-    GoRoute(
-      path: '/splash',
-      pageBuilder: (context, state) => NoTransitionPage(child: SplashScreen()),
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        // viewmodel list here
+        ChangeNotifierProvider(create: (_) => BookViewModel()),
+      ],
+      child: const MyApp(),
     ),
-    ShellRoute(
-      builder: (context, state, child) {
-        return MainScaffold(context: context, state: state, child: child);
-      },
-      routes:
-          AppRoutes.all
-              .map(
-                (route) => GoRoute(
-                  path: route.path,
-                  pageBuilder: route.pageBuilder
-                ),
-              )
-              .toList(),
-    ),
-  ],
-);
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final router = _buildRouterConfig().buildRouter();
+
     return MaterialApp.router(
-      routerConfig: _router,
-      theme: ThemeData(
-        splashFactory: NoSplash.splashFactory,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        hoverColor: Colors.transparent,
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.light(),
-        fontFamily: 'Plus Jakarta',
-      ),
+      routerConfig: router,
+      theme: _buildAppTheme(),
+    );
+  }
+
+  AppRouterConfig _buildRouterConfig() {
+    return AppRouterConfig(
+      initialLocation: AppRoutes.splashScreen.path,
+      mainShellBuilder: _mainShellBuilder(),
+      appRoutes: _appRoutes(),
+    );
+  }
+
+  ShellBuilder _mainShellBuilder() {
+    return (BuildContext context, GoRouterState state, Widget child) {
+      return MainScaffold(context: context, state: state, child: child);
+    };
+  }
+
+  List<GoRoute> _appRoutes() {
+    return AppRoutes.all
+        .map(
+          (route) => GoRoute(
+            path: route.path,
+            pageBuilder: route.pageBuilder,
+          ),
+        ).toList();
+  }
+
+  ThemeData _buildAppTheme() {
+    return ThemeData(
+      splashFactory: NoSplash.splashFactory,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      scaffoldBackgroundColor: Colors.white,
+      colorScheme: const ColorScheme.light(),
+      fontFamily: 'Plus Jakarta',
     );
   }
 }
@@ -73,7 +85,7 @@ class MainScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String currentPath = state.uri.toString();
-    final AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
+    final AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
 
     final double topPadding =
         (!currentRoute.isHasBar || currentRoute.isHasPurpleBanner)

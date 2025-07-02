@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/google_auth.dart';
 import 'package:mtqmnuns/components/logo.dart';
-import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/screens/signup.dart';
 
 class AppColors {

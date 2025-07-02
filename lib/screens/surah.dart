@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart';

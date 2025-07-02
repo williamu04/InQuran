@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/route.dart';
 
 Widget topBar(BuildContext context, GoRouterState state) {
   String currentPath = state.uri.toString();
-  AppRouteConfig currentRoute = AppRoutes.getRouteByPath(currentPath);
+  AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
 
   Color backgroundColor = Colors.transparent;
   Color iconColor;

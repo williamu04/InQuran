@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/route.dart';
 import '../components/rounded_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -27,7 +28,7 @@ class HomeScreen extends StatelessWidget {
 
 Widget homeMenu({
   required BuildContext context,
-  required List<AppRouteConfig> menuItems,
+  required List<AppRoute> menuItems,
 }) {
   return Container(
     padding: const EdgeInsets.only(left: 40.0, right: 40.0, top: 40),

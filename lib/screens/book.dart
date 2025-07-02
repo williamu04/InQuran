@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/search_box.dart';
-import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
 import 'package:provider/provider.dart';
 
