@@ -11,7 +11,6 @@ class ProfileScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Bagian header profil
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
@@ -26,41 +25,14 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               padding: const EdgeInsets.only(
-                top: 24,
+                top: 90,
                 left: 16,
                 right: 16,
-                bottom: 24,
+                bottom: 40,
               ),
               child: Column(
                 children: [
                   // Top bar
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.menu, color: Colors.white),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Account ',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Profile',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.settings, color: Colors.white),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Avatar (kotak putih)
                   Container(
                     width: 90,
                     height: 90,
@@ -69,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 20),
 
                   const Text(
                     "Sebelas Maret",
@@ -93,14 +65,12 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
-
-            // Menu dan tombol dalam Expanded agar tombol di bawah
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
                   children: [
+                    const SizedBox(height: 16),
                     _buildMenuItem("Notes"),
                     _buildMenuItem("Favourites", trailing: "2 Items"),
                     _buildMenuItem("Points"),
@@ -117,25 +87,20 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 24),
 
-                    // Tombol paling bawah
-                    Column(
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {
-                            context.push('/signup');
-                          },
-                          child: const Text("Go to Signup"),
-                        ),
-                        const SizedBox(height: 12),
-                        OutlinedButton(
-                          onPressed: () {
-                            context.push('/login');
-                          },
-                          child: const Text("Go to Login"),
-                        ),
-                      ],
+                    OutlinedButton(
+                      onPressed: () {
+                        context.push('/signup');
+                      },
+                      child: const Text("Go to Signup"),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: () {
+                        context.push('/login');
+                      },
+                      child: const Text("Go to Login"),
                     ),
                     const SizedBox(height: 16),
                   ],
