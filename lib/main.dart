@@ -28,10 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final router = _buildRouterConfig().buildRouter();
 
-    return MaterialApp.router(
-      routerConfig: router,
-      theme: _buildAppTheme(),
-    );
+    return MaterialApp.router(routerConfig: router, theme: _buildAppTheme());
   }
 
   AppRouterConfig _buildRouterConfig() {
@@ -51,11 +48,9 @@ class MyApp extends StatelessWidget {
   List<GoRoute> _appRoutes() {
     return AppRoutes.all
         .map(
-          (route) => GoRoute(
-            path: route.path,
-            pageBuilder: route.pageBuilder,
-          ),
-        ).toList();
+          (route) => GoRoute(path: route.path, pageBuilder: route.pageBuilder),
+        )
+        .toList();
   }
 
   ThemeData _buildAppTheme() {

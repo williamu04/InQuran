@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
+import 'package:mtqmnuns/screens/dua_detail.dart';
 import 'package:mtqmnuns/screens/etc.dart';
 import 'package:mtqmnuns/screens/favorites.dart';
 import 'package:mtqmnuns/screens/intro.dart';
@@ -16,7 +17,6 @@ import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/surah.dart';
 import 'package:mtqmnuns/screens/splash_screen.dart';
 import 'package:mtqmnuns/screens/times.dart';
-
 
 class AppRoutes {
   static final signUp = AppRoute(
@@ -54,7 +54,6 @@ class AppRoutes {
     isHasPurpleBanner: false,
     isHasBar: false,
   );
-
 
   static final home = AppRoute(
     title: 'QuranApp',
@@ -168,13 +167,7 @@ class AppRoutes {
     etc,
   ];
 
-  static final List<AppRoute> bottomNav = [
-    book,
-    search,
-    home,
-    duas,
-    profile,
-  ];
+  static final List<AppRoute> bottomNav = [book, search, home, duas, profile];
 
   static final List<AppRoute> all = [
     book,
@@ -191,9 +184,8 @@ class AppRoutes {
     login,
     surah,
     splashScreen,
-    intro
+    intro,
   ];
-
 
   static AppRoute getRouteByPath(String path) {
     final cleanPath = Uri.parse(path).path;
