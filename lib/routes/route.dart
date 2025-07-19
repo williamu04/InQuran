@@ -1,8 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/route.dart';
-import 'package:mtqmnuns/screens/Home-disability.dart';
+import 'package:mtqmnuns/screens/Home_disability.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';

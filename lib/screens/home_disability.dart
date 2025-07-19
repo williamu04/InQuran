@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
-import 'package:mtqmnuns/viewmodel/transcription_viewmodel.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/services/stt_service.dart';
+import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -11,40 +15,67 @@ class HomeDisabilityScreen extends StatefulWidget {
 }
 
 class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
-
   final ValueNotifier<bool> isListening = ValueNotifier(false);
+  final ValueNotifier<String> transcript = ValueNotifier('');
+  late final SttService stt;
 
   @override
   void initState() {
     super.initState();
+    stt = Provider.of<SttService>(context, listen: false);
+    stt.onTranscriptHandled = processTranscript;
+  }
+
+  Future<bool> processTranscript(String transcriptStream) async {
+    final bookViewModel = Provider.of<BookViewModel>(context, listen: false);
+    final SurahData? match = await bookViewModel.fuzzyFindSurahFromText(transcriptStream);
+
+    if (match != null) {
+      debugPrint('Matched Surah: ${match.nameLatin}');
+      if (!mounted) return false;
+      context.push(Uri(
+        path: AppRoutes.surah.path,
+        queryParameters: {
+          'id': '${match.id}',
+          'ayah': '1',
+        },
+      ).toString());
+      transcript.value = '';
+      isListening.value = false;
+      return Future.value(true); 
+    }
+
+
+    debugPrint('No matched Surah');
+    return Future.value(false); 
   }
 
   void _handleMicPressed(BuildContext context) async {
-    final viewModel = context.read<TranscriptionViewModel>();
     if (!isListening.value) {
       var status = await Permission.microphone.status;
-
-      if (status.isDenied) {
-        status = await Permission.microphone.request();
-      }
-
-      if (status.isPermanentlyDenied) {
-        openAppSettings();
-      }
-      if (!mounted) return; 
+      if (status.isDenied) status = await Permission.microphone.request();
+      if (status.isPermanentlyDenied) openAppSettings();
+      if (!mounted) return;
 
       if (status.isGranted) {
-        viewModel.startTranscription();
-        isListening.value = true; 
+        stt.startListening();
+        stt.transcriptionStream.listen((text) {
+          if (text.trim().isNotEmpty) {
+            transcript.value = text.trim();
+          }
+        });
+
+        isListening.value = true;
       } else {
         _micPermissionErrorMessage();
       }
     } else {
-        viewModel.stopTranscription();
-        viewModel.clearTranscript();
-        isListening.value = false; 
+      stt.stopListening();
+      transcript.value = ''; 
+      isListening.value = false;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +85,7 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
         width: double.infinity,
         height: double.infinity,
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(), // optional
+          physics: const BouncingScrollPhysics(), 
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -108,13 +139,14 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
 
 
   Widget _mainInstructionText(bool listening, BuildContext context) {
-    return Consumer<TranscriptionViewModel>(
-      builder: (context, viewModel, _) {
+    return ValueListenableBuilder<String>(
+        valueListenable: transcript,
+        builder: (context, transcriptText, _) {
         String displayText;
 
-        if (viewModel.transcript.trim().isNotEmpty) {
-          displayText = viewModel.transcript;
-        } else if (listening) {
+        if (transcriptText.trim().isNotEmpty) {
+          displayText = transcriptText;
+        } else if (isListening.value) {
           displayText = "Listening...";
         } else {
           displayText = "Tap to Talk";
@@ -123,7 +155,7 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SizedBox(
-            height: 30, // set your max height here
+            height: 30, 
             child: AutoSizeText(
               displayText,
               textAlign: TextAlign.center,

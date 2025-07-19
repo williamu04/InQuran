@@ -8,7 +8,6 @@ import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt_service.dart';
 import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
-import 'package:mtqmnuns/viewmodel/transcription_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 main() async {
@@ -20,10 +19,13 @@ main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
+        Provider<SttService>(
+          create: (_) => SttService(),
+          dispose: (_, service) => service.dispose(),
+        ),
 
         // viewmodel list here
         ChangeNotifierProvider(create: (_) => BookViewModel()),
-        ChangeNotifierProvider(create: (_) => TranscriptionViewModel(SttService())),
       ],
       child: const MyApp(),
     ),
