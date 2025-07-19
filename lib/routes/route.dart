@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/screens/Home-disability.dart';
 import 'package:mtqmnuns/screens/book.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
@@ -25,7 +27,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: SignUpScreen()),
     icon: LucideIcons.user,
     isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasTopBar: false,
+    isHasBottomBar: false,
   );
 
   static final intro = AppRoute(
@@ -34,7 +37,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: IntroScreen()),
     icon: LucideIcons.listStart,
     isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasTopBar: false,
+    isHasBottomBar: false,
   );
 
   static final login = AppRoute(
@@ -43,7 +47,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: LoginScreen()),
     icon: LucideIcons.user,
     isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasTopBar: false,
+    isHasBottomBar: false,
   );
 
   static final splashScreen = AppRoute(
@@ -52,17 +57,28 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: SplashScreen()),
     icon: LucideIcons.user,
     isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasTopBar: false,
+    isHasBottomBar: false,
   );
 
 
   static final home = AppRoute(
     title: 'QuranApp',
     path: '/',
+    isHasPurpleBanner: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
     pageBuilder: (context, state) => NoTransitionPage(child: HomeScreen()),
     icon: LucideIcons.house,
-    isHasPurpleBanner: true,
-    isHasBar: true,
+  );
+  static final homeDisability = AppRoute(
+    title: 'QuranApp',
+    path: '/disability',
+    isHasPurpleBanner: false,
+    isHasTopBar: true,
+    isHasBottomBar: false,
+    pageBuilder: (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
+    icon: LucideIcons.house,
   );
 
   static final book = AppRoute(
@@ -71,7 +87,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: BookScreen()),
     icon: LucideIcons.bookOpen,
     isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final search = AppRoute(
@@ -80,7 +97,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: SearchScreen()),
     icon: LucideIcons.search,
     isHasPurpleBanner: true,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final duas = AppRoute(
@@ -89,7 +107,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: DuasScreen()),
     icon: LucideIcons.handHeart,
     isHasPurpleBanner: true,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final profile = AppRoute(
@@ -98,7 +117,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: ProfileScreen()),
     icon: LucideIcons.user,
     isHasPurpleBanner: true,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final prayer = AppRoute(
@@ -108,7 +128,8 @@ class AppRoutes {
         (context, state) => NoTransitionPage(child: PrayerTimeScreen()),
     icon: LucideIcons.hourglass,
     isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final qibla = AppRoute(
@@ -117,7 +138,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: QiblaScreen()),
     icon: LucideIcons.compass,
     isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final favorites = AppRoute(
@@ -126,7 +148,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: FavoriteScreen()),
     icon: LucideIcons.bookMarked,
     isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final calendar = AppRoute(
@@ -135,7 +158,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: CalendarScreen()),
     icon: LucideIcons.calendar,
     isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final etc = AppRoute(
@@ -144,7 +168,8 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: EtcScreen()),
     icon: LucideIcons.bell,
     isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final surah = AppRoute(
@@ -155,7 +180,8 @@ class AppRoutes {
     },
     icon: LucideIcons.book,
     isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasTopBar: true,
+    isHasBottomBar: true,
   );
 
   static final List<AppRoute> homeMenu = [
@@ -191,7 +217,8 @@ class AppRoutes {
     login,
     surah,
     splashScreen,
-    intro
+    intro,
+    homeDisability
   ];
 
 

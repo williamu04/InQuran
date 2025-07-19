@@ -2,60 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/services/stt_service.dart';
 import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
+import 'package:mtqmnuns/viewmodel/transcription_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-main() {
+main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final globalConfig = GlobalConfig();
+  await globalConfig.initialize();
+
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
+
         // viewmodel list here
         ChangeNotifierProvider(create: (_) => BookViewModel()),
+        ChangeNotifierProvider(create: (_) => TranscriptionViewModel(SttService())),
       ],
       child: const MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final router = _buildRouterConfig().buildRouter();
+  State<MyApp> createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    final config = AppRouterConfig(
+      initialLocation: AppRoutes.splashScreen.path,
+      mainShellBuilder: (context, state, child) {
+        return MainScaffold(context: context, state: state, child: child);
+      },
+      appRoutes: AppRoutes.all.map((route) => GoRoute(
+        path: route.path,
+        pageBuilder: route.pageBuilder,
+      )).toList(),
+    );
+
+    _router = config.buildRouter();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: router,
+      routerConfig: _router,
       theme: _buildAppTheme(),
     );
-  }
-
-  AppRouterConfig _buildRouterConfig() {
-    return AppRouterConfig(
-      initialLocation: AppRoutes.splashScreen.path,
-      mainShellBuilder: _mainShellBuilder(),
-      appRoutes: _appRoutes(),
-    );
-  }
-
-  ShellBuilder _mainShellBuilder() {
-    return (BuildContext context, GoRouterState state, Widget child) {
-      return MainScaffold(context: context, state: state, child: child);
-    };
-  }
-
-  List<GoRoute> _appRoutes() {
-    return AppRoutes.all
-        .map(
-          (route) => GoRoute(
-            path: route.path,
-            pageBuilder: route.pageBuilder,
-          ),
-        ).toList();
   }
 
   ThemeData _buildAppTheme() {
@@ -89,7 +96,7 @@ class MainScaffold extends StatelessWidget {
     final AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
 
     final double topPadding =
-        (!currentRoute.isHasBar || currentRoute.isHasPurpleBanner)
+        (!currentRoute.isHasTopBar || currentRoute.isHasPurpleBanner)
             ? 0
             : MediaQuery.of(context).padding.top + kToolbarHeight;
 
@@ -100,15 +107,13 @@ class MainScaffold extends StatelessWidget {
         body: Stack(
           children: [
             _buildMainContent(topPadding),
-            if (currentRoute.isHasBar) ...[
-              _buildTopBar(),
-              _buildWhiteGradientOverlay(),
-            ],
+            if (currentRoute.isHasTopBar) _buildTopBar(),
+            if (currentRoute.isHasBottomBar) _buildWhiteGradientOverlay(),
             _buildPurpleGradientOverlay(),
           ],
         ),
         bottomNavigationBar:
-            currentRoute.isHasBar ? bottomNavBar(context, state) : null,
+            currentRoute.isHasBottomBar ? bottomNavBar(context, state) : null,
       ),
     );
   }
