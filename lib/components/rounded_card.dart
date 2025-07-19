@@ -6,14 +6,18 @@ Widget RoundedCard({
   Gradient? gradient,
   double borderRadius = 20,
   List<BoxShadow>? boxShadow,
+  bool allRounded = false,
 }) {
   return Container(
-    width: double.infinity, 
+    width: double.infinity,
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(borderRadius),
-        bottomRight: Radius.circular(borderRadius),
-      ),
+      borderRadius:
+          allRounded
+              ? BorderRadius.circular(borderRadius)
+              : BorderRadius.only(
+                bottomLeft: Radius.circular(borderRadius),
+                bottomRight: Radius.circular(borderRadius),
+              ),
       boxShadow:
           boxShadow ??
           [
@@ -36,10 +40,13 @@ Widget RoundedCard({
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(borderRadius),
-          bottomRight: Radius.circular(borderRadius),
-        ),
+        borderRadius:
+            allRounded
+                ? BorderRadius.circular(borderRadius)
+                : BorderRadius.only(
+                  bottomLeft: Radius.circular(borderRadius),
+                  bottomRight: Radius.circular(borderRadius),
+                ),
       ),
       child: child,
     ),
