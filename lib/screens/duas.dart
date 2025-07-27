@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/screens/dua_detail.dart';
 
 class DuasScreen extends StatefulWidget {
@@ -63,12 +65,12 @@ class _DuasScreenState extends State<DuasScreen> {
                           category: category,
                           index: index,
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => DuaDetailScreen(category: category),
-                              ),
+                            AppRoutes.duaDetail.title = category.name;
+                            context.push(
+                              Uri(
+                                path: AppRoutes.duaDetail.path,
+                                queryParameters: {'id': '${category.id}'},
+                              ).toString(),
                             );
                           },
                         );

@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 class DuaDetailScreen extends StatelessWidget {
-  final CategoryDua category;
+  final GoRouterState state;
 
-  const DuaDetailScreen({super.key, required this.category});
+  const DuaDetailScreen({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
+    final categoryId = int.tryParse(state.uri.queryParameters['id'] ?? '');
+
+    Future<List<Dua>> fetchDuasByCategory(int categoryId) async {
+      return AppDatabase().duasDao.getDuasByCategory(categoryId);
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder<List<Dua>>(
-        future: AppDatabase().duasDao.getDuasByCategory(category.id),
+        future: fetchDuasByCategory(categoryId ?? 1),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

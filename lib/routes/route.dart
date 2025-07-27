@@ -157,6 +157,17 @@ class AppRoutes {
     isHasBar: true,
   );
 
+  static final duaDetail = AppRoute(
+    title: 'Dua Detail',
+    path: '/duaDetail',
+    pageBuilder: (context, state) {
+      return NoTransitionPage(child: DuaDetailScreen(state: state));
+    },
+    icon: LucideIcons.book,
+    isHasPurpleBanner: false,
+    isHasBar: true,
+  );
+
   static final List<AppRoute> homeMenu = [
     book,
     duas,
@@ -185,6 +196,7 @@ class AppRoutes {
     surah,
     splashScreen,
     intro,
+    duaDetail,
   ];
 
   static AppRoute getRouteByPath(String path) {
