@@ -15,8 +15,6 @@ class HomeDisabilityScreen extends StatefulWidget {
 }
 
 class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
-  final ValueNotifier<bool> isListening = ValueNotifier(false);
-  final ValueNotifier<String> transcript = ValueNotifier('');
   late final SttService stt;
 
   @override
@@ -45,36 +43,10 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
       return Future.value(true); 
     }
 
-
     debugPrint('No matched Surah');
     return Future.value(false); 
   }
 
-  void _handleMicPressed(BuildContext context) async {
-    if (!isListening.value) {
-      var status = await Permission.microphone.status;
-      if (status.isDenied) status = await Permission.microphone.request();
-      if (status.isPermanentlyDenied) openAppSettings();
-      if (!mounted) return;
-
-      if (status.isGranted) {
-        stt.startListening();
-        stt.transcriptionStream.listen((text) {
-          if (text.trim().isNotEmpty) {
-            transcript.value = text.trim();
-          }
-        });
-
-        isListening.value = true;
-      } else {
-        _micPermissionErrorMessage();
-      }
-    } else {
-      stt.stopListening();
-      transcript.value = ''; 
-      isListening.value = false;
-    }
-  }
 
 
   @override
@@ -92,11 +64,7 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
               const SizedBox(height: 15),
               _title(),
               const SizedBox(height: 60),
-              MicButton(
-                size: 200,
-                isListening: isListening,
-                onPressed: () => _handleMicPressed(context),
-              ),
+              MicButton(),
               const SizedBox(height: 60),
               _instructionText(context),
             ],
@@ -211,14 +179,4 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
       ],
     );
   }
-
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _micPermissionErrorMessage() {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Microphone permission is required.'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
 }
