@@ -1,26 +1,24 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/components/mic_permission.dart';
+import 'package:mtqmnuns/viewmodel/stt_viewmodel.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class MicButton extends StatelessWidget {
   final double size;
-  final ValueListenable<bool> isListening;
-  final void Function() onPressed;
 
   const MicButton({
     super.key,
     required this.size,
-    required this.isListening,
-    required this.onPressed
   });
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: isListening,
-      builder: (context, listening, _) {
+    return Consumer<SttViewModel>(
+      builder: (context, vm, _) {
         return GestureDetector(
-          onTap: onPressed, 
+          onTap: () => handleMicPressed(context, vm),
           child: Container(
             width: size,
             height: size,
@@ -30,7 +28,7 @@ class MicButton extends StatelessWidget {
               border: Border.all(color: Colors.grey.shade300, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF672CBC).withOpacity(0.3),
+                  color: const Color(0xFF672CBC).withOpacity(0.3),
                   blurRadius: 28,
                   spreadRadius: 7,
                 ),
@@ -38,8 +36,8 @@ class MicButton extends StatelessWidget {
             ),
             child: Center(
               child: Icon(
-                listening ? LucideIcons.audioLines : LucideIcons.power,
-                color: Color(0xFF672CBC),
+                vm.isListening ? LucideIcons.audioLines : LucideIcons.power,
+                color: const Color(0xFF672CBC),
                 size: size * 0.675,
               ),
             ),
@@ -48,4 +46,20 @@ class MicButton extends StatelessWidget {
       },
     );
   }
+
+
+  void handleMicPressed(BuildContext context, SttViewModel vm) async {
+    void showError() => micPermissionErrorMessage(context);
+
+    var status = await Permission.microphone.status;
+    if (status.isDenied) status = await Permission.microphone.request();
+    if (status.isPermanentlyDenied) openAppSettings();
+
+    if (status.isGranted) {
+      vm.toggleListening(); 
+    } else {
+      showError();
+    }
+  }
+
 }
