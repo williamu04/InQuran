@@ -54,8 +54,13 @@ class _SplashScreenState extends State<SplashScreen>
   void _fadeOutAndNavigate() async {
     await _animationController.reverse();
     final isFirst = await GlobalConfig().isFirstLaunch();
+    final isDisabilityMode = GlobalConfig().isDisabilityMode;
     if (!mounted) return;
-    context.go(isFirst ? AppRoutes.intro.path : AppRoutes.home.path);
+    if (!isFirst) {
+      context.go(isDisabilityMode ? AppRoutes.homeDisability.path : AppRoutes.home.path);
+    } else {
+      context.go(AppRoutes.intro.path);
+    }
   }
 
   @override

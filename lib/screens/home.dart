@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:provider/provider.dart';
 import '../components/rounded_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -11,15 +9,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDisability = context.watch<GlobalConfig>().isDisabilityMode;
-
-    if (isDisability) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go(AppRoutes.homeDisability.path);
-      });
-      return const SizedBox.shrink();
-    }
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 115),
       child: SizedBox(
