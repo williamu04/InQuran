@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
+import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/viewmodel/stt_viewmodel.dart';
@@ -16,6 +17,10 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
+
     return Consumer<SttViewModel>(
       builder: (context, vm, _) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -29,72 +34,63 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
                 },
               ).toString(),
             );
-            vm.stopListening(); 
+            vm.stopListening();
           }
         });
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 115),
-          child: SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
+        return SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _title(height),
+              SizedBox(height: height * 0.055),
+              MicButton(size: height * 0.3),
+              SizedBox(height: height * 0.035),
+              Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 15),
-                  _title(),
-                  const SizedBox(height: 60),
-
-                  MicButton(size: 200),
-
-                  const SizedBox(height: 60),
-
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      TranscriptionText(),
-                      const SizedBox(height: 8),
-                      _helpingText(),
-                    ],
-                  )
+                  TranscriptionText(),
+                  SizedBox(height: height * 0.008),
+                  _helpingText(height),
                 ],
               ),
-            ),
+              SizedBox(height: height * 0.03),
+              normalButton(context)
+            ],
           ),
         );
       },
     );
   }
 
-
-  Widget _helpingText() {
+  Widget _helpingText(double height) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 250),
-      child: const Text(
+      constraints: BoxConstraints(maxWidth: height * 0.25),
+      child: Text(
         "Help those who are visually impaired to press the button",
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: Color(0xFF7C8BA0),
-          fontSize: 12,
+          color: const Color(0xFF7C8BA0),
+          fontSize: height * 0.013,
           fontFamily: "Plus Jakarta",
         ),
-      )
+      ),
     );
   }
 
-  Widget _title() {
+  Widget _title(double height) {
     return Column(
       children: [
         Text(
           "Voice",
           style: TextStyle(
             fontFamily: "Plus Jakarta",
-            fontSize: 32,
+            fontSize: height * 0.035,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF672CBC),
+            color: const Color(0xFF672CBC),
             height: 1.0,
           ),
         ),
@@ -102,9 +98,9 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
           "Command",
           style: TextStyle(
             fontFamily: "Plus Jakarta",
-            fontSize: 32,
+            fontSize: height * 0.035,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF672CBC),
+            color: const Color(0xFF672CBC),
             height: 1.0,
           ),
         ),
@@ -112,8 +108,8 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
           "Mode",
           style: TextStyle(
             fontFamily: "Plus Jakarta",
-            fontSize: 32,
-            color: Color(0xFF672CBC),
+            fontSize: height * 0.035,
+            color: const Color(0xFF672CBC),
           ),
         ),
       ],
