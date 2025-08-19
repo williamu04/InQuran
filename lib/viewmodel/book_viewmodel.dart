@@ -1,7 +1,4 @@
-import 'dart:math' as Math;
-
 import 'package:flutter/material.dart';
-import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 enum SurahViewMode { surah, juz }

@@ -19,7 +19,6 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
-    final width = size.width;
 
     return Consumer<SttViewModel>(
       builder: (context, vm, _) {
