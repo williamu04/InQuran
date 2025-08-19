@@ -18,7 +18,11 @@ Widget normalButton(
         onTap: () async {
           await GlobalConfig().setDisabilityMode(false);
           if (!context.mounted) return;
-          context.go(AppRoutes.home.path);
+          String currentPath = GoRouterState.of(context).uri.toString();
+
+          if (currentPath == AppRoutes.homeDisability.path) {
+            context.go(AppRoutes.home.path);
+          } 
         },
         child: Container(
           height: size,
