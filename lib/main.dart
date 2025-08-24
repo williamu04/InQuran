@@ -5,10 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/services/stt_service.dart';
-import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
-import 'package:mtqmnuns/viewmodel/stt_viewmodel.dart';
+import 'package:mtqmnuns/services/stt.dart';
+import 'package:mtqmnuns/viewmodel/stt.dart';
+import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 
 main() async {
@@ -21,8 +22,10 @@ main() async {
       providers: [
         ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
 
+
+
         // viewmodel list here
-        ChangeNotifierProvider(create: (_) => BookViewModel()),
+        ChangeNotifierProvider(create: (_) => SurahViewModel()),
         ChangeNotifierProvider(create: (_) => SttViewModel(SttService())),
       ],
       child: const MyApp(),

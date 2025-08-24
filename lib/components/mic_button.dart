@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/mic_permission.dart';
-import 'package:mtqmnuns/viewmodel/stt_viewmodel.dart';
+import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 

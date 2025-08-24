@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/services/stt_service.dart';
+import 'package:mtqmnuns/services/stt.dart';
 
 class SttViewModel extends ChangeNotifier {
   final SttService sttService;

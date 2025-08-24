@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
+import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 
 Widget searchBox(BuildContext context) {
-  final viewModel = Provider.of<BookViewModel>(context, listen: false);
+  final viewModel = Provider.of<SurahViewModel>(context, listen: false);
 
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 16),
@@ -15,7 +15,7 @@ Widget searchBox(BuildContext context) {
       children: [
         Expanded(
           child: TextField(
-            onChanged: (value) => viewModel.setSearchQuery(value),
+            onChanged: (value) => viewModel.updateSearchQuery(value),
             decoration: InputDecoration(
               hintText: "Search by Surah, Juz, or Verse",
               hintStyle: TextStyle(

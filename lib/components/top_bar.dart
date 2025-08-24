@@ -25,7 +25,7 @@ Widget topBar(BuildContext context, GoRouterState state) {
   }
 
   final List<String> centerTitle = [
-            AppRoutes.book.path, 
+            AppRoutes.surahList.path, 
             AppRoutes.search.path, 
             AppRoutes.duas.path, 
             AppRoutes.profile.path,

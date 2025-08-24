@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/screens/Home_disability.dart';
-import 'package:mtqmnuns/screens/book.dart';
+import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
 import 'package:mtqmnuns/screens/favorites.dart';
@@ -15,7 +15,7 @@ import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/surah.dart';
-import 'package:mtqmnuns/screens/splash_screen.dart';
+import 'package:mtqmnuns/screens/splash.dart';
 import 'package:mtqmnuns/screens/times.dart';
 
 
@@ -80,10 +80,10 @@ class AppRoutes {
     icon: LucideIcons.house,
   );
 
-  static final book = AppRoute(
+  static final surahList = AppRoute(
     title: 'The Holy Quran',
-    path: '/book',
-    pageBuilder: (context, state) => NoTransitionPage(child: BookScreen()),
+    path: '/surah/list',
+    pageBuilder: (context, state) => NoTransitionPage(child: SurahListScreen()),
     icon: LucideIcons.bookOpen,
     isHasPurpleBanner: false,
     isHasTopBar: true,
@@ -184,7 +184,7 @@ class AppRoutes {
   );
 
   static final List<AppRoute> homeMenu = [
-    book,
+    surahList,
     duas,
     prayer,
     qibla,
@@ -194,7 +194,7 @@ class AppRoutes {
   ];
 
   static final List<AppRoute> bottomNav = [
-    book,
+    surahList,
     search,
     home,
     duas,
@@ -202,7 +202,7 @@ class AppRoutes {
   ];
 
   static final List<AppRoute> all = [
-    book,
+    surahList,
     search,
     home,
     duas,
