@@ -5,11 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
-import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
 
 main() async {
@@ -25,7 +24,7 @@ main() async {
 
 
         // viewmodel list here
-        ChangeNotifierProvider(create: (_) => SurahViewModel()),
+        ChangeNotifierProvider(create: (_) => SurahListViewModel()),
         ChangeNotifierProvider(create: (_) => SttViewModel(SttService())),
       ],
       child: const MyApp(),

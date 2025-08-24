@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:mtqmnuns/models/juz.dart';
+import 'package:mtqmnuns/models/surah.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 
-class SurahViewModel extends ChangeNotifier {
+class SurahListViewModel extends ChangeNotifier {
   final AppDatabase _database = AppDatabase();
   
   // Search functionality
@@ -16,25 +18,20 @@ class SurahViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   // Data storage
-  List<SurahData> _allSurahs = [];
-  List<Map<String, dynamic>> _allJuzData = [];
-  Map<int, int> _surahVerseCounts = {};
+  List<SurahWithVerse> _allSurahsWithVerse = [];
+  List<JuzInfo> _allJuzData = [];
 
   // Filtered data (public getters)
-  List<SurahData> filteredSurahs = [];
-  List<Map<String, dynamic>> filteredJuz = [];
+  List<SurahWithVerse> filteredSurahs = [];
+  List<JuzInfo> filteredJuz = [];
 
   String _currentContentFilter = 'surah'; 
 
-  SurahViewModel() {
+  SurahListViewModel() {
     _initializeData();
   }
 
   // Public methods
-  int getVerseCount(int surahId) {
-    return _surahVerseCounts[surahId] ?? 0;
-  }
-
   void updateSearchQuery(String query) {
     _searchQuery = query;
     _applyFilters();
@@ -55,9 +52,8 @@ class SurahViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _loadSurahData();
-      await _loadJuzData();
-      await _calculateVerseCounts();
+      _allSurahsWithVerse = await _database.surahDao.getAllSurahsWithVerseCount();
+      _allJuzData = await _database.juzDao.getAllJuzInfo();
       _applyFilters();
     } catch (e) {
       debugPrint('Error loading Quran data: $e');
@@ -67,23 +63,6 @@ class SurahViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadSurahData() async {
-    _allSurahs = await _database.surahDao.getAllSurahs();
-  }
-
-  Future<void> _loadJuzData() async {
-    _allJuzData = await _database.juzDao.getJuzInfo(_database.surahDao);
-  }
-
-  Future<void> _calculateVerseCounts() async {
-    final verseCountFutures = _allSurahs.map((surah) async {
-      final ayahs = await _database.ayahDao.getAyahsBySurahId(surah.id);
-      return MapEntry(surah.id, ayahs.length);
-    });
-
-    final verseCounts = await Future.wait(verseCountFutures);
-    _surahVerseCounts = Map.fromEntries(verseCounts);
-  }
 
   void _applyFilters() {
     final query = _searchQuery.toLowerCase().trim();
@@ -98,7 +77,7 @@ class SurahViewModel extends ChangeNotifier {
   }
 
   void _resetToAllData() {
-    filteredSurahs = List.from(_allSurahs);
+    filteredSurahs = List.from(_allSurahsWithVerse);
     filteredJuz = List.from(_allJuzData);
   }
 
@@ -111,8 +90,8 @@ class SurahViewModel extends ChangeNotifier {
   }
 
   void _filterSurahs(String query) {
-    filteredSurahs = _allSurahs.where((surah) {
-      return _surahMatchesQuery(surah, query);
+    filteredSurahs = _allSurahsWithVerse.where((surahVerse) {
+      return _surahMatchesQuery(surahVerse.surah, query);
     }).toList();
   }
 
@@ -129,17 +108,14 @@ class SurahViewModel extends ChangeNotifier {
     }).toList();
   }
 
-  bool _juzMatchesQuery(Map<String, dynamic> juz, String query) {
-    final juzNumber = juz['juz'].toString();
-    final juzLabel = 'juz $juzNumber';
+  bool _juzMatchesQuery(JuzInfo juz, String query) {
+    final juzLabel = 'juz ${juz.juzNumber}';
     
-    final startSurah = juz['startSurah'];
-    final endSurah = juz['endSurah'];
     
-    return juzNumber.contains(query) ||
+    return juz.juzNumber.toString().contains(query) ||
            juzLabel.contains(query) ||
-           _surahDataMatchesQuery(startSurah, query) ||
-           _surahDataMatchesQuery(endSurah, query);
+           _surahDataMatchesQuery(juz.startSurah, query) ||
+           _surahDataMatchesQuery(juz.endSurah, query);
   }
 
   bool _surahDataMatchesQuery(dynamic surahData, String query) {

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:mtqmnuns/data/entity/ayah.dart';
-import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart'; 
+import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/models/juz.dart'; 
 
 part 'juz_dao.g.dart';
 
@@ -9,47 +9,38 @@ part 'juz_dao.g.dart';
 class JuzDao extends DatabaseAccessor<AppDatabase> with _$JuzDaoMixin {
   JuzDao(super.db);
 
-  Future<List<Map<String, AyahData>>> getJuzBoundaries() async {
-    final result = <Map<String, AyahData>>[];
+  Future<List<JuzInfo>> getAllJuzInfo() async {
+    final result = <JuzInfo>[];
+    
+    for (int juzNumber = 1; juzNumber <= 30; juzNumber++) {
+      final firstAyahQuery = select(ayah).join([
+        innerJoin(surah, surah.id.equalsExp(ayah.surahId))
+      ])
+        ..where(ayah.juz.equals(juzNumber))
+        ..orderBy([OrderingTerm.asc(ayah.id)])
+        ..limit(1);
 
-    for (int i = 1; i <= 30; i++) {
-      // Get all ayahs for the current juz, ordered by id
-      final ayahs = await (select(ayah)
-            ..where((tbl) => tbl.juz.equals(i))
-            ..orderBy([(tbl) => OrderingTerm(expression: tbl.id)]))
-          .get();
+      final lastAyahQuery = select(ayah).join([
+        innerJoin(surah, surah.id.equalsExp(ayah.surahId))
+      ])
+        ..where(ayah.juz.equals(juzNumber))
+        ..orderBy([OrderingTerm.desc(ayah.id)])
+        ..limit(1);
 
-      if (ayahs.isEmpty) continue;
+      final firstResult = await firstAyahQuery.getSingleOrNull();
+      final lastResult = await lastAyahQuery.getSingleOrNull();
 
-      // First and last ayahs for the juz
-      final firstAyah = ayahs.first;
-      final lastAyah = ayahs.last;
+      if (firstResult == null || lastResult == null) continue;
 
-      result.add({'start': firstAyah, 'end': lastAyah});
-    }
+      final juzInfo = JuzInfo(
+        juzNumber: juzNumber,
+        startAyah: firstResult.readTable(ayah),
+        startSurah: firstResult.readTable(surah),
+        endAyah: lastResult.readTable(ayah),
+        endSurah: lastResult.readTable(surah),
+      );
 
-    return result;
-  }
-
-
-  Future<List<Map<String, dynamic>>> getJuzInfo(SurahDao surahDao) async {
-    final boundaries = await getJuzBoundaries();
-    final result = <Map<String, dynamic>>[];
-
-    for (int i = 0; i < boundaries.length; i++) {
-      final start = boundaries[i]['start']!;
-      final end = boundaries[i]['end']!;
-
-      final startSurah = await surahDao.getSurahById(start.surahId);
-      final endSurah = await surahDao.getSurahById(end.surahId);
-
-      result.add({
-        'juz': i + 1,
-        'startAyah': start,
-        'startSurah': startSurah,
-        'endAyah': end,
-        'endSurah': endSurah,
-      });
+      result.add(juzInfo);
     }
 
     return result;

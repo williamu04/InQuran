@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/search_box.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/models/juz.dart';
+import 'package:mtqmnuns/models/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
 
 enum SurahContentType { surah, juz }
@@ -42,7 +44,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<SurahViewModel>();
+    final viewModel = context.read<SurahListViewModel>();
 
     return Column(
       children: [
@@ -59,8 +61,8 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  Widget _buildTabNavigation(SurahViewModel viewModel) {
-    return Consumer<SurahViewModel>(
+  Widget _buildTabNavigation(SurahListViewModel viewModel) {
+    return Consumer<SurahListViewModel>(
       builder: (context, viewModel, child) {
         return Row(
           children: [
@@ -116,7 +118,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  void _switchTab(SurahContentType contentType, SurahViewModel viewModel) {
+  void _switchTab(SurahContentType contentType, SurahListViewModel viewModel) {
     setState(() {
       _activeTabType = contentType;
     });
@@ -124,10 +126,11 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
   }
 
   Widget _buildTabContent() {
-    return Consumer<SurahViewModel>(
+    return Consumer<SurahListViewModel>(
       builder: (context, viewModel, child) {
         if (viewModel.isLoading) {
-          return const Center(
+          return const Padding(
+          padding: EdgeInsets.only(top: 20),
             child: CircularProgressIndicator(
               color: Colors.purple,
             ),
@@ -142,12 +145,15 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
   }
 
   Widget _buildSurahList() {
-    return Consumer<SurahViewModel>(
+    return Consumer<SurahListViewModel>(
       builder: (context, viewModel, _) {
         final surahList = viewModel.filteredSurahs;
 
         if (surahList.isEmpty) {
-          return const Center(child: Text("No Surah data available"));
+          return const Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text("No Surah data available")
+          );
         }
 
         return ListView.builder(
@@ -164,23 +170,21 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  Widget _buildSurahListItem(SurahData surah, SurahViewModel viewModel) {
-    final verseCount = viewModel.getVerseCount(surah.id);
-
+  Widget _buildSurahListItem(SurahWithVerse surahVerse, SurahListViewModel viewModel) {
     return Column(
       children: [
         InkWell(
-          onTap: () => _navigateToSurah(surah),
+          onTap: () => _navigateToSurah(surahVerse.surah),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Row(
               children: [
-                _buildSurahNumberIcon(surah.id),
+                _buildSurahNumberIcon(surahVerse.surah.id),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildSurahInfo(surah, verseCount),
+                  child: _buildSurahInfo(surahVerse.surah, surahVerse.verse),
                 ),
-                _buildArabicName(surah.name),
+                _buildArabicName(surahVerse.surah.name),
               ],
             ),
           ),
@@ -283,12 +287,15 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
   }
 
   Widget _buildJuzList() {
-    return Consumer<SurahViewModel>(
+    return Consumer<SurahListViewModel>(
       builder: (context, viewModel, _) {
         final juzList = viewModel.filteredJuz;
 
         if (juzList.isEmpty) {
-          return const Center(child: Text("No Juz data available"));
+          return const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Text("No Juz data available")
+            );
         }
 
         return ListView.builder(
@@ -305,37 +312,33 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  Widget _buildJuzListItem(Map<String, dynamic> juz) {
-    final startSurah = juz['startSurah'];
-    final endSurah = juz['endSurah'];
-    final startAyah = juz['startAyah'];
-    final endAyah = juz['endAyah'];
-    final isSameSurah = startSurah?.nameLatin == endSurah?.nameLatin;
+Widget _buildJuzListItem(JuzInfo juzInfo) {
+  final isSameSurah = juzInfo.startSurah.nameLatin == juzInfo.endSurah.nameLatin;
 
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+  return Card(
+    elevation: 0,
+    margin: const EdgeInsets.symmetric(vertical: 8.0),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8.0),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildJuzHeader(juzInfo),
+          const SizedBox(height: 16.0),
+          if (isSameSurah)
+            _buildSameSurahRange(juzInfo)
+          else
+            _buildMultipleSurahRange(juzInfo),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildJuzHeader(juz),
-            const SizedBox(height: 16.0),
-            if (isSameSurah)
-              _buildSameSurahRange(startSurah, startAyah, endAyah)
-            else
-              _buildMultipleSurahRange(startSurah, endSurah, startAyah, endAyah),
-          ],
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildJuzHeader(Map<String, dynamic> juz) {
+  Widget _buildJuzHeader(JuzInfo juzInfo) {
     return Row(
       children: [
         SizedBox(
@@ -351,7 +354,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
                 fit: BoxFit.cover,
               ),
               Text(
-                '${juz['juz']}',
+                '${juzInfo.juzNumber}',
                 style: const TextStyle(
                   color: Color(0xFF3B1D77),
                   fontSize: 12.0,
@@ -363,7 +366,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
         ),
         const SizedBox(width: 16.0),
         Text(
-          'Juz ${juz['juz']}',
+          'Juz ${juzInfo.juzNumber}',
           style: const TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -374,21 +377,21 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  Widget _buildSameSurahRange(dynamic startSurah, dynamic startAyah, dynamic endAyah) {
+  Widget _buildSameSurahRange(JuzInfo juzInfo) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${startSurah?.nameLatin}',
+              juzInfo.startSurah.nameLatin,
               style: TextStyle(
                 fontSize: 14.0,
                 color: Colors.grey.shade600,
               ),
             ),
             Text(
-              'Verse ${startAyah?.ayahNumber} - ${endAyah?.ayahNumber}',
+              'Verse ${juzInfo.startAyah.ayahNumber} - ${juzInfo.endAyah.ayahNumber}',
               style: const TextStyle(
                 fontSize: 12.0,
                 color: Color(0xFF672CBC),
@@ -402,21 +405,21 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  Widget _buildMultipleSurahRange(dynamic startSurah, dynamic endSurah, dynamic startAyah, dynamic endAyah) {
+  Widget _buildMultipleSurahRange(JuzInfo juzInfo) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${startSurah?.nameLatin}',
+              juzInfo.startSurah.nameLatin,
               style: TextStyle(
                 fontSize: 14.0,
                 color: Colors.grey.shade600,
               ),
             ),
             Text(
-              'Verse ${startAyah?.ayahNumber} - ${startSurah?.totalAyah}',
+              'Verse ${juzInfo.startAyah.ayahNumber} - ${juzInfo.startSurah.totalAyah}',
               style: const TextStyle(
                 fontSize: 12.0,
                 color: Color(0xFF672CBC),
@@ -429,14 +432,14 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${endSurah?.nameLatin}',
+              juzInfo.endSurah.nameLatin,
               style: TextStyle(
                 fontSize: 14.0,
                 color: Colors.grey.shade600,
               ),
             ),
             Text(
-              'Verse 1 - ${endAyah?.ayahNumber}',
+              'Verse 1 - ${juzInfo.endAyah.ayahNumber}',
               style: const TextStyle(
                 fontSize: 12.0,
                 color: Color(0xFF672CBC),
