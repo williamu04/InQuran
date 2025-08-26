@@ -5,8 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
+import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
+import 'package:mtqmnuns/services/surah_filter.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
@@ -15,17 +20,31 @@ main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final globalConfig = GlobalConfig();
   await globalConfig.initialize();
+  final db = AppDatabase();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
 
+        // db dao list here
+        Provider(create: (_) => db.surahDao),
+        Provider(create: (_) => db.juzDao),
 
+        // service list here
+        Provider(create: (_) => SttService()),
+        Provider(create: (_) => SurahFilterService()),
+
+        // repository list here
+        Provider(create: (context) => SurahRepository(context.read<SurahDao>(), context.read<JuzDao>())),
 
         // viewmodel list here
-        ChangeNotifierProvider(create: (_) => SurahListViewModel()),
-        ChangeNotifierProvider(create: (_) => SttViewModel(SttService())),
+        ChangeNotifierProvider(create:(context) =>
+             SurahListViewModel(context.read<SurahRepository>(), context.read<SurahFilterService>())
+        ),
+        ChangeNotifierProvider(create: (context) =>
+             SttViewModel(context.read<SttService>(), context.read<SurahRepository>())
+        ),
       ],
       child: const MyApp(),
     ),

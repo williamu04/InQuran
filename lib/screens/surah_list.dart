@@ -170,7 +170,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  Widget _buildSurahListItem(SurahWithVerse surahVerse, SurahListViewModel viewModel) {
+  Widget _buildSurahListItem(SurahWithVerseCount surahVerse, SurahListViewModel viewModel) {
     return Column(
       children: [
         InkWell(
@@ -182,7 +182,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
                 _buildSurahNumberIcon(surahVerse.surah.id),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildSurahInfo(surahVerse.surah, surahVerse.verse),
+                  child: _buildSurahInfo(surahVerse.surah, surahVerse.verseCount),
                 ),
                 _buildArabicName(surahVerse.surah.name),
               ],

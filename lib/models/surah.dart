@@ -7,9 +7,9 @@ class SurahWithAyahs {
   SurahWithAyahs(this.surah, this.ayahs);
 }
 
-class SurahWithVerse {
+class SurahWithVerseCount {
   final SurahData surah;
-  final int verse;
+  final int verseCount;
 
-  SurahWithVerse(this.surah, this.verse);
+  SurahWithVerseCount(this.surah, this.verseCount);
 }

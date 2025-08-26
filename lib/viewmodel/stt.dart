@@ -2,30 +2,31 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/services/stt.dart';
 
 class SttViewModel extends ChangeNotifier {
-  final SttService sttService;
-  final AppDatabase _db = AppDatabase(); 
+  final SttService _sttService;
+  final SurahRepository _surahRepo;
 
   String transcription = "";
   bool isListening = false;
   bool isProcessing = false;
   SurahData? foundSurah;
 
-  SttViewModel(this.sttService) {
-    sttService.transcriptionStream.listen(_onTranscription);
-    sttService.errorStream.listen(_onError);
+  SttViewModel(this._sttService, this._surahRepo) {
+    _sttService.transcriptionStream.listen(_onTranscription);
+    _sttService.errorStream.listen(_onError);
   }
 
   Future<void> startListening() async {
     isListening = true;
-    await sttService.startListening();
+    await _sttService.startListening();
     notifyListeners();
   }
 
   Future<void> stopListening() async {
-    await sttService.stopListening();
+    await _sttService.stopListening();
     _delayTimer?.cancel();
     _delayTimer = null;
 
@@ -34,7 +35,7 @@ class SttViewModel extends ChangeNotifier {
     transcription = "";
     foundSurah = null;
 
-    await sttService.stopListening(); 
+    await _sttService.stopListening(); 
     notifyListeners();
   }
 
@@ -53,12 +54,12 @@ class SttViewModel extends ChangeNotifier {
     if (!isProcessing) {
       isProcessing = true;
 
-      final surah = await _db.surahDao.fuzzyFindSurahFromText(text);
+      final surah = await _surahRepo.fuzzyFindSurahFromText(text);
       foundSurah = surah;
       isProcessing = false;
 
       if (surah != null) {
-        await sttService.stopListening();
+        await _sttService.stopListening();
       } else {
         _retryListening();
       }
@@ -80,7 +81,7 @@ class SttViewModel extends ChangeNotifier {
       transcription = 'Coba Lagi';
       notifyListeners();
       Timer(Duration(milliseconds: 500), () {
-        sttService.startListening();
+        _sttService.startListening();
       });
     });
   }

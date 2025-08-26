@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/models/surah.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SurahScreen extends StatelessWidget {
@@ -13,31 +14,27 @@ class SurahScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final surahId = int.tryParse(state.uri.queryParameters['id'] ?? '');
 
-    Future<SurahData?> fetchSurahName(int id) async {
-      return AppDatabase().surahDao.getSurahById(id);
-    }
-
-    Future<List<AyahData>> fetchAyahs(int surahId) async {
-      return AppDatabase().ayahDao.getAyahsBySurahId(surahId);
-    }
-
-    return FutureBuilder<List<dynamic>>(
-      future: Future.wait([
-        fetchSurahName(surahId ?? 1), // index 0
-        fetchAyahs(surahId ?? 1), // index 1
-      ]),
-
+    return FutureBuilder<SurahWithAyahs?>(
+      future: AppDatabase().surahDao.getSurahWithAyahs(surahId ?? 1),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data![1].isEmpty) {
-          return Center(child: Text('No Ayahs found for Surah $surahId'));
+        } 
+
+        if (!snapshot.hasData) {
+          return Center(child: Text('No data found for Surah $surahId'));
         }
 
-        final surah = snapshot.data![0] as SurahData;
-        final ayahList = snapshot.data![1] as List<AyahData>;
+        final data = snapshot.data;
+
+        final surah = data?.surah;
+        final ayahList = data?.ayahs;
+
+        if (surah == null || ayahList == null || ayahList.isEmpty) {
+          return Center(child: Text('No Ayahs found for Surah $surahId'));
+        }
 
         return ListView.builder(
           padding: const EdgeInsets.only(left: 24, right: 24, bottom: 64),
