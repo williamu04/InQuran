@@ -173,7 +173,7 @@ class AppRoutes {
 
   static final voice = AppRoute(
     title: 'Voice Command Mode',
-    path: '/voice',
+    path: '/disability',
     pageBuilder:
         (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
     icon: LucideIcons.audioLines,
@@ -210,7 +210,7 @@ class AppRoutes {
     prayer,
     qibla,
     favorites,
-    explore,
+    search,
     voice,
   ];
 
@@ -239,6 +239,7 @@ class AppRoutes {
     splashScreen,
     intro,
     homeDisability,
+    voice,
   ];
 
   static AppRoute getRouteByPath(String path) {
