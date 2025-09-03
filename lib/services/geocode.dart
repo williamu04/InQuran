@@ -36,7 +36,7 @@ class LocationHelper {
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         // bisa pilih detail apa yang mau ditampilkan
-        return "${place.subAdministrativeArea}, ${place.administrativeArea}";
+        return "${place.subAdministrativeArea}";
       } else {
         return "${lat.toStringAsFixed(4)}, ${lon.toStringAsFixed(4)}";
       }

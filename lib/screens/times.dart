@@ -196,7 +196,7 @@ class PrayerCard extends StatelessWidget {
           title,
           style: const TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 18,
+            fontSize: 16,
             color: Color(0xffF5F9FE),
           ),
         ),
