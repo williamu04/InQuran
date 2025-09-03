@@ -39,7 +39,7 @@ class _DuasScreenState extends State<DuasScreen> {
           return Column(
             children: [
               RoundedCard(
-                child: const Text("Doa-doa Harian"), // replace with actual text
+                child: const Text(""), // replace with actual text
               ),
               Expanded(
                 child: ListView.builder(
@@ -52,20 +52,24 @@ class _DuasScreenState extends State<DuasScreen> {
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (_) => AlertDialog(
-                            title: Text(dua.title),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Arab:\n${dua.doaArab}', textAlign: TextAlign.right),
-                                const SizedBox(height: 8),
-                                Text('Latin:\n${dua.doaLatin}'),
-                                const SizedBox(height: 8),
-                                Text('Arti:\n${dua.doaIndo}'),
-                              ],
-                            ),
-                          ),
+                          builder:
+                              (_) => AlertDialog(
+                                title: Text(dua.title),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Arab:\n${dua.doaArab}',
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text('Latin:\n${dua.doaLatin}'),
+                                    const SizedBox(height: 8),
+                                    Text('Arti:\n${dua.doaIndo}'),
+                                  ],
+                                ),
+                              ),
                         );
                       },
                     );

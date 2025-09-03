@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/screens/Home_disability.dart';
+import 'package:mtqmnuns/screens/explore.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
@@ -17,7 +18,6 @@ import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/surah.dart';
 import 'package:mtqmnuns/screens/splash.dart';
 import 'package:mtqmnuns/screens/times.dart';
-
 
 class AppRoutes {
   static final signUp = AppRoute(
@@ -60,7 +60,6 @@ class AppRoutes {
     isHasBottomBar: false,
   );
 
-
   static final home = AppRoute(
     title: 'QuranApp',
     path: '/',
@@ -76,7 +75,8 @@ class AppRoutes {
     isHasPurpleBanner: false,
     isHasTopBar: true,
     isHasBottomBar: false,
-    pageBuilder: (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
+    pageBuilder:
+        (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
     icon: LucideIcons.house,
   );
 
@@ -161,6 +161,27 @@ class AppRoutes {
     isHasBottomBar: true,
   );
 
+  static final explore = AppRoute(
+    title: 'Explore',
+    path: '/explore',
+    pageBuilder: (context, state) => NoTransitionPage(child: ExploreScreen()),
+    icon: LucideIcons.search,
+    isHasPurpleBanner: false,
+    isHasTopBar: true,
+    isHasBottomBar: true,
+  );
+
+  static final voice = AppRoute(
+    title: 'Voice Command Mode',
+    path: '/disability',
+    pageBuilder:
+        (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
+    icon: LucideIcons.audioLines,
+    isHasPurpleBanner: false,
+    isHasTopBar: true,
+    isHasBottomBar: true,
+  );
+
   static final etc = AppRoute(
     title: 'Etc',
     path: '/etc',
@@ -190,8 +211,8 @@ class AppRoutes {
     prayer,
     qibla,
     favorites,
-    calendar,
-    etc,
+    search,
+    voice,
   ];
 
   static final List<AppRoute> bottomNav = [
@@ -218,9 +239,9 @@ class AppRoutes {
     surah,
     splashScreen,
     intro,
-    homeDisability
+    homeDisability,
+    voice,
   ];
-
 
   static AppRoute getRouteByPath(String path) {
     final cleanPath = Uri.parse(path).path;
