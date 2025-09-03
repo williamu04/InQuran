@@ -1,84 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:mtqmnuns/models/juz.dart';
-import 'package:mtqmnuns/models/surah.dart';
+import 'package:mtqmnuns/dto/juz.dart';
+import 'package:mtqmnuns/dto/surah.dart';
+import 'package:mtqmnuns/repositories/juz.dart';
 import 'package:mtqmnuns/repositories/surah.dart';
-import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
+import 'package:mtqmnuns/state/surah_list.dart';
 
 class SurahListViewModel extends ChangeNotifier {
   final SurahRepository _surahRepo;
+  final JuzRepository _juzRepo;
   final SurahFilterService _filterService;
+  String _query = '';
 
-  // Search state
-  String _searchQuery = '';
-  String get searchQuery => _searchQuery;
+  List<SurahInfoDto> _allSurahs = [];
+  List<JuzInfoDto> _allJuz = [];
 
-  // Loading state
-  bool _isLoading = true;
-  bool get isLoading => _isLoading;
+  SurahContentType _contentType = SurahContentType.surah;
+  SurahContentType get contentType => _contentType;
 
-  // Raw data
-  List<SurahWithVerseCount> _allSurahsWithVerse = [];
-  List<JuzInfo> _allJuzData = [];
+  SurahListState _state = SurahListLoading();
+  SurahListState get state => _state;
 
-  // Filtered data (exposed to UI)
-  List<SurahWithVerseCount> filteredSurahs = [];
-  List<JuzInfo> filteredJuz = [];
-
-  // Content filter (surah or juz)
-  String _currentContentFilter = 'surah'; 
-
-  SurahListViewModel(this._surahRepo, this._filterService) {
+  SurahListViewModel(
+    this._surahRepo,
+    this._filterService,
+    this._juzRepo,
+  ) {
     _initializeData();
   }
 
-  // Public API
-  void updateSearchQuery(String query) {
-    _searchQuery = query;
-    _applyFilters();
-  }
-
-  void setContentFilter(SurahContentType contentType) {
-    _currentContentFilter = 
-      contentType == SurahContentType.surah ? 'surah' : 'juz';
-    _applyFilters();
-  }
-
-  // Private methods
   Future<void> _initializeData() async {
-    _isLoading = true;
+    _state = SurahListLoading();
     notifyListeners();
 
     try {
-      _allSurahsWithVerse = await _surahRepo.getAllSurahsWithVerseCount();
-      _allJuzData = await _surahRepo.getAllJuzInfo();
-      _applyFilters();
-    } catch (e) {
-      debugPrint('Error loading Quran data: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  void _applyFilters() {
-    final query = _searchQuery.toLowerCase().trim();
-
-    if (query.isEmpty) {
-      filteredSurahs = List.from(_allSurahsWithVerse);
-      filteredJuz = List.from(_allJuzData);
-    } else {
-      if (_currentContentFilter == 'surah') {
-        filteredSurahs = _filterService.filterSurahs(_allSurahsWithVerse, query);
+      _allSurahs = await _surahRepo.getAllSurahs();
+      _allJuz = await _juzRepo.getAllJuz();
+      if (_contentType == SurahContentType.surah) {
+        _state = SurahListSuccessTypeSurah(surahs: _allSurahs);
       } else {
-        filteredJuz = _filterService.filterJuz(_allJuzData, query);
+        _state = SurahListSuccessTypeJuz(juz: _allJuz);
       }
+    } catch (e) {
+      _state = SurahListError('Error loading Quran data: $e');
     }
 
     notifyListeners();
   }
-}
 
+  void updateSearchQuery(String query) {
+    _query = query;
+    if (_contentType == SurahContentType.surah) {
+      if (_allSurahs.isEmpty) {
+        _state = SurahListError("somethign wrong when loading surah data");
+      }
+      final filteredSurahs = _filterService.filterSurahs(_allSurahs, query);
+
+      if (filteredSurahs.isEmpty) {
+        _state = SurahListSuccessEmpty();
+        notifyListeners();
+        return;
+      }
+      _state = SurahListSuccessTypeSurah(surahs: filteredSurahs);
+    } else {
+      if (_allJuz.isEmpty) {
+        _state = SurahListError("somethign wrong when loading juz data");
+      }
+      final filteredJuz = _filterService.filterJuz(_allJuz, query);
+
+      if (filteredJuz.isEmpty) {
+        _state = SurahListSuccessEmpty();
+        notifyListeners();
+        return;
+      }
+      _state = SurahListSuccessTypeJuz(juz: filteredJuz);
+    }
+    notifyListeners();
+  }
+
+  void setContentType(SurahContentType contentType) {
+    _contentType = contentType; 
+    updateSearchQuery(_query);
+  }
+}

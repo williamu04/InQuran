@@ -196,7 +196,8 @@ class AppRoutes {
     title: 'Surah Screen',
     path: '/surah',
     pageBuilder: (context, state) {
-      return NoTransitionPage(child: SurahScreen(state: state));
+      int? surahId = int.tryParse(state.uri.queryParameters['id'] ?? '');
+      return NoTransitionPage(child: SurahScreen(surahId: surahId));
     },
     icon: LucideIcons.book,
     isHasPurpleBanner: false,

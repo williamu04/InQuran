@@ -20,48 +20,29 @@ class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
     final size = MediaQuery.of(context).size;
     final height = size.height;
 
-    return Consumer<SttViewModel>(
-      builder: (context, vm, _) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (vm.foundSurah != null) {
-            context.push(
-              Uri(
-                path: AppRoutes.surah.path,
-                queryParameters: {
-                  'id': '${vm.foundSurah!.id}',
-                  'ayah': '1',
-                },
-              ).toString(),
-            );
-            vm.stopListening();
-          }
-        });
-
-        return SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Column(
+    return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _title(height),
+          SizedBox(height: height * 0.055),
+          MicButton(size: height * 0.3),
+          SizedBox(height: height * 0.035),
+          Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _title(height),
-              SizedBox(height: height * 0.055),
-              MicButton(size: height * 0.3),
-              SizedBox(height: height * 0.035),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TranscriptionText(),
-                  SizedBox(height: height * 0.008),
-                  _helpingText(height),
-                ],
-              ),
-              SizedBox(height: height * 0.03),
-              normalButton(context)
+              TranscriptionText(),
+              SizedBox(height: height * 0.008),
+              _helpingText(height),
             ],
           ),
-        );
-      },
+          SizedBox(height: height * 0.03),
+          normalButton(context),
+        ],
+      ),
     );
   }
 

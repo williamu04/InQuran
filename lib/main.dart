@@ -9,11 +9,13 @@ import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/providers/location.dart';
+import 'package:mtqmnuns/repositories/juz.dart';
 import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
+import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
 
@@ -59,10 +61,23 @@ main() async {
                 context.read<SttService>(),
                 context.read<SurahRepository>(),
               ),
+        Provider(create: (context) => SurahRepository(context.read<SurahDao>())),
+        Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
+
+        // viewmodel list here
+        ChangeNotifierProvider(create:(context) =>
+             SurahListViewModel(
+                context.read<SurahRepository>(), 
+                context.read<SurahFilterService>(), 
+                context.read<JuzRepository>()
+              )
         ),
         ChangeNotifierProvider(
           create: (_) => LocationProvider()..loadLocation(),
           child: const MyApp(),
+        ),
+        ChangeNotifierProvider(create: (context) =>
+             SurahDetailViewModel(context.read<SurahRepository>())
         ),
       ],
       child: const MyApp(),

@@ -2,19 +2,16 @@
 import 'dart:math';
 
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
-import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/models/juz.dart';
-import 'package:mtqmnuns/models/surah.dart';
+import 'package:mtqmnuns/dto/surah.dart';
 
 class SurahRepository {
   final SurahDao _surahDao;
-  final JuzDao _juzDao;
 
-  SurahRepository(this._surahDao, this._juzDao);
+  SurahRepository(this._surahDao);
 
-  Future<SurahData?> fuzzyFindSurahFromText(String input) async {
+  Future<SurahInfoDto> fuzzyFindSurahFromText(String input) async {
     await Future.delayed(const Duration(milliseconds: 300)); 
 
     final tokens = input.toLowerCase().split(RegExp(r'\s+'));
@@ -59,10 +56,43 @@ class SurahRepository {
       }
     }
 
-    return bestScore >= 70 ? bestMatch : null;
+    if (bestMatch != null && bestScore >= 70) {
+      return SurahInfoDto.fromEntity(bestMatch);
+    } else {
+      throw StateError("No match, Try Again");
+    }
   }
 
-  Future<List<SurahWithVerseCount>> getAllSurahsWithVerseCount() => _surahDao.getAllSurahsWithVerseCount();
 
-  Future<List<JuzInfo>> getAllJuzInfo() => _juzDao.getAllJuzInfo();
+  Future<SurahWithAyahDto> getSurahWithAyahs(int id) async {
+    final surahWithAyahData = await _surahDao.getSurahWithAyahs(id);
+    final surah = surahWithAyahData.surah;
+    final ayahs = surahWithAyahData.ayahs;
+
+    if (surah == null || ayahs.isEmpty) {
+      throw Exception("Surah or ayahs not found for id $id");
+    }
+
+    final ayahDtos = surahWithAyahData.ayahs.map((ayah) {
+      return AyahWithTranslation(
+        ayah.ayahNumber,
+        ayah.ayahText,
+        ayah.indoText,
+      );
+    }).toList();
+
+    return SurahWithAyahDto(
+      surah.id,
+      surah.name,
+      surah.nameLatin,
+      surah.nameIndo,
+      ayahDtos,
+    );
+  }
+
+
+  Future<List<SurahInfoDto>> getAllSurahs() async {
+    final entities = await _surahDao.getAllSurahs(); // returns List<SurahData>
+    return entities.map((e) => SurahInfoDto.fromEntity(e)).toList();
+  }
 }
