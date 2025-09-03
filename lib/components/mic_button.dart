@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/mic_permission.dart';
+import 'package:mtqmnuns/state/stt.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,16 @@ class MicButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SttViewModel>(
       builder: (context, vm, _) {
+        // Determine whether we are listening based on the state
+        final isListening = switch (vm.state) {
+          SttListening() => true,
+          SttProcessing() => true, // optional: you can treat processing as listening
+          SttIdle() => false,
+          SttSuccess() => false,
+          SttRetry() => false,
+          SttError() => false,
+        };
+
         return GestureDetector(
           onTap: () => handleMicPressed(context, vm),
           child: Container(
@@ -36,7 +47,7 @@ class MicButton extends StatelessWidget {
             ),
             child: Center(
               child: Icon(
-                vm.isListening ? LucideIcons.audioLines : LucideIcons.power,
+                isListening ? LucideIcons.audioLines : LucideIcons.power,
                 color: const Color(0xFF672CBC),
                 size: size * 0.675,
               ),
@@ -46,7 +57,6 @@ class MicButton extends StatelessWidget {
       },
     );
   }
-
 
   void handleMicPressed(BuildContext context, SttViewModel vm) async {
     void showError() => micPermissionErrorMessage(context);
@@ -61,5 +71,4 @@ class MicButton extends StatelessWidget {
       showError();
     }
   }
-
 }

@@ -8,7 +8,6 @@ class JuzBoundary {
     required this.start,
     required this.end,
   });
-
 }
 
 class JuzInfo {

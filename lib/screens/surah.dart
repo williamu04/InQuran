@@ -1,144 +1,142 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/models/surah.dart';
+import 'package:mtqmnuns/dto/surah.dart';
+import 'package:mtqmnuns/state/surah.dart';
+import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-class SurahScreen extends StatelessWidget {
-  const SurahScreen({super.key, required this.state});
-
-  final GoRouterState state;
+class SurahScreen extends StatefulWidget {
+  final int? surahId;
+  const SurahScreen({super.key, this.surahId});
 
   @override
+  State<SurahScreen> createState() => _SurahScreenState();
+}
+
+class _SurahScreenState extends State<SurahScreen> {
+  @override
   Widget build(BuildContext context) {
-    final surahId = int.tryParse(state.uri.queryParameters['id'] ?? '');
+    context.read<SurahDetailViewModel>().loadSurah(widget.surahId);
+    return Consumer<SurahDetailViewModel>(
+      builder: (context, vm, child) {
+        final state = vm.state;
 
-    return FutureBuilder<SurahWithAyahs?>(
-      future: AppDatabase().surahDao.getSurahWithAyahs(surahId ?? 1),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } 
+        switch (state) {
+          case SurahLoading():
+            return Center(child: CircularProgressIndicator());
+          case SurahError(:var message):
+            return Center(child: Text("Error: $message")); 
+          case SurahSuccess(:var surahWithAyahData):
+            return _buildSurah(surahWithAyahData);
+        }
+      },
+    );
+  }
 
-        if (!snapshot.hasData) {
-          return Center(child: Text('No data found for Surah $surahId'));
+  Widget _buildSurah(SurahWithAyahDto surahWithAyahs) {
+    final ayahList = surahWithAyahs.ayahs;
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 64),
+      itemCount: ayahList.length + 1, // +1 untuk header di atas
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: SurahHeaderCard(
+              name: surahWithAyahs.arabname,
+              nameLatin: surahWithAyahs.nameLatin,
+              nameIndo: surahWithAyahs.nameIndo,
+              showBasmallah: surahWithAyahs.number != 1 && surahWithAyahs.number != 9,
+            ),
+          );
         }
 
-        final data = snapshot.data;
+        final ayah = ayahList[index - 1]; // karena index 0 dipakai untuk header
 
-        final surah = data?.surah;
-        final ayahList = data?.ayahs;
-
-        if (surah == null || ayahList == null || ayahList.isEmpty) {
-          return Center(child: Text('No Ayahs found for Surah $surahId'));
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.only(left: 24, right: 24, bottom: 64),
-          itemCount: ayahList.length + 1, // +1 untuk header di atas
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: SurahHeaderCard(
-                  name: surah.name,
-                  nameLatin: surah.nameLatin,
-                  nameIndo: surah.nameIndo,
-                  showBasmallah: surah.id != 1 && surah.id != 9,
-                ),
-              );
-            }
-
-            final ayah =
-                ayahList[index - 1]; // karena index 0 dipakai untuk header
-
-            return Card(
-              elevation: 0,
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              child: Padding(
-                padding: const EdgeInsets.all(0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Ayah Header
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 0,
-                        horizontal: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF5F9FE),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: const Color(0xFF672CBC),
-                            radius: 16,
-                            child: Text(
-                              '${ayah.ayahNumber}',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(LucideIcons.play),
-                            iconSize: 20,
-                            color: const Color(0xFF672CBC),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: const Icon(LucideIcons.share),
-                            iconSize: 20,
-                            color: const Color(0xFF672CBC),
-                            onPressed: () {
-                              final text =
-                                  'Surah ${surah.nameLatin}, Ayat ${ayah.ayahNumber}:\n\n'
-                                  '${ayah.ayahText}\n\n${ayah.indoText}';
-                              SharePlus.instance.share(ShareParams(text: text));
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(LucideIcons.bookmark),
-                            iconSize: 20,
-                            color: const Color(0xFF672CBC),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        ayah.ayahText,
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF3B1D77),
-                          fontFamily: 'Arab Typesetting',
+        return Card(
+          elevation: 0,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.all(0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Ayah Header
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 0,
+                    horizontal: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F9FE),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: const Color(0xFF672CBC),
+                        radius: 16,
+                        child: Text(
+                          '${ayah.number}',
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      ayah.indoText,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF3B1D77),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(LucideIcons.play),
+                        iconSize: 20,
+                        color: const Color(0xFF672CBC),
+                        onPressed: () {},
                       ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Divider(color: Colors.grey.shade400, thickness: 0.8),
-                  ],
+                      IconButton(
+                        icon: const Icon(LucideIcons.share),
+                        iconSize: 20,
+                        color: const Color(0xFF672CBC),
+                        onPressed: () {
+                          final text =
+                              'Surah ${surahWithAyahs.nameLatin}, Ayat ${ayah.number}:\n\n'
+                              '${ayah.arabText}\n\n${ayah.translationText}';
+                          SharePlus.instance.share(ShareParams(text: text));
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(LucideIcons.bookmark),
+                        iconSize: 20,
+                        color: const Color(0xFF672CBC),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    ayah.arabText,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF3B1D77),
+                      fontFamily: 'Arab Typesetting',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  ayah.translationText,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF3B1D77),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Divider(color: Colors.grey.shade400, thickness: 0.8),
+              ],
+            ),
+          ),
         );
       },
     );

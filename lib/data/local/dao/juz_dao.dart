@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:mtqmnuns/data/entity/ayah.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/models/juz.dart'; 
+import 'package:mtqmnuns/data/aggregate/juz.dart'; 
 
 part 'juz_dao.g.dart';
 
@@ -9,10 +9,7 @@ part 'juz_dao.g.dart';
 class JuzDao extends DatabaseAccessor<AppDatabase> with _$JuzDaoMixin {
   JuzDao(super.db);
 
-  Future<List<JuzInfo>> getAllJuzInfo() async {
-    final result = <JuzInfo>[];
-    
-    for (int juzNumber = 1; juzNumber <= 30; juzNumber++) {
+  Future<JuzInfo?> getJuzInfo(int juzNumber) async {
       final firstAyahQuery = select(ayah).join([
         innerJoin(surah, surah.id.equalsExp(ayah.surahId))
       ])
@@ -30,9 +27,9 @@ class JuzDao extends DatabaseAccessor<AppDatabase> with _$JuzDaoMixin {
       final firstResult = await firstAyahQuery.getSingleOrNull();
       final lastResult = await lastAyahQuery.getSingleOrNull();
 
-      if (firstResult == null || lastResult == null) continue;
+      if (firstResult == null || lastResult == null) return null;
 
-      final juzInfo = JuzInfo(
+      return JuzInfo(
         juzNumber: juzNumber,
         startAyah: firstResult.readTable(ayah),
         startSurah: firstResult.readTable(surah),
@@ -40,9 +37,6 @@ class JuzDao extends DatabaseAccessor<AppDatabase> with _$JuzDaoMixin {
         endSurah: lastResult.readTable(surah),
       );
 
-      result.add(juzInfo);
     }
 
-    return result;
-  }
 }

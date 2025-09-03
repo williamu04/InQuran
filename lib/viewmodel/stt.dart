@@ -1,18 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/services/stt.dart';
+import 'package:mtqmnuns/state/stt.dart';
 
 class SttViewModel extends ChangeNotifier {
   final SttService _sttService;
   final SurahRepository _surahRepo;
 
-  String transcription = "";
-  bool isListening = false;
-  bool isProcessing = false;
-  SurahData? foundSurah;
+  SttState _state = SttIdle();
+  SttState get state => _state;
+
+  Timer? _delayTimer;
 
   SttViewModel(this._sttService, this._surahRepo) {
     _sttService.transcriptionStream.listen(_onTranscription);
@@ -20,7 +20,7 @@ class SttViewModel extends ChangeNotifier {
   }
 
   Future<void> startListening() async {
-    isListening = true;
+    _state = SttListening("");
     await _sttService.startListening();
     notifyListeners();
   }
@@ -29,18 +29,12 @@ class SttViewModel extends ChangeNotifier {
     await _sttService.stopListening();
     _delayTimer?.cancel();
     _delayTimer = null;
-
-    isProcessing = false;
-    isListening = false;
-    transcription = "";
-    foundSurah = null;
-
-    await _sttService.stopListening(); 
+    _state = SttIdle();
     notifyListeners();
   }
 
   Future<void> toggleListening() async {
-    if (isListening) {
+    if (_state is SttListening || _state is SttProcessing) {
       await stopListening();
     } else {
       await startListening();
@@ -48,40 +42,38 @@ class SttViewModel extends ChangeNotifier {
   }
 
   void _onTranscription(String text) async {
-    transcription = text;
+    if (_state is! SttListening) return;
+
+    _state = SttProcessing(text);
     notifyListeners();
 
-    if (!isProcessing) {
-      isProcessing = true;
-
-      final surah = await _surahRepo.fuzzyFindSurahFromText(text);
-      foundSurah = surah;
-      isProcessing = false;
-
-      if (surah != null) {
-        await _sttService.stopListening();
-      } else {
-        _retryListening();
-      }
-
-      notifyListeners();
+    final surah = await _surahRepo.fuzzyFindSurahFromText(text);
+    try {
+      await _sttService.stopListening();
+      _state = SttSuccess(surah);
+    } catch (e) {
+      _retryListening();
     }
+
+    notifyListeners();
   }
 
   void _onError(String error) {
+    _state = SttError(error);
+    notifyListeners();
     _retryListening();
   }
 
-  Timer? _delayTimer;
-  Future<void> _retryListening() async {
-    if (isProcessing) return;
-
+  void _retryListening() {
     _delayTimer?.cancel();
-    _delayTimer = Timer(Duration(seconds: 2), () {
-      transcription = 'Coba Lagi';
+    _delayTimer = Timer(const Duration(seconds: 2), () {
+      _state = SttRetry("Coba Lagi");
       notifyListeners();
-      Timer(Duration(milliseconds: 500), () {
+
+      Timer(const Duration(milliseconds: 500), () {
         _sttService.startListening();
+        _state = SttListening("");
+        notifyListeners();
       });
     });
   }
