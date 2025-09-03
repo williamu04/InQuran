@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mtqmnuns/models/prayer.dart';
+import 'package:mtqmnuns/providers/location.dart';
 import 'package:mtqmnuns/screens/login.dart';
 import 'package:mtqmnuns/services/geocode.dart'; // Change this line
 import 'package:mtqmnuns/services/prayer.dart';
+import 'package:provider/provider.dart';
 
 class PrayerTimeScreen extends StatefulWidget {
   const PrayerTimeScreen({super.key});
@@ -68,6 +70,17 @@ class _PrayerScreenState extends State<PrayerTimeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final locationProvider = context.watch<LocationProvider>();
+
+    if (locationProvider.loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (locationProvider.latitude == null ||
+        locationProvider.longitude == null) {
+      return const Scaffold(body: Center(child: Text("Lokasi tidak tersedia")));
+    }
+
     return Scaffold(
       // appBar: AppBar(title: const Text("Jadwal Sholat")),
       body:
@@ -81,27 +94,100 @@ class _PrayerScreenState extends State<PrayerTimeScreen> {
                   children: [
                     // Box lokasi
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      // padding: const EdgeInsets.all(12),
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        // color: Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: Color(0xff672CBC),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              currentLocation,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                          // "Current" button
+                          ElevatedButton.icon(
+                            // icon: const Icon(
+                            //   Icons.my_location,
+                            //   size: 18,
+                            //   color: Color(0xff672CBC),
+                            // ),
+                            label: const Text(
+                              "Current",
+                              style: TextStyle(color: Color(0xff7C8BA0)),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffF3F4F6),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              overflow: TextOverflow.ellipsis,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                            ),
+                            onPressed: () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              await context
+                                  .read<LocationProvider>()
+                                  .loadLocation();
+                              loadData();
+                            },
+                          ),
+                          const SizedBox(width: 12),
+                          // Location display as button
+                          Expanded(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: () {
+                                // TODO: Implement location search/adjust dialog
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Fitur pencarian lokasi belum diimplementasi",
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Color(0xff672CBC),
+                                    width: 0,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        locationProvider.placeName ??
+                                            "Lokasi tidak tersedia",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    // const Icon(
+                                    //   Icons.edit_location_alt,
+                                    //   size: 20,
+                                    // ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -113,11 +199,11 @@ class _PrayerScreenState extends State<PrayerTimeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Text(
-                          "TODAY",
+                          "Today",
                           style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff3B1D77),
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xff672CBC),
                             letterSpacing: 2,
                           ),
                         ),
@@ -125,9 +211,9 @@ class _PrayerScreenState extends State<PrayerTimeScreen> {
                         Text(
                           DateFormat('d MMMM yyyy').format(DateTime.now()),
                           style: const TextStyle(
-                            fontSize: 18,
-                            color: Color(0xff3B1D77),
-                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xff994EF8),
+                            fontWeight: FontWeight.w200,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -209,14 +295,14 @@ class PrayerCard extends StatelessWidget {
                 color: const Color(0xff3B1D77),
                 borderRadius: BorderRadius.circular(20),
               ),
-              width: 100,
+              width: 80,
               height: 40,
               alignment: Alignment.center,
 
               child: Text(
                 time,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: Colors.white,
                   // fontWeight: FontWeight.bold,
                 ),

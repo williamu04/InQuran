@@ -8,6 +8,7 @@ import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/providers/location.dart';
 import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
@@ -36,14 +37,32 @@ main() async {
         Provider(create: (_) => SurahFilterService()),
 
         // repository list here
-        Provider(create: (context) => SurahRepository(context.read<SurahDao>(), context.read<JuzDao>())),
+        Provider(
+          create:
+              (context) => SurahRepository(
+                context.read<SurahDao>(),
+                context.read<JuzDao>(),
+              ),
+        ),
 
         // viewmodel list here
-        ChangeNotifierProvider(create:(context) =>
-             SurahListViewModel(context.read<SurahRepository>(), context.read<SurahFilterService>())
+        ChangeNotifierProvider(
+          create:
+              (context) => SurahListViewModel(
+                context.read<SurahRepository>(),
+                context.read<SurahFilterService>(),
+              ),
         ),
-        ChangeNotifierProvider(create: (context) =>
-             SttViewModel(context.read<SttService>(), context.read<SurahRepository>())
+        ChangeNotifierProvider(
+          create:
+              (context) => SttViewModel(
+                context.read<SttService>(),
+                context.read<SurahRepository>(),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocationProvider()..loadLocation(),
+          child: const MyApp(),
         ),
       ],
       child: const MyApp(),
@@ -69,10 +88,13 @@ class _MyAppState extends State<MyApp> {
       mainShellBuilder: (context, state, child) {
         return MainScaffold(context: context, state: state, child: child);
       },
-      appRoutes: AppRoutes.all.map((route) => GoRoute(
-        path: route.path,
-        pageBuilder: route.pageBuilder,
-      )).toList(),
+      appRoutes:
+          AppRoutes.all
+              .map(
+                (route) =>
+                    GoRoute(path: route.path, pageBuilder: route.pageBuilder),
+              )
+              .toList(),
     );
 
     _router = config.buildRouter();
@@ -80,10 +102,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: _router,
-      theme: _buildAppTheme(),
-    );
+    return MaterialApp.router(routerConfig: _router, theme: _buildAppTheme());
   }
 
   ThemeData _buildAppTheme() {
