@@ -2,16 +2,16 @@ import 'package:mtqmnuns/dto/surah.dart';
 
 sealed class SttState {}
 
-class SttIdle extends SttState {}
-
-class SttListening extends SttState {
-  final String transcription;
-  SttListening(this.transcription);
+class SttIdle extends SttState {
+  bool isForceStop;
+  String message;
+  SttIdle([this.isForceStop = false, this.message = '']);
 }
 
-class SttProcessing extends SttState {
-  final String transcription;
-  SttProcessing(this.transcription);
+
+class SttListening extends SttState {
+  final Stream<String> transcriptionStream;
+  SttListening(this.transcriptionStream);
 }
 
 class SttSuccess extends SttState {
@@ -19,12 +19,9 @@ class SttSuccess extends SttState {
   SttSuccess(this.surah);
 }
 
-class SttRetry extends SttState {
-  final String message;
-  SttRetry(this.message);
-}
+class SttRetry extends SttState {}
 
-class SttError extends SttState {
-  final String message;
-  SttError(this.message);
+class SttProcessing extends SttState {
+  final String finalTranscription;
+  SttProcessing(this.finalTranscription);
 }

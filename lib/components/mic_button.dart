@@ -21,11 +21,10 @@ class MicButton extends StatelessWidget {
         // Determine whether we are listening based on the state
         final isListening = switch (vm.state) {
           SttListening() => true,
-          SttProcessing() => true, // optional: you can treat processing as listening
           SttIdle() => false,
           SttSuccess() => false,
-          SttRetry() => false,
-          SttError() => false,
+          SttRetry() => true,
+          SttProcessing() => true,
         };
 
         return GestureDetector(

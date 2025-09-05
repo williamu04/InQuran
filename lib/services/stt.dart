@@ -4,9 +4,11 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 class SttService {
   final stt.SpeechToText _speech = stt.SpeechToText();
   final _transcriptionController = StreamController<String>.broadcast();
+  final _finalResultController = StreamController<String>.broadcast(); 
   final _errorController = StreamController<String>.broadcast();
 
   Stream<String> get transcriptionStream => _transcriptionController.stream;
+  Stream<String> get finalResultStream => _finalResultController.stream; 
   Stream<String> get errorStream => _errorController.stream;
 
   bool _hasSpeech = false;
@@ -29,11 +31,14 @@ class SttService {
   Future<void> startListening({String locale = "id_ID"}) async {
     if (!_hasSpeech) await initialize();
     if (_hasSpeech && !_speech.isListening) {
-
       await _speech.listen(
         localeId: locale,
         onResult: (result) {
           _transcriptionController.add(result.recognizedWords);
+
+          if (result.finalResult) {
+            _finalResultController.add(result.recognizedWords);
+          }
         },
       );
     }
@@ -47,6 +52,7 @@ class SttService {
 
   void dispose() {
     _transcriptionController.close();
+    _finalResultController.close();
     _errorController.close();
     _speech.cancel();
   }

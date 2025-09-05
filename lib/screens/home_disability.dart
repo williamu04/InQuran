@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
-import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/viewmodel/stt.dart';
-import 'package:provider/provider.dart';
 
 class HomeDisabilityScreen extends StatefulWidget {
   @override

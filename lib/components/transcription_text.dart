@@ -5,6 +5,10 @@ import 'package:mtqmnuns/state/stt.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:provider/provider.dart';
 
+sealed class TextSource {}
+class StaticText extends TextSource { final String text; StaticText(this.text); }
+class StreamText extends TextSource { final Stream<String> stream; StreamText(this.stream); }
+
 class TranscriptionText extends StatelessWidget {
   const TranscriptionText({super.key});
 
@@ -16,17 +20,11 @@ class TranscriptionText extends StatelessWidget {
 
         switch (vm.state) {
           case SttIdle():
-            child = _buildText("Tap to Talk");
+            child = _buildText(StaticText("Tap to Talk"));
             break;
 
-          case SttListening(:var transcription):
-            child = _buildText(transcription);
-            break;
-
-          case SttProcessing():
-            child = const Center(
-              child: CircularProgressIndicator(),
-            );
+          case SttListening(:var transcriptionStream):
+            child = _buildText(StreamText(transcriptionStream));
             break;
 
           case SttSuccess(:var surah):
@@ -36,12 +34,12 @@ class TranscriptionText extends StatelessWidget {
             child = const SizedBox.shrink(); 
             break;
 
-          case SttRetry(:var message):
-            child = _buildText(message);
+          case SttRetry():
+            child = _buildText(StaticText("tidak terekognisi, Coba Lagi"));
             break;
 
-          case SttError(:var message):
-            child = _buildText(message);
+          case SttProcessing(: var finalTranscription):
+            child = _buildText(StaticText(finalTranscription));
             break;
         }
 
@@ -50,25 +48,38 @@ class TranscriptionText extends StatelessWidget {
     );
   }
 
-  Widget _buildText(String text) {
+  Widget _buildText(TextSource source) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SizedBox(
         height: 30,
-        child: AutoSizeText(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Color(0xFF672CBC),
-            fontSize: 24,
-            fontStyle: FontStyle.italic,
-            fontFamily: "Plus Jakarta",
-          ),
-          maxLines: 3,
-          minFontSize: 0,
-          overflow: TextOverflow.ellipsis,
-        ),
+        child: switch (source) {
+          StaticText(:final text) => _styledText(text),
+          StreamText(:final stream) => StreamBuilder<String>(
+              stream: stream,
+              builder: (context, snapshot) {
+                return _styledText(snapshot.data ?? "Listening...");
+              },
+            ),
+        },
       ),
     );
   }
+
+  Widget _styledText(String text) {
+    return AutoSizeText(
+      text,
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        color: Color(0xFF672CBC),
+        fontSize: 24,
+        fontStyle: FontStyle.italic,
+        fontFamily: "Plus Jakarta",
+      ),
+      maxLines: 3,
+      minFontSize: 0,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
 }

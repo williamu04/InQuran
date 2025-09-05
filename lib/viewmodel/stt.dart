@@ -15,13 +15,39 @@ class SttViewModel extends ChangeNotifier {
   Timer? _delayTimer;
 
   SttViewModel(this._sttService, this._surahRepo) {
-    _sttService.transcriptionStream.listen(_onTranscription);
-    _sttService.errorStream.listen(_onError);
+    _bindStreams();
+  }
+
+  void _bindStreams() {
+    _sttService.finalResultStream.listen(_onFinalTranscription);
+    _sttService.errorStream.listen((message) async {
+      if (message == 'error_network' || message =='error_network_timeout') {
+      }
+      if (_state is! SttIdle){
+        await startListening();
+      }
+    });
+  }
+
+  void _onFinalTranscription(String text) async {
+    _state = SttProcessing(text);
+    notifyListeners();
+
+    try {
+      final surah = await _surahRepo.fuzzyFindSurahFromText(text);
+      await _sttService.stopListening();
+      if (_state is SttProcessing) _state = SttSuccess(surah);
+    } catch (_) {
+      if (_state is SttProcessing) _retryListening();
+    }
+
+    notifyListeners();
   }
 
   Future<void> startListening() async {
-    _state = SttListening("");
+    if(_state is SttListening) return;
     await _sttService.startListening();
+    _state = SttListening(_sttService.transcriptionStream);
     notifyListeners();
   }
 
@@ -34,46 +60,24 @@ class SttViewModel extends ChangeNotifier {
   }
 
   Future<void> toggleListening() async {
-    if (_state is SttListening || _state is SttProcessing) {
-      await stopListening();
-    } else {
+    if (_state is SttIdle) {
       await startListening();
+    } else {
+      await stopListening();
     }
-  }
-
-  void _onTranscription(String text) async {
-    if (_state is! SttListening) return;
-
-    _state = SttProcessing(text);
-    notifyListeners();
-
-    final surah = await _surahRepo.fuzzyFindSurahFromText(text);
-    try {
-      await _sttService.stopListening();
-      _state = SttSuccess(surah);
-    } catch (e) {
-      _retryListening();
-    }
-
-    notifyListeners();
-  }
-
-  void _onError(String error) {
-    _state = SttError(error);
-    notifyListeners();
-    _retryListening();
   }
 
   void _retryListening() {
     _delayTimer?.cancel();
+    if (_state is SttIdle) return;
     _delayTimer = Timer(const Duration(seconds: 2), () {
-      _state = SttRetry("Coba Lagi");
+      if (_state is SttIdle) return;
+      _state = SttRetry();
       notifyListeners();
 
-      Timer(const Duration(milliseconds: 500), () {
-        _sttService.startListening();
-        _state = SttListening("");
-        notifyListeners();
+      Timer(const Duration(milliseconds: 500), () async {
+        if (_state is SttIdle) return;
+        await startListening();
       });
     });
   }

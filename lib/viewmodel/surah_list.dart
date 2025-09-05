@@ -82,6 +82,7 @@ class SurahListViewModel extends ChangeNotifier {
 
   void setContentType(SurahContentType contentType) {
     _contentType = contentType; 
+    notifyListeners();
     updateSearchQuery(_query);
   }
 }
