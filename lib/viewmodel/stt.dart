@@ -21,12 +21,21 @@ class SttViewModel extends ChangeNotifier {
   void _bindStreams() {
     _sttService.finalResultStream.listen(_onFinalTranscription);
     _sttService.errorStream.listen((message) async {
-      if (message == 'error_network' || message =='error_network_timeout') {
+      if (message.trim() == 'error_network' || message.trim() == 'error_network_timeout') {
+        debugPrint(message);
+        _state = SttNetworkError();
+        notifyListeners();
+        return;
       }
       if (_state is! SttIdle){
         await startListening();
       }
     });
+  }
+
+  void changeStateToIdle() {
+    _state = SttIdle();
+    notifyListeners();
   }
 
   void _onFinalTranscription(String text) async {
@@ -76,7 +85,7 @@ class SttViewModel extends ChangeNotifier {
       notifyListeners();
 
       Timer(const Duration(milliseconds: 500), () async {
-        if (_state is SttIdle) return;
+        if (_state is! SttRetry) return;
         await startListening();
       });
     });

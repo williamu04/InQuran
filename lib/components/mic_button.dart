@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/components/mic_permission.dart';
+import 'package:mtqmnuns/components/error_popup.dart';
 import 'package:mtqmnuns/state/stt.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -25,6 +25,7 @@ class MicButton extends StatelessWidget {
           SttSuccess() => false,
           SttRetry() => true,
           SttProcessing() => true,
+          SttNetworkError() => false,
         };
 
         return GestureDetector(
@@ -58,7 +59,7 @@ class MicButton extends StatelessWidget {
   }
 
   void handleMicPressed(BuildContext context, SttViewModel vm) async {
-    void showError() => micPermissionErrorMessage(context);
+    void showError() => errorPopup(context, 'microphone permission are needed');
 
     var status = await Permission.microphone.status;
     if (status.isDenied) status = await Permission.microphone.request();

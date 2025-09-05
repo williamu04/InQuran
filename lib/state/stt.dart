@@ -2,12 +2,9 @@ import 'package:mtqmnuns/dto/surah.dart';
 
 sealed class SttState {}
 
-class SttIdle extends SttState {
-  bool isForceStop;
-  String message;
-  SttIdle([this.isForceStop = false, this.message = '']);
-}
+class SttIdle extends SttState {}
 
+class SttNetworkError extends SttState {}
 
 class SttListening extends SttState {
   final Stream<String> transcriptionStream;

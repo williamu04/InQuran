@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/common/navigation.dart';
+import 'package:mtqmnuns/components/error_popup.dart';
 import 'package:mtqmnuns/state/stt.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:provider/provider.dart';
@@ -31,15 +32,24 @@ class TranscriptionText extends StatelessWidget {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               navigateToSurah(context, surah);
             });
-            child = const SizedBox.shrink(); 
+            child = _buildText(StaticText("Surah Found")); 
+            vm.changeStateToIdle();
             break;
 
           case SttRetry():
-            child = _buildText(StaticText("tidak terekognisi, Coba Lagi"));
+            child = _buildText(StaticText('Command Unrecognizeable'));
             break;
 
           case SttProcessing(: var finalTranscription):
             child = _buildText(StaticText(finalTranscription));
+            break;
+          case SttNetworkError():
+            child = _buildText(StaticText("Tap To Talk"));
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+                errorPopup(context, 'No Internet Connection, please connect to your interne to use this feature');
+                vm.changeStateToIdle();
+              });
+            vm.changeStateToIdle();
             break;
         }
 
