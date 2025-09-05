@@ -19,71 +19,60 @@ import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
 
-main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final globalConfig = GlobalConfig();
   await globalConfig.initialize();
+
   final db = AppDatabase();
 
   runApp(
     MultiProvider(
       providers: [
+        // Global config
         ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
 
-        // db dao list here
+        // DAOs
         Provider(create: (_) => db.surahDao),
         Provider(create: (_) => db.juzDao),
 
-        // service list here
-        Provider(create: (_) => SttService()),
-        Provider(create: (_) => SurahFilterService()),
-
-        // repository list here
-        Provider(
-          create:
-              (context) => SurahRepository(
-                context.read<SurahDao>(),
-                context.read<JuzDao>(),
-              ),
-        ),
-
-        // viewmodel list here
-        ChangeNotifierProvider(
-          create:
-              (context) => SurahListViewModel(
-                context.read<SurahRepository>(),
-                context.read<SurahFilterService>(),
-              ),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) => SttViewModel(
-                context.read<SttService>(),
-                context.read<SurahRepository>(),
-              ),
+        // Repositories
         Provider(create: (context) => SurahRepository(context.read<SurahDao>())),
         Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
 
-        // viewmodel list here
-        ChangeNotifierProvider(create:(context) =>
-             SurahListViewModel(
-                context.read<SurahRepository>(), 
-                context.read<SurahFilterService>(), 
-                context.read<JuzRepository>()
-              )
+        // Services
+        Provider(create: (_) => SttService()),
+        Provider(create: (_) => SurahFilterService()),
+
+        // ViewModels
+        ChangeNotifierProvider(
+          create: (context) => SurahListViewModel(
+            context.read<SurahRepository>(),
+            context.read<SurahFilterService>(),
+            context.read<JuzRepository>(), // optional if needed
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SttViewModel(
+            context.read<SttService>(),
+            context.read<SurahRepository>(),
+          ),
         ),
         ChangeNotifierProvider(
           create: (_) => LocationProvider()..loadLocation(),
-          child: const MyApp(),
         ),
-        ChangeNotifierProvider(create: (context) =>
-             SurahDetailViewModel(context.read<SurahRepository>())
+        ChangeNotifierProvider(
+          create: (context) => SurahDetailViewModel(
+            context.read<SurahRepository>(),
+          ),
         ),
       ],
       child: const MyApp(),
     ),
   );
 }
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
