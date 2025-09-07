@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
+import 'package:mtqmnuns/components/drawer.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/config/drawer.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/go_router.dart';
 import 'package:mtqmnuns/config/route.dart';
@@ -14,6 +16,7 @@ import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
+import 'package:mtqmnuns/viewmodel/drawer.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
@@ -38,7 +41,9 @@ void main() async {
         Provider(create: (_) => db.juzDao),
 
         // Repositories
-        Provider(create: (context) => SurahRepository(context.read<SurahDao>())),
+        Provider(
+          create: (context) => SurahRepository(context.read<SurahDao>()),
+        ),
         Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
 
         // Services
@@ -47,32 +52,35 @@ void main() async {
 
         // ViewModels
         ChangeNotifierProvider(
-          create: (context) => SurahListViewModel(
-            context.read<SurahRepository>(),
-            context.read<SurahFilterService>(),
-            context.read<JuzRepository>(), // optional if needed
-          ),
+          create:
+              (context) => SurahListViewModel(
+                context.read<SurahRepository>(),
+                context.read<SurahFilterService>(),
+                context.read<JuzRepository>(), // optional if needed
+              ),
         ),
         ChangeNotifierProvider(
-          create: (context) => SttViewModel(
-            context.read<SttService>(),
-            context.read<SurahRepository>(),
-          ),
+          create:
+              (context) => SttViewModel(
+                context.read<SttService>(),
+                context.read<SurahRepository>(),
+              ),
         ),
         ChangeNotifierProvider(
           create: (_) => LocationProvider()..loadLocation(),
         ),
         ChangeNotifierProvider(
-          create: (context) => SurahDetailViewModel(
-            context.read<SurahRepository>(),
-          ),
+          create:
+              (context) =>
+                  SurahDetailViewModel(context.read<SurahRepository>()),
         ),
+        ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
+        ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),
       ],
       child: const MyApp(),
     ),
   );
 }
-
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -145,19 +153,38 @@ class MainScaffold extends StatelessWidget {
             : MediaQuery.of(context).padding.top + kToolbarHeight;
 
     return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        extendBody: true,
-        body: Stack(
-          children: [
-            _buildMainContent(topPadding),
-            if (currentRoute.isHasTopBar) _buildTopBar(),
-            if (currentRoute.isHasBottomBar) _buildWhiteGradientOverlay(),
-            _buildPurpleGradientOverlay(),
-          ],
-        ),
-        bottomNavigationBar:
-            currentRoute.isHasBottomBar ? bottomNavBar(context, state) : null,
+      child: Stack(
+        children: [
+          Scaffold(
+            resizeToAvoidBottomInset: false,
+            extendBody: true,
+            body: Stack(
+              children: [
+                _buildMainContent(topPadding),
+                if (currentRoute.isHasTopBar) _buildTopBar(),
+                if (currentRoute.isHasBottomBar) _buildWhiteGradientOverlay(),
+                _buildPurpleGradientOverlay(),
+              ],
+            ),
+            bottomNavigationBar:
+                currentRoute.isHasBottomBar
+                    ? bottomNavBar(context, state)
+                    : null,
+          ),
+
+          SlideDrawer(
+            title: "InQuran",
+            side: DrawerSide.left,
+            viewModel: context.read<MenuSlideDrawerViewModel>(),
+            textButtonList: DrawerConfig.getMenuDrawerTextButtonList(context),
+          ),
+          SlideDrawer(
+            title: "Settings",
+            side: DrawerSide.right,
+            viewModel: context.read<SettingSlideDrawerViewModel>(),
+            textButtonList: DrawerConfig.getSettingDrawerTextButtonList(context),
+          ),
+        ],
       ),
     );
   }

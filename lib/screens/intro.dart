@@ -78,7 +78,7 @@ class _IntroScreenState extends State<IntroScreen> {
                         height: 40, 
                         child: ElevatedButton(
                           onPressed: () async {
-                            final isFirst = await GlobalConfig().isFirstLaunch();
+                            final isFirst = GlobalConfig().isFirstLaunch;
                             if (isFirst) {
                               await GlobalConfig().markLaunched(isDisabilityMode: false);
                             }
@@ -111,12 +111,12 @@ class _IntroScreenState extends State<IntroScreen> {
                         height: 40, // Reduced button height
                         child: OutlinedButton(
                           onPressed: () async {
-                            final isFirst = await GlobalConfig().isFirstLaunch();
+                            final isFirst = GlobalConfig().isFirstLaunch;
                             if (isFirst) {
                               await GlobalConfig().markLaunched(isDisabilityMode: true);
                             }
                             if (!mounted) return;
-                            context.go(AppRoutes.homeDisability.path);
+                            context.go(AppRoutes.voice.path);
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF672CBC),

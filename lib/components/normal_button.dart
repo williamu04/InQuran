@@ -15,12 +15,11 @@ Widget normalButton(
     mainAxisSize: MainAxisSize.min,
     children: [
       GestureDetector(
-        onTap: () async {
-          await GlobalConfig().setDisabilityMode(false);
-          if (!context.mounted) return;
+        onTap: () {
+          GlobalConfig().setVoiceMode(false);
           String currentPath = GoRouterState.of(context).uri.toString();
 
-          if (currentPath == AppRoutes.homeDisability.path) {
+          if (currentPath == AppRoutes.voice.path) {
             context.go(AppRoutes.home.path);
           } 
         },

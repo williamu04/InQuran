@@ -69,16 +69,6 @@ class AppRoutes {
     pageBuilder: (context, state) => NoTransitionPage(child: HomeScreen()),
     icon: LucideIcons.house,
   );
-  static final homeDisability = AppRoute(
-    title: 'QuranApp',
-    path: '/disability',
-    isHasPurpleBanner: false,
-    isHasTopBar: true,
-    isHasBottomBar: false,
-    pageBuilder:
-        (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
-    icon: LucideIcons.house,
-  );
 
   static final surahList = AppRoute(
     title: 'The Holy Quran',
@@ -173,7 +163,7 @@ class AppRoutes {
 
   static final voice = AppRoute(
     title: 'Voice Command Mode',
-    path: '/disability',
+    path: '/voice',
     pageBuilder:
         (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
     icon: LucideIcons.audioLines,
@@ -239,7 +229,6 @@ class AppRoutes {
     surah,
     splashScreen,
     intro,
-    homeDisability,
     voice,
   ];
 

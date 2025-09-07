@@ -1,42 +1,54 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum QuranMode {normal, memorize, mushaf}
+
 class GlobalConfig extends ChangeNotifier {
   static final GlobalConfig _instance = GlobalConfig._internal();
   factory GlobalConfig() => _instance;
   GlobalConfig._internal();
 
   SharedPreferences? _prefs;
-  bool _isDisabilityMode = false;
+
+  QuranMode _quranMode = QuranMode.normal;
+  bool _isVoiceMode = false;
+  bool _isFirstLaunch = true;
+
+  bool get isFirstLaunch => _isFirstLaunch;
+  bool get isVoiceMode => _isVoiceMode;
+  QuranMode get quranMode => _quranMode;
 
   Future<void> initialize() async {
     _prefs ??= await SharedPreferences.getInstance();
-    _isDisabilityMode = _prefs?.getBool('isDisabilityMode') ?? false;
+    _isFirstLaunch = _prefs!.getBool('isFirstLaunch') ?? true;
+    _isVoiceMode = _prefs!.getBool('isVoiceMode') ?? false;
+    final string = _prefs!.getString('quranMode') ?? QuranMode.normal.name;
+    _quranMode = QuranMode.values.firstWhere(
+      (e) => e.name == string,
+      orElse: () => QuranMode.normal,
+    );
   }
 
-  bool get isDisabilityMode => _isDisabilityMode;
+  Future<void> setQuranMode(QuranMode mode) async {
+    _quranMode = mode;
+    await _prefs?.setString('quranMode', mode.name); 
+    notifyListeners();
+  }
+
+  Future<void> setVoiceMode(bool value) async {
+    _isVoiceMode = value;
+    await _prefs?.setBool('isDisabilityMode', value);
+    notifyListeners();
+  }
 
   Future<void> markLaunched({required bool isDisabilityMode}) async {
-    await initialize();
-    await _prefs?.setBool('isFirstLaunch', false);
-    await setDisabilityMode(isDisabilityMode);
+    _prefs ??= await SharedPreferences.getInstance();
+    _isFirstLaunch = false;
+    await _prefs!.setBool('isFirstLaunch', false);
+    await _prefs!.setString('quranMode', QuranMode.normal.name);
+    await _prefs!.setBool('isVoiceMode', isDisabilityMode);
+
+    notifyListeners();
   }
 
-  Future<bool> isFirstLaunch() async {
-    await initialize();
-    return _prefs?.getBool('isFirstLaunch') ?? true;
-  }
-
-  Future<void> setDisabilityMode(bool value) async {
-    await initialize();
-    _isDisabilityMode = value;
-    await _prefs?.setBool('isDisabilityMode', value);
-    notifyListeners(); 
-  }
-
-  Future<void> toggleDisabilityMode() async {
-    await initialize();
-    final toggled = !_isDisabilityMode;
-    await setDisabilityMode(toggled);
-  }
 }

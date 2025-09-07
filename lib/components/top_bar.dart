@@ -3,10 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:provider/provider.dart';
 
 Widget topBar(BuildContext context, GoRouterState state) {
   String currentPath = state.uri.toString();
   AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
+  SettingSlideDrawerViewModel settingDrawerVm = context.read<SettingSlideDrawerViewModel>();
+  MenuSlideDrawerViewModel menuDrawerVm = context.read<MenuSlideDrawerViewModel>();
 
   Color backgroundColor = Colors.transparent;
   Color iconColor;
@@ -29,7 +33,7 @@ Widget topBar(BuildContext context, GoRouterState state) {
             AppRoutes.search.path, 
             AppRoutes.duas.path, 
             AppRoutes.profile.path,
-            AppRoutes.homeDisability.path
+            AppRoutes.voice.path
             ];
 
   final bool shouldCenterTitle = centerTitle.contains(state.uri.toString());
@@ -54,7 +58,7 @@ Widget topBar(BuildContext context, GoRouterState state) {
                 LucideIcons.alignLeft,
                 color: iconColor,
               ),
-              onPressed: () => Scaffold.of(context).openDrawer(),
+              onPressed:() => menuDrawerVm.open() ,
             ),
           ),
           Expanded(
@@ -81,9 +85,7 @@ Widget topBar(BuildContext context, GoRouterState state) {
               LucideIcons.settings,
               color: iconColor,
             ),
-            onPressed: () {
-              // Settings action
-            },
+            onPressed: () => settingDrawerVm.open(),
           ),
         ],
       ),
