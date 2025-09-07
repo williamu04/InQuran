@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
-import 'package:mtqmnuns/screens/Home_disability.dart';
+import 'package:mtqmnuns/screens/voice.dart';
 import 'package:mtqmnuns/screens/explore.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
@@ -165,11 +165,11 @@ class AppRoutes {
     title: 'Voice Command Mode',
     path: '/voice',
     pageBuilder:
-        (context, state) => NoTransitionPage(child: HomeDisabilityScreen()),
+        (context, state) => NoTransitionPage(child: VoiceScreen()),
     icon: LucideIcons.audioLines,
     isHasPurpleBanner: false,
     isHasTopBar: true,
-    isHasBottomBar: true,
+    isHasBottomBar: false,
   );
 
   static final etc = AppRoute(

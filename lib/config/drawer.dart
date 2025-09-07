@@ -28,20 +28,20 @@ class DrawerConfig {
               text: "Normal Mode",
               showIcon: false,
               color: _getActiveColor<QuranMode>(globalConfig.quranMode, QuranMode.normal),
-              action: SystemAction(() => setNormalMode(globalConfig)),
+              action: SystemAction(() => setNormalMode(context, globalConfig)),
             ),
             TextButtonDrawerModel(
               text: "Memorize Mode",
               showIcon: false,
               color: _getActiveColor<QuranMode>(globalConfig.quranMode, QuranMode.memorize),
-              action: SystemAction(() => setMemorizeMode(globalConfig)),
+              action: SystemAction(() => setMemorizeMode(context, globalConfig)),
             ),
             TextButtonDrawerModel(
               text: "Mushaf Mode",
               showIcon: false,
               consumer: globalConfig,
               color: _getActiveColor<QuranMode>(globalConfig.quranMode, QuranMode.mushaf),
-              action: SystemAction(() => setMushafMode(globalConfig)),
+              action: SystemAction(() => setMushafMode(context, globalConfig)),
             ),
           ]
         ),
@@ -61,35 +61,35 @@ class DrawerConfig {
       ),
       TextButtonDrawerModel(
         text: "Voice Command Mode",
+        consumer: globalConfig,
         action: ExpandNestedDrawerAction([
           TextButtonDrawerModel(
             text: "On", 
             showIcon: false,
             color: _getActiveColor<bool>(globalConfig.isVoiceMode, true),
-            action: SystemAction(() => turnOnVoiceMode(globalConfig))
+            action: SystemAction(() => turnOnVoiceMode(context, globalConfig))
           ),
           TextButtonDrawerModel(
             text: "Off", 
             showIcon: false,
             color: _getActiveColor<bool>(globalConfig.isVoiceMode, false),
-            action: SystemAction(() => turnOffVoiceMode(globalConfig))
+            action: SystemAction(() => turnOffVoiceMode(context, globalConfig))
           )
         ]),
       ),
       TextButtonDrawerModel(
         text: "Profile Setting",
-        consumer: globalConfig,
         action: ExpandNestedDrawerAction([]),
       ),
       TextButtonDrawerModel(
         text: "Help & Support",
-        consumer: globalConfig,
         action: ExpandNestedDrawerAction([]),
       ),
       TextButtonDrawerModel(
         text: "logout",
-        consumer: globalConfig,
-        action: ExpandNestedDrawerAction([]),
+        action: SystemAction(()=> {}),
+        showIcon: false,
+        color: Color(0xFFEA4335)
       ),
     ];
   }

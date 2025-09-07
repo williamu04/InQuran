@@ -3,12 +3,12 @@ import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 
-class HomeDisabilityScreen extends StatefulWidget {
+class VoiceScreen extends StatefulWidget {
   @override
-  State<HomeDisabilityScreen> createState() => _HomeDisabilityScreenState();
+  State<VoiceScreen> createState() => _VoiceScreenState();
 }
 
-class _HomeDisabilityScreenState extends State<HomeDisabilityScreen> {
+class _VoiceScreenState extends State<VoiceScreen> {
   final ValueNotifier<bool> isListening = ValueNotifier(false);
 
   @override
