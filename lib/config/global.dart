@@ -30,14 +30,16 @@ class GlobalConfig extends ChangeNotifier {
   }
 
   Future<void> setQuranMode(QuranMode mode) async {
+    _prefs ??= await SharedPreferences.getInstance();
     _quranMode = mode;
     await _prefs?.setString('quranMode', mode.name); 
     notifyListeners();
   }
 
   Future<void> setVoiceMode(bool value) async {
+    _prefs ??= await SharedPreferences.getInstance();
+    await _prefs?.setBool('isVoiceMode', value);
     _isVoiceMode = value;
-    await _prefs?.setBool('isDisabilityMode', value);
     notifyListeners();
   }
 

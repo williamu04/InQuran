@@ -6,10 +6,10 @@ import 'package:mtqmnuns/config/global.dart';
 import 'package:provider/provider.dart';
 
 class DrawerConfig {
-  static List<TextButtonDrawerModel> getSettingDrawerTextButtonList(
+  List<TextButtonDrawerModel> getSettingDrawerTextButtonList(
     BuildContext context,
   ) {
-    final globalConfig = context.watch<GlobalConfig>();
+    final globalConfig = GlobalConfig();
 
     return [
       TextButtonDrawerModel(
@@ -27,21 +27,20 @@ class DrawerConfig {
             TextButtonDrawerModel(
               text: "Normal Mode",
               showIcon: false,
-              color: _getActiveColor<QuranMode>(globalConfig.quranMode, QuranMode.normal),
-              action: SystemAction(() => setNormalMode(context, globalConfig)),
+              dynamicColor: () => _getQuranModeActiveColor(QuranMode.normal),
+              action: SystemAction(() => setNormalMode(context)),
             ),
             TextButtonDrawerModel(
               text: "Memorize Mode",
               showIcon: false,
-              color: _getActiveColor<QuranMode>(globalConfig.quranMode, QuranMode.memorize),
-              action: SystemAction(() => setMemorizeMode(context, globalConfig)),
+              action: SystemAction(() => setMemorizeMode(context)),
+              dynamicColor: () => _getQuranModeActiveColor(QuranMode.memorize),
             ),
             TextButtonDrawerModel(
               text: "Mushaf Mode",
               showIcon: false,
-              consumer: globalConfig,
-              color: _getActiveColor<QuranMode>(globalConfig.quranMode, QuranMode.mushaf),
-              action: SystemAction(() => setMushafMode(context, globalConfig)),
+              action: SystemAction(() => setMushafMode(context)),
+              dynamicColor: () => _getQuranModeActiveColor(QuranMode.mushaf),
             ),
           ]
         ),
@@ -49,7 +48,7 @@ class DrawerConfig {
     ];
   }
 
-  static List<TextButtonDrawerModel> getMenuDrawerTextButtonList(
+  List<TextButtonDrawerModel> getMenuDrawerTextButtonList(
     BuildContext context,
   ) {
     final globalConfig = context.watch<GlobalConfig>();
@@ -66,14 +65,14 @@ class DrawerConfig {
           TextButtonDrawerModel(
             text: "On", 
             showIcon: false,
-            color: _getActiveColor<bool>(globalConfig.isVoiceMode, true),
-            action: SystemAction(() => turnOnVoiceMode(context, globalConfig))
+            dynamicColor: () => _getVoiceActiveColor(true),
+            action: SystemAction(() => turnOnVoiceMode(context))
           ),
           TextButtonDrawerModel(
             text: "Off", 
             showIcon: false,
-            color: _getActiveColor<bool>(globalConfig.isVoiceMode, false),
-            action: SystemAction(() => turnOffVoiceMode(context, globalConfig))
+            dynamicColor: () => _getVoiceActiveColor(false),
+            action: SystemAction(() => turnOffVoiceMode(context))
           )
         ]),
       ),
@@ -89,12 +88,17 @@ class DrawerConfig {
         text: "logout",
         action: SystemAction(()=> {}),
         showIcon: false,
-        color: Color(0xFFEA4335)
+        dynamicColor: () => Color(0xFFEA4335)
       ),
     ];
   }
 
-  static Color _getActiveColor<T>(T activeOption, T activeValue) {
-      return activeOption == activeValue ? Colors.grey : const Color(0xFF672CBC);
+  Color _getVoiceActiveColor(bool activeValue) {
+      final globalConfig = GlobalConfig();
+      return globalConfig.isVoiceMode == activeValue ? Colors.grey : const Color(0xFF672CBC);
+  }
+  Color _getQuranModeActiveColor(QuranMode activeValue) {
+      final globalConfig = GlobalConfig();
+      return globalConfig.quranMode == activeValue ? Colors.grey : const Color(0xFF672CBC);
   }
 }

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -111,7 +112,7 @@ class _TextButtonDrawerState extends State<TextButtonDrawer>
 class TextButtonDrawerModel {
   final String text;
   final DrawerAction action;
-  final Color color;
+  final Color Function()? dynamicColor;
   final bool showIcon;
   final ChangeNotifier? consumer;
 
@@ -120,9 +121,10 @@ class TextButtonDrawerModel {
     required this.text,
     required this.action,
     this.consumer,
-    this.color = const Color(0xFF672CBC),
+    this.dynamicColor,
     this.showIcon = true,
   });
+    Color get color => dynamicColor?.call() ?? const Color(0xFF672CBC);
 }
 
 

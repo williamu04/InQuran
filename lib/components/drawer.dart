@@ -29,29 +29,49 @@ class SlideDrawerState extends State<SlideDrawer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
+  // Key & controller used for the list area
+  Key _listKey = UniqueKey();
+  late ScrollController _listScrollController;
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
 
-    widget.viewModel.addListener(() {
-      if (widget.viewModel.isOpen) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
+    _listScrollController = ScrollController();
+
+    widget.viewModel.addListener(_onDrawerToggle);
   }
 
+  void _onDrawerToggle() {
+    if (widget.viewModel.isOpen) {
+      _controller.forward();
+    } else {
+      // Wait for the closing animation to finish, then reset the list subtree.
+      _controller.reverse().then((_) {
+        if (!mounted) return;
+        setState(() {
+          // Throw away previous list subtree by giving it a new identity
+          _listKey = UniqueKey();
+
+          // Reset scroll controller safely:
+          _listScrollController.dispose();
+          _listScrollController = ScrollController();
+        });
+      });
+    }
+  }
 
   @override
   void dispose() {
+    widget.viewModel.removeListener(_onDrawerToggle);
+    _listScrollController.dispose();
     _controller.dispose();
     super.dispose();
   }
 
   Widget _buildDrawerContent(BuildContext context) {
-    return Material( 
+    return Material(
       color: Colors.white,
       child: Column(
         children: [
@@ -82,8 +102,13 @@ class SlideDrawerState extends State<SlideDrawer>
             ),
           ),
           const SizedBox(height: 10),
+
+          // <-- Here: ListView gets a new key & controller when drawer closes
           Expanded(
             child: ListView.builder(
+              key: _listKey,                    // <- unique identity
+              controller: _listScrollController,// <- fresh controller
+              primary: false,                   // avoid primary scroll behavior
               padding: const EdgeInsets.all(10),
               itemCount: widget.textButtonList.length,
               itemBuilder: (context, index) {
@@ -103,7 +128,6 @@ class SlideDrawerState extends State<SlideDrawer>
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -139,3 +163,4 @@ class SlideDrawerState extends State<SlideDrawer>
     );
   }
 }
+

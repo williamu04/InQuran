@@ -176,13 +176,14 @@ class MainScaffold extends StatelessWidget {
             title: "InQuran",
             side: DrawerSide.left,
             viewModel: context.read<MenuSlideDrawerViewModel>(),
-            textButtonList: DrawerConfig.getMenuDrawerTextButtonList(context),
+            textButtonList: DrawerConfig().getMenuDrawerTextButtonList(context),
           ),
+
           SlideDrawer(
             title: "Settings",
             side: DrawerSide.right,
             viewModel: context.read<SettingSlideDrawerViewModel>(),
-            textButtonList: DrawerConfig.getSettingDrawerTextButtonList(context),
+            textButtonList: DrawerConfig().getSettingDrawerTextButtonList(context),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
+import 'package:mtqmnuns/config/global.dart';
 
 class VoiceScreen extends StatefulWidget {
   @override
@@ -10,6 +11,16 @@ class VoiceScreen extends StatefulWidget {
 
 class _VoiceScreenState extends State<VoiceScreen> {
   final ValueNotifier<bool> isListening = ValueNotifier(false);
+  final globalConfig = GlobalConfig();
+  @override
+  void initState() {
+    super.initState();
+    _setup();
+  }
+  Future<void> _setup() async {
+    globalConfig.setVoiceMode(true);
+    setState(() {}); 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +47,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
             ],
           ),
           SizedBox(height: height * 0.03),
-          normalButton(context),
+          NormalButton(globalConfig: globalConfig),
         ],
       ),
     );
