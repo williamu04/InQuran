@@ -207,7 +207,7 @@ class MainScaffold extends StatelessWidget {
       bottom: 0,
       child: IgnorePointer(
         child: Container(
-          height: 200,
+          height: 150,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -250,3 +250,4 @@ class MainScaffold extends StatelessWidget {
     );
   }
 }
+

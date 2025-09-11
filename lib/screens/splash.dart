@@ -55,10 +55,9 @@ class _SplashScreenState extends State<SplashScreen>
     await _animationController.reverse();
     final globalConfig = GlobalConfig(); 
     final isFirst = globalConfig.isFirstLaunch;
-    final isVoiceMode = globalConfig.isVoiceMode;
     if (!mounted) return;
     if (!isFirst) {
-      context.go(isVoiceMode ? AppRoutes.voice.path : AppRoutes.home.path);
+      context.go(AppRoutes.home.path);
     } else {
       context.go(AppRoutes.intro.path);
     }

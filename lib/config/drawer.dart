@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/common/drawer_action.dart';
 import 'package:mtqmnuns/components/drawer_text_button.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:provider/provider.dart';
@@ -28,19 +27,19 @@ class DrawerConfig {
               text: "Normal Mode",
               showIcon: false,
               dynamicColor: () => _getQuranModeActiveColor(QuranMode.normal),
-              action: SystemAction(() => setNormalMode(context)),
+              action: SystemAction(() => globalConfig.setQuranMode(QuranMode.normal)),
             ),
             TextButtonDrawerModel(
               text: "Memorize Mode",
               showIcon: false,
-              action: SystemAction(() => setMemorizeMode(context)),
               dynamicColor: () => _getQuranModeActiveColor(QuranMode.memorize),
+              action: SystemAction(() => globalConfig.setQuranMode(QuranMode.memorize)),
             ),
             TextButtonDrawerModel(
               text: "Mushaf Mode",
               showIcon: false,
-              action: SystemAction(() => setMushafMode(context)),
               dynamicColor: () => _getQuranModeActiveColor(QuranMode.mushaf),
+              action: SystemAction(() => globalConfig.setQuranMode(QuranMode.mushaf)),
             ),
           ]
         ),
@@ -66,13 +65,13 @@ class DrawerConfig {
             text: "On", 
             showIcon: false,
             dynamicColor: () => _getVoiceActiveColor(true),
-            action: SystemAction(() => turnOnVoiceMode(context))
+            action: SystemAction(() => globalConfig.setVoiceMode(true))
           ),
           TextButtonDrawerModel(
             text: "Off", 
             showIcon: false,
             dynamicColor: () => _getVoiceActiveColor(false),
-            action: SystemAction(() => turnOffVoiceMode(context))
+            action: SystemAction(() => globalConfig.setVoiceMode(false))
           )
         ]),
       ),

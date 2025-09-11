@@ -1,9 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/routes/route.dart';
 
 
 class NormalButton extends StatelessWidget {
@@ -22,11 +20,6 @@ class NormalButton extends StatelessWidget {
         GestureDetector(
           onTap: () {
             globalConfig.setVoiceMode(false);
-
-            String currentPath = GoRouterState.of(context).uri.toString();
-            if (currentPath == AppRoutes.voice.path) {
-              context.go(AppRoutes.home.path);
-            }
           },
           child: Container(
             height: size,

@@ -29,11 +29,6 @@ class AppDatabase extends _$AppDatabase {
     return _instance;
   }
 
-  late final SurahDao surahDao = SurahDao(this);
-  late final AyahDao ayahDao = AyahDao(this);
-  late final JuzDao juzDao = JuzDao(this);
-  late final DuasDao duasDao = DuasDao(this);
-
   @override
   int get schemaVersion => 3;
 }

@@ -38,7 +38,7 @@ class _DuasScreenState extends State<DuasScreen> {
 
           return Column(
             children: [
-              RoundedCard(
+              roundedCard(
                 child: const Text(""), // replace with actual text
               ),
               Expanded(

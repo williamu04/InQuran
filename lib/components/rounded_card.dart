@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget RoundedCard({
+Widget roundedCard({
   required Widget child,
   EdgeInsetsGeometry? padding,
   Gradient? gradient,

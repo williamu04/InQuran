@@ -1,7 +1,14 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/components/mic_button.dart';
+import 'package:mtqmnuns/components/normal_button.dart';
+import 'package:mtqmnuns/components/transcription_text.dart';
+import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/routes/route.dart';
+import 'package:provider/provider.dart';
 import '../components/rounded_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,16 +16,304 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<GlobalConfig>(
+      builder: (context, config, _) {
+        if (config.isVoiceMode) {
+          return VoiceHomeScreen();
+        } else {
+          return MainHomeScreen();
+        }
+      },
+    );
+  }
+}
+
+class HomeMenuItem {
+  String title;
+  IconData icon;
+  Color buttonColor;
+  Function() action;
+
+  HomeMenuItem(this.title, this.icon, this.buttonColor, this.action);
+  factory HomeMenuItem.fromAppRoutes(
+    AppRoute route,
+    BuildContext context,
+    Color buttonColor,
+  ) {
+    return HomeMenuItem(
+      route.title,
+      route.icon,
+      buttonColor,
+      () => context.push(route.path),
+    );
+  }
+}
+
+class MainHomeScreen extends StatelessWidget {
+  const MainHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    HomeMenuItem topItem = HomeMenuItem.fromAppRoutes(
+      AppRoutes.surahList,
+      context,
+      Color(0xFF672CBC),
+    );
+    List<HomeMenuItem> menuItems = [
+      HomeMenuItem.fromAppRoutes(
+          AppRoutes.duas,
+          context,
+        Color(0xFF3B1D77)
+        ),
+        HomeMenuItem.fromAppRoutes(
+          AppRoutes.prayer,
+          context,
+        Color(0xFF3B1D77)
+        ),
+        HomeMenuItem.fromAppRoutes(
+          AppRoutes.qibla,
+          context,
+        Color(0xFF672CBC),
+        ),
+        HomeMenuItem.fromAppRoutes(
+          AppRoutes.favorites,
+          context,
+        Color(0xFF672CBC),
+        ),
+        HomeMenuItem.fromAppRoutes(
+          AppRoutes.explore,
+          context,
+        Color(0xFF3B1D77)
+        ),
+        HomeMenuItem(
+          "Voice Command Mode",
+          LucideIcons.audioLines,
+        Color(0xFF3B1D77),
+          () => GlobalConfig().setVoiceMode(true)
+        ),
+    ];
     return Padding(
-      padding: const EdgeInsets.only(bottom: 115),
+      padding: const EdgeInsets.only(bottom: 85),
       child: SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            homeTitle(),
-            homeMenu(context: context, menuItems: AppRoutes.homeMenu),
+            Expanded(
+              flex: 1, 
+              child: _homeTitle(),
+            ),
+            Expanded(
+              flex: 1,
+              child: _homeMenu(
+                context: context,
+                topItem: topItem,
+                menuItems: menuItems,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _homeTitle() {
+    return roundedCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset('assets/img/logo.png', height: 40),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Assalamu'alaikum",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontFamily: 'Plus Jakarta',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Text(
+                        'Sebelas Maret',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Plus Jakarta',
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(width: double.infinity, height: 1, color: Colors.white38),
+            const SizedBox(height: 24),
+            const Center(
+              child: AutoSizeText(
+                'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
+                'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
+                textAlign: TextAlign.center,
+                maxFontSize: 16,
+                minFontSize: 10,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  height: 1.4,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Center(
+              child: AutoSizeText(
+                '“Indeed, those who have believed and done righteous deeds - '
+                'the Most Merciful will appoint for them affection.”',
+                textAlign: TextAlign.center,
+                maxFontSize: 10,
+                minFontSize: 8,
+                style: TextStyle(
+                  fontFamily: 'Plus Jakarta',
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF994EF8),
+                  height: 1.4,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Center(
+              child: Text(
+                'Thaha : 96',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Plus Jakarta',
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: Color(0xFF994EF8),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+  }
+
+  Widget _homeMenu({
+    required BuildContext context,
+    required HomeMenuItem topItem,
+    required List<HomeMenuItem> menuItems,
+    double gap = 8.0, 
+  }) {
+    return Container(
+      padding: EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 15),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final totalHeight = constraints.maxHeight;
+
+          int rows = 1; 
+          rows += (menuItems.length / 2).ceil();
+          final totalGap = gap * (rows - 1);
+          final buttonHeight = (totalHeight - totalGap) / rows;
+          List<Widget> children = [];
+
+          children.add(
+            SizedBox(
+              height: buttonHeight,
+              width: double.infinity,
+              child: _buildMenuButton(
+                item: topItem,
+                alignment: MainAxisAlignment.center,
+              ),
+            ),
+          );
+
+          for (int i = 0; i < menuItems.length; i += 2) {
+            children.add(SizedBox(height: gap)); 
+
+            if (i + 1 < menuItems.length) {
+              children.add(
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: buttonHeight,
+                        child: _buildMenuButton(item: menuItems[i]),
+                      ),
+                    ),
+                    SizedBox(width: gap),
+                    Expanded(
+                      child: SizedBox(
+                        height: buttonHeight,
+                        child: _buildMenuButton(item: menuItems[i + 1]),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              children.add(
+                SizedBox(
+                  height: buttonHeight,
+                  width: double.infinity,
+                  child: _buildMenuButton(
+                    item: menuItems[i],
+                    alignment: MainAxisAlignment.center,
+                  ),
+                ),
+              );
+            }
+          }
+          return Column(children: children);
+        },
+      )
+    ); 
+  }
+
+  Widget _buildMenuButton({
+    required HomeMenuItem item,
+    MainAxisAlignment alignment = MainAxisAlignment.start,
+  }) {
+    return ElevatedButton(
+      onPressed: item.action,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: item.buttonColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        padding: EdgeInsets.zero,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: Row(
+          mainAxisAlignment: alignment,
+          children: [
+            Icon(item.icon, color: Colors.white),
+            const SizedBox(width: 10.0),
+            Flexible(
+              child: AutoSizeText(
+                item.title,
+                maxLines: 2,
+                minFontSize: 10,
+                maxFontSize: 14,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Plus Jakarta',
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),
@@ -27,211 +322,90 @@ class HomeScreen extends StatelessWidget {
 }
 
 
+class VoiceHomeScreen extends StatelessWidget {
+  final ValueNotifier<bool> isListening = ValueNotifier(false);
+  final globalConfig = GlobalConfig();
 
-Widget homeMenu({
-  required BuildContext context,
-  required List<AppRoute> menuItems,
-}) {
-  return Container(
-    padding: const EdgeInsets.only(left: 40.0, right: 40.0, top: 40),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (menuItems.isNotEmpty)
-          ElevatedButton(
-            onPressed: () {
-              if (menuItems[0].path.isNotEmpty) {
-                context.push(menuItems[0].path);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF672CBC),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              padding: EdgeInsets.zero,
-            ),
-            child: Container(
-              height: 60.0,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(menuItems[0].icon, color: Colors.white, size: 24.0),
-                    const SizedBox(width: 10.0),
-                    Flexible(
-                      child: Text(
-                        menuItems[0].title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'Plus Jakarta',
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        const SizedBox(height: 16.0),
-        // Grid untuk item-item menu berikutnya
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16.0,
-            mainAxisSpacing: 16.0,
-            childAspectRatio: 2.5,
-          ),
-          itemCount: menuItems.length - 1,
-          itemBuilder: (context, index) {
-            int rowIndex = index ~/ 2 + 1;
-            Color buttonColor =
-                rowIndex % 2 == 0
-                    ? const Color(0xFF672CBC)
-                    : const Color(0xFF3B1D77);
+  VoiceHomeScreen({super.key});
 
-            final item = menuItems[index + 1];
-            return ElevatedButton(
-              onPressed: () {
-                if (item.path.isNotEmpty) {
-                  context.push(item.path);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                padding: EdgeInsets.zero,
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(item.icon, color: Colors.white, size: 24.0),
-                    const SizedBox(width: 10.0),
-                    Expanded(
-                      child: Text(
-                        item.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'Plus Jakarta',
-                        ),
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    ),
-  );
-}
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
 
-Widget homeTitle() {
-  return Expanded(
-    child: RoundedCard(
+    return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
+          _title(height),
+          SizedBox(height: height * 0.055),
+          MicButton(size: height * 0.3),
+          SizedBox(height: height * 0.035),
+          Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('assets/img/logo.png', height: 40),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      "Assalamu'alaikum",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontFamily: 'Plus Jakarta',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      'Sebelas Maret',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Plus Jakarta',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
+              TranscriptionText(),
+              SizedBox(height: height * 0.008),
+              _helpingText(height),
             ],
           ),
-          const SizedBox(height: 16),
-          Container(width: double.infinity, height: 1, color: Colors.white38),
-          const SizedBox(height: 24),
-          const Center(
-            child: Text(
-              'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
-              'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                height: 1.4,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Center(
-            child: Text(
-              '“Indeed, those who have believed and done righteous deeds - '
-              'the Most Merciful will appoint for them affection.”',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Plus Jakarta',
-                fontSize: 10,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF994EF8),
-                height: 1.4,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Center(
-            child: Text(
-              'Thaha : 96',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Plus Jakarta',
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-                color: Color(0xFF994EF8),
-              ),
-            ),
-          ),
+          SizedBox(height: height * 0.03),
+          NormalButton(globalConfig: globalConfig),
         ],
       ),
-    ),
-  );
+    );
+  }
+
+  Widget _helpingText(double height) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: height * 0.25),
+      child: Text(
+        "Help those who are visually impaired to press the button",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: const Color(0xFF7C8BA0),
+          fontSize: height * 0.013,
+          fontFamily: "Plus Jakarta",
+        ),
+      ),
+    );
+  }
+
+  Widget _title(double height) {
+    return Column(
+      children: [
+        Text(
+          "Voice",
+          style: TextStyle(
+            fontFamily: "Plus Jakarta",
+            fontSize: height * 0.035,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF672CBC),
+            height: 1.0,
+          ),
+        ),
+        Text(
+          "Command",
+          style: TextStyle(
+            fontFamily: "Plus Jakarta",
+            fontSize: height * 0.035,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF672CBC),
+            height: 1.0,
+          ),
+        ),
+        Text(
+          "Mode",
+          style: TextStyle(
+            fontFamily: "Plus Jakarta",
+            fontSize: height * 0.035,
+            color: const Color(0xFF672CBC),
+          ),
+        ),
+      ],
+    );
+  }
 }

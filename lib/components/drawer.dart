@@ -14,12 +14,12 @@ class SlideDrawer extends StatefulWidget {
   final SlideDrawerViewModel viewModel;
 
   const SlideDrawer({
-    Key? key,
+    super.key,
     this.side = DrawerSide.left,
     required this.title,
     required this.textButtonList, 
     required this.viewModel,
-  }) : super(key: key);
+  });
 
   @override
   State<SlideDrawer> createState() => SlideDrawerState();
@@ -75,7 +75,7 @@ class SlideDrawerState extends State<SlideDrawer>
       color: Colors.white,
       child: Column(
         children: [
-          RoundedCard(
+          roundedCard(
             padding: const EdgeInsets.only(
                 top: 70, bottom: 25, left: 40, right: 20),
             child: Row(

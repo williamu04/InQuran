@@ -33,7 +33,6 @@ Widget topBar(BuildContext context, GoRouterState state) {
             AppRoutes.search.path, 
             AppRoutes.duas.path, 
             AppRoutes.profile.path,
-            AppRoutes.voice.path
             ];
 
   final bool shouldCenterTitle = centerTitle.contains(state.uri.toString());

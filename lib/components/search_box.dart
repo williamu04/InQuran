@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 
 class SearchBox extends StatefulWidget {
+  const SearchBox({super.key});
+
   @override
-  _SearchBoxState createState() => _SearchBoxState();
+  State<SearchBox> createState() => _SearchBoxState();
+
 }
 
 class _SearchBoxState extends State<SearchBox> {

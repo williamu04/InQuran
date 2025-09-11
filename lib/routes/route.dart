@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/route.dart';
-import 'package:mtqmnuns/screens/voice.dart';
 import 'package:mtqmnuns/screens/explore.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
@@ -161,17 +160,6 @@ class AppRoutes {
     isHasBottomBar: true,
   );
 
-  static final voice = AppRoute(
-    title: 'Voice Command Mode',
-    path: '/voice',
-    pageBuilder:
-        (context, state) => NoTransitionPage(child: VoiceScreen()),
-    icon: LucideIcons.audioLines,
-    isHasPurpleBanner: false,
-    isHasTopBar: true,
-    isHasBottomBar: false,
-  );
-
   static final etc = AppRoute(
     title: 'Etc',
     path: '/etc',
@@ -202,7 +190,6 @@ class AppRoutes {
     qibla,
     favorites,
     search,
-    voice,
   ];
 
   static final List<AppRoute> bottomNav = [
@@ -229,7 +216,6 @@ class AppRoutes {
     surah,
     splashScreen,
     intro,
-    voice,
   ];
 
   static AppRoute getRouteByPath(String path) {

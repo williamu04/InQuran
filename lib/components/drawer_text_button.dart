@@ -11,10 +11,10 @@ class TextButtonDrawer extends StatefulWidget {
   final SlideDrawerViewModel viewModel;
 
   const TextButtonDrawer({
-    Key? key,
+    super.key,
     required this.model,
     required this.viewModel,
-  }) : super(key: key);
+  });
 
   @override
   State<TextButtonDrawer> createState() => _TextButtonDrawerState();

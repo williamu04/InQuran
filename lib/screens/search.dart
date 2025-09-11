@@ -39,7 +39,7 @@ class SearchScreen extends StatelessWidget {
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-      child: RoundedCard(
+      child: roundedCard(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
         borderRadius: 20,
         gradient: const LinearGradient(

@@ -12,7 +12,7 @@ class ProfileScreen extends StatelessWidget {
       height: double.infinity,
       child: Column(
         children: [
-          RoundedCard(
+          roundedCard(
             child: Text('test')
           ),
           const Text(

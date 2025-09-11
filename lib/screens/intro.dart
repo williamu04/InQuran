@@ -13,7 +13,7 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: Padding(
@@ -82,7 +82,7 @@ class _IntroScreenState extends State<IntroScreen> {
                             if (isFirst) {
                               await GlobalConfig().markLaunched(isDisabilityMode: false);
                             }
-                            if (!mounted) return;
+                            if (!context.mounted) return;
                             context.go(AppRoutes.home.path);
                           },
                           style: ElevatedButton.styleFrom(
@@ -115,8 +115,8 @@ class _IntroScreenState extends State<IntroScreen> {
                             if (isFirst) {
                               await GlobalConfig().markLaunched(isDisabilityMode: true);
                             }
-                            if (!mounted) return;
-                            context.go(AppRoutes.voice.path);
+                            if (!context.mounted) return;
+                            context.go(AppRoutes.home.path);
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF672CBC),

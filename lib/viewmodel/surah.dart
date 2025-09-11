@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtqmnuns/config/Global.dart';
 import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/state/surah.dart';
 
@@ -19,7 +20,8 @@ class SurahDetailViewModel extends ChangeNotifier {
     }
     try {
       final data = await _surahRepo.getSurahWithAyahs(surahId);
-      state = SurahSuccess(data);
+      final quranMode = GlobalConfig().quranMode;
+      state = SurahSuccess(data, quranMode);
       previousSurahId = surahId;
     } catch (e) {
       state = SurahError(e.toString());

@@ -1,23 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
+import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/state/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-class SurahScreen extends StatefulWidget {
+
+class SurahScreen extends StatelessWidget {
   final int? surahId;
   const SurahScreen({super.key, this.surahId});
 
   @override
-  State<SurahScreen> createState() => _SurahScreenState();
+  Widget build(BuildContext context) {
+    return Consumer<GlobalConfig>(
+      builder: (context, config, _) {
+        if (config.quranMode == QuranMode.mushaf) {
+          return MushafSurahScreen(surahId: surahId);
+        } else {
+          return NormalSurahScreen(surahId: surahId);
+        }
+      },
+    );
+  }
 }
 
-class _SurahScreenState extends State<SurahScreen> {
+class NormalSurahScreen extends StatelessWidget {
+  final int? surahId;
+
+  const NormalSurahScreen({super.key, required this.surahId});
+
   @override
   Widget build(BuildContext context) {
-    context.read<SurahDetailViewModel>().loadSurah(widget.surahId);
+    context.read<SurahDetailViewModel>().loadSurah(surahId);
     return Consumer<SurahDetailViewModel>(
       builder: (context, vm, child) {
         final state = vm.state;
@@ -241,4 +258,98 @@ class SurahHeaderCard extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class MushafSurahScreen extends StatelessWidget {
+  final int? surahId;
+
+  const MushafSurahScreen({super.key, required this.surahId});
+
+  @override
+  Widget build(BuildContext context) {
+    context.read<SurahDetailViewModel>().loadSurah(surahId);
+    return Consumer<SurahDetailViewModel>(
+      builder: (context, vm, child) {
+        final state = vm.state;
+
+        switch (state) {
+          case SurahLoading():
+            return Center(child: CircularProgressIndicator());
+          case SurahError(:var message):
+            return Center(child: Text("Error: $message")); 
+          case SurahSuccess(:var surahWithAyahData):
+            return _buildSurah(surahWithAyahData);
+        }
+      },
+    );
+  }
+
+  Widget _buildSurah(SurahWithAyahDto s) {
+    return Padding(
+      padding: EdgeInsetsGeometry.only(
+        top: 10,
+        left: 20,
+        right: 20,
+        bottom: 40,
+      ),
+      child: Column(
+        children: [
+          roundedCard(
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 20, vertical: 10),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Juz 1",
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFF994EF8),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "Page 001",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(
+                  color: Color(0xFF994EF8),
+                  thickness: 1,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '${s.nameLatin} | ',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                        Text(s.nameIndo, style: TextStyle()),
+                      ],
+                    ),
+                    Text(s.arabname),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+  }
+
+  
 }
