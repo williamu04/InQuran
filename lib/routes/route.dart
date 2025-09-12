@@ -17,6 +17,8 @@ import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/surah.dart';
 import 'package:mtqmnuns/screens/splash.dart';
 import 'package:mtqmnuns/screens/times.dart';
+import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:provider/provider.dart';
 
 class AppRoutes {
   static final signUp = AppRoute(
@@ -175,7 +177,7 @@ class AppRoutes {
     path: '/surah',
     pageBuilder: (context, state) {
       int? surahId = int.tryParse(state.uri.queryParameters['id'] ?? '');
-      return NoTransitionPage(child: SurahScreen(surahId: surahId));
+      return NoTransitionPage(child: SurahScreen(surahId: surahId,));
     },
     icon: LucideIcons.book,
     isHasPurpleBanner: false,

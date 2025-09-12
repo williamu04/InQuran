@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
@@ -9,32 +12,54 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 
-class SurahScreen extends StatelessWidget {
+class SurahScreen extends StatefulWidget {
   final int? surahId;
   const SurahScreen({super.key, this.surahId});
+
+  @override
+  State<SurahScreen> createState() => _SurahScreenState();
+}
+
+class _SurahScreenState extends State<SurahScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SurahDetailViewModel>().loadSurah(widget.surahId);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant SurahScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.surahId != widget.surahId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<SurahDetailViewModel>().loadSurah(widget.surahId);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<GlobalConfig>(
       builder: (context, config, _) {
         if (config.quranMode == QuranMode.mushaf) {
-          return MushafSurahScreen(surahId: surahId);
+          return const MushafSurahScreen();
         } else {
-          return NormalSurahScreen(surahId: surahId);
+          return const NormalSurahScreen();
         }
       },
     );
   }
 }
 
-class NormalSurahScreen extends StatelessWidget {
-  final int? surahId;
 
-  const NormalSurahScreen({super.key, required this.surahId});
+class NormalSurahScreen extends StatelessWidget {
+  const NormalSurahScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
-    context.read<SurahDetailViewModel>().loadSurah(surahId);
     return Consumer<SurahDetailViewModel>(
       builder: (context, vm, child) {
         final state = vm.state;
@@ -160,7 +185,6 @@ class NormalSurahScreen extends StatelessWidget {
   }
 }
 
-
 class SurahHeaderCard extends StatelessWidget {
   final String nameLatin;
   final String name;
@@ -262,13 +286,10 @@ class SurahHeaderCard extends StatelessWidget {
 
 
 class MushafSurahScreen extends StatelessWidget {
-  final int? surahId;
-
-  const MushafSurahScreen({super.key, required this.surahId});
+  const MushafSurahScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    context.read<SurahDetailViewModel>().loadSurah(surahId);
     return Consumer<SurahDetailViewModel>(
       builder: (context, vm, child) {
         final state = vm.state;
@@ -295,60 +316,91 @@ class MushafSurahScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          roundedCard(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 20, vertical: 10),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          _buildHeader(s),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(SurahWithAyahDto s) {
+    return roundedCard(
+      allRounded: true,
+      padding: EdgeInsetsGeometry.symmetric(horizontal: 30, vertical: 15),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Juz 1",
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Color(0xFF994EF8),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
                   children: [
                     Text(
-                      "Juz 1",
-                      style: TextStyle(fontWeight: FontWeight.w900),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF994EF8),
-                        borderRadius: BorderRadius.circular(20),
+                      "Page ",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w100,
+                        fontSize: 12,
                       ),
-                      child: Text(
-                        "Page 001",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    Text(
+                      "001",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
-                Divider(
-                  color: Color(0xFF994EF8),
-                  thickness: 1,
-                  indent: 20,
-                  endIndent: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '${s.nameLatin} | ',
-                          style: TextStyle(fontWeight: FontWeight.w900),
-                        ),
-                        Text(s.nameIndo, style: TextStyle()),
-                      ],
+              ),
+            ],
+          ),
+          Divider(color: Color(0xFF994EF8), thickness: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    '${s.nameLatin} | ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      fontSize: 12,
                     ),
-                    Text(s.arabname),
-                  ],
+                  ),
+                  Text(
+                    s.nameIndo,
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ],
+              ),
+              Text(
+                s.arabname,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontFamily: 'Al Jazeera',
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
     );
-
   }
 
   

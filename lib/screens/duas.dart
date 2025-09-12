@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
+import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 class DuasScreen extends StatefulWidget {
@@ -11,19 +12,19 @@ class DuasScreen extends StatefulWidget {
 
 class _DuasScreenState extends State<DuasScreen> {
   late final AppDatabase _db;
-  late Future<List<Dua>> _futureDuas;
+  late Future<List<CompleteDuaData>> _futureDuas;
 
   @override
   void initState() {
     super.initState();
     _db = AppDatabase(); // langsung inisialisasi database
-    _futureDuas = _db.duasDao.getAllDuas(); // ambil data
+    _futureDuas = _db.duasDao.getAllCompleteDuas(); // ambil data
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<Dua>>(
+      body: FutureBuilder<List<CompleteDuaData>>(
         future: _futureDuas,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -35,38 +36,46 @@ class _DuasScreenState extends State<DuasScreen> {
           }
 
           final duas = snapshot.data!;
+          final List<DoaCategoryData> categories =
+              duas.map((dua) => dua.doaCategory).toSet().toList();
+
+          final Map<DoaCategoryData, List<AyahData>> duaAyahByCategory = {
+            for (var category in categories)
+              category: duas
+                  .where((dua) => dua.doaCategory == category)
+                  .map((dua) => dua.ayah)
+                  .toList(),
+          };
 
           return Column(
             children: [
-              roundedCard(
-                child: const Text(""), // replace with actual text
-              ),
+              roundedCard(child: SizedBox.shrink()),
               Expanded(
                 child: ListView.builder(
-                  itemCount: duas.length,
+                  itemCount: categories.length,
                   itemBuilder: (context, index) {
-                    final dua = duas[index];
+                    final category = categories[index];
                     return ListTile(
-                      title: Text(dua.title),
-                      subtitle: Text(dua.doaIndo),
+                      title: Text('Duas About'),
+                      subtitle: Text(category.nama),
                       onTap: () {
                         showDialog(
                           context: context,
                           builder:
                               (_) => AlertDialog(
-                                title: Text(dua.title),
+                                title: Text("dua.title"),
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Arab:\n${dua.doaArab}',
+                                      'Arab:\n${"dua.doaArab"}',
                                       textAlign: TextAlign.right,
                                     ),
                                     const SizedBox(height: 8),
-                                    Text('Latin:\n${dua.doaLatin}'),
+                                    Text('Latin:\n${"dua.doaLatin"}'),
                                     const SizedBox(height: 8),
-                                    Text('Arti:\n${dua.doaIndo}'),
+                                    Text('Arti:\n${"dua.doaIndo"}'),
                                   ],
                                 ),
                               ),

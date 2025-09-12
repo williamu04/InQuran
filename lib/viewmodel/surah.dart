@@ -10,7 +10,6 @@ class SurahDetailViewModel extends ChangeNotifier {
   SurahDetailState state = SurahLoading();
 
   Future<void> loadSurah(int? surahId) async {
-    if (previousSurahId == surahId) return;
     state = SurahLoading();
     notifyListeners();
     if (surahId == null) {
