@@ -9,6 +9,7 @@ void navigateToSurah(BuildContext context, SurahInfoDto surah) {
     queryParameters: {
       'id': '${surah.number}',
       'ayah': '1',
+      'surah_name' : surah.nameLatin
     },
   ).toString());
 }

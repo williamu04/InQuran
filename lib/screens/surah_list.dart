@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/navigation.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/search_box.dart';
-import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/dto/juz.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/state/surah_list.dart';
@@ -134,13 +132,13 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
       builder: (context, viewModel, child) {
         switch (viewModel.state) {
           case SurahListLoading():
-            return Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator()
+            );
           case SurahListError(:var message):
-            return Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Text("Error: $message"));
+            return Center(
+                child: Text("Error: $message")
+              );
           case SurahListSuccessTypeSurah(:var surahs):
             return SingleChildScrollView( 
                 controller: _surahScrollController,

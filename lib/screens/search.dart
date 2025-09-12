@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/components/top_bar.dart';
-import 'package:mtqmnuns/viewmodel/drawer.dart';
-import 'package:path/path.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});

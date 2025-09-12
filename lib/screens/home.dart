@@ -5,7 +5,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/normal_button.dart';
-import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/routes/route.dart';
@@ -117,7 +116,7 @@ class MainHomeScreen extends StatelessWidget {
 
   Widget _homeTitle(BuildContext context) {
     return roundedCard(
-        padding: EdgeInsets.only(top: 20, left: 24, right: 24, bottom: 20),
+        padding: EdgeInsets.symmetric(vertical:20 , horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

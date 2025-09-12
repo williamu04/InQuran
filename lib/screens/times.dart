@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mtqmnuns/common/top_bar_utils.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/models/prayer.dart';
 import 'package:mtqmnuns/providers/location.dart';
 import 'package:mtqmnuns/screens/login.dart';
@@ -70,6 +72,21 @@ class _PrayerScreenState extends State<PrayerTimeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      children: [
+        roundedCard(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          child: TopBarUtility.buildDefaultTopBar(context: context, title: "Prayeer Times")
+        ),
+        Expanded(
+          child: _buildMainContent(context)
+        )
+      ],
+    );
+
+  }
+
+  Scaffold _buildMainContent(BuildContext context) {
     final locationProvider = context.watch<LocationProvider>();
 
     if (locationProvider.loading) {
@@ -82,7 +99,6 @@ class _PrayerScreenState extends State<PrayerTimeScreen> {
     }
 
     return Scaffold(
-      // appBar: AppBar(title: const Text("Jadwal Sholat")),
       body:
           isLoading
               ? const Center(child: CircularProgressIndicator())

@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/common/top_bar_utils.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/services/qibla.dart';
 
 class QiblaScreen extends StatefulWidget {
@@ -39,6 +41,21 @@ class _QiblaScreenState extends State<QiblaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      children: [
+        roundedCard(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          child: TopBarUtility.buildDefaultTopBar(context: context, title: "Qibla Finder")
+        ),
+        Expanded(
+          child: _buildMainContent(context)
+        )
+      ],
+    );
+
+  }
+
+  Scaffold _buildMainContent(BuildContext context) {
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }

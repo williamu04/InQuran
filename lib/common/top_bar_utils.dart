@@ -44,7 +44,8 @@ class TopBarUtility {
             title,
             style: TextStyle(
               color: titleColor ?? Colors.white,
-              fontWeight: FontWeight.w900
+              fontWeight: FontWeight.w900,
+              fontSize: 18
             ),
           ),
         ),

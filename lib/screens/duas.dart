@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 

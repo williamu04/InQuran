@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/dto/surah.dart';
@@ -11,7 +12,8 @@ import 'package:share_plus/share_plus.dart';
 
 class SurahScreen extends StatefulWidget {
   final int? surahId;
-  const SurahScreen({super.key, this.surahId});
+  final String? surahName;
+  const SurahScreen({super.key, this.surahId, this.surahName});
 
   @override
   State<SurahScreen> createState() => _SurahScreenState();
@@ -38,15 +40,25 @@ class _SurahScreenState extends State<SurahScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GlobalConfig>(
-      builder: (context, config, _) {
-        if (config.quranMode == QuranMode.mushaf) {
-          return const MushafSurahScreen();
-        } else {
-          return const NormalSurahScreen();
-        }
-      },
-    );
+    return  Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          child: TopBarUtility.buildPurpleTitleTopbar(context:context, title: "Reading ${widget.surahName ?? ''}"),
+        ),
+        Expanded(
+          child: Consumer<GlobalConfig>(
+          builder: (context, config, _) {
+            if (config.quranMode == QuranMode.mushaf) {
+              return const MushafSurahScreen();
+            } else {
+              return const NormalSurahScreen();
+            }
+          },
+        )
+        )
+      ],
+    ) ;
   }
 }
 
