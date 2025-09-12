@@ -1,94 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/config/route.dart';
-import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/viewmodel/drawer.dart';
-import 'package:provider/provider.dart';
 
-Widget topBar(BuildContext context, GoRouterState state) {
-  String currentPath = state.uri.toString();
-  AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
-  SettingSlideDrawerViewModel settingDrawerVm = context.read<SettingSlideDrawerViewModel>();
-  MenuSlideDrawerViewModel menuDrawerVm = context.read<MenuSlideDrawerViewModel>();
+class TopBar extends StatelessWidget implements PreferredSizeWidget {
+  final Widget? leftIcon;
+  final Widget? rightIcon;
+  final Widget? middle;
+  final Color backgroundColor;
 
-  Color backgroundColor = Colors.transparent;
-  Color iconColor;
-  Color titleColor;
-  MainAxisAlignment titleAlignment;
-  String title; 
+  const TopBar({
+    super.key,
+    this.leftIcon,
+    this.rightIcon,
+    this.middle,
+    this.backgroundColor = Colors.transparent,
+  });
 
-  title = currentRoute.title;
-
-  if (currentRoute.isHasPurpleBanner) {
-    iconColor = Colors.white;
-    titleColor = Colors.white;
-  } else {
-    iconColor = const Color(0xFF7C8BA0);
-    titleColor = const Color(0xFF672CBC);
-  }
-
-  final List<String> centerTitle = [
-            AppRoutes.surahList.path, 
-            AppRoutes.search.path, 
-            AppRoutes.duas.path, 
-            AppRoutes.profile.path,
-            ];
-
-  final bool shouldCenterTitle = centerTitle.contains(state.uri.toString());
-  if (shouldCenterTitle) {
-    titleAlignment = MainAxisAlignment.center;
-  } else {
-    titleAlignment = MainAxisAlignment.start;
-  }
-
-
-  return PreferredSize(
-    preferredSize: const Size.fromHeight(kToolbarHeight),
-    child: Container(
-      padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
+  @override
+  Widget build(BuildContext context) {
+    return Container(
       color: backgroundColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: Icon(
-                LucideIcons.alignLeft,
-                color: iconColor,
-              ),
-              onPressed:() => menuDrawerVm.open() ,
-            ),
-          ),
+          leftIcon ?? SizedBox.shrink(),
+
           Expanded(
             child: Row(
-              mainAxisAlignment: titleAlignment,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: "Plus Jakarta",
-                      color: titleColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
+                middle ?? const SizedBox.shrink(),
               ],
             ),
           ),
-          IconButton(
-            icon: Icon(
-              LucideIcons.settings,
-              color: iconColor,
-            ),
-            onPressed: () => settingDrawerVm.open(),
-          ),
+
+          rightIcon ?? SizedBox.shrink()
         ],
       ),
-    ),
-  );
-}
+    );
+  }
 
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}

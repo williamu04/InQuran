@@ -1,54 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/routes/route_model.dart';
 
+class BottomNavicon {
+  IconData icon;
+  AppRoute route;
+  BottomNavicon({required this.icon, required this.route});
+}
 
-Widget bottomNavBar(BuildContext context, GoRouterState state) {
-  final currentRoute = state.uri.toString();
-  final bottomNavPaths = AppRoutes.bottomNav.map((r) => r.path).toList();
-  final isBottomNavRoute = bottomNavPaths.contains(currentRoute);
-  final currentIndex = isBottomNavRoute
-      ? bottomNavPaths.indexOf(currentRoute)
-      : -1;
+class BottomNavBar extends StatelessWidget {
+  const BottomNavBar({super.key});
 
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 24, right: 36, left: 36),
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: Container(
-          color: const Color(0xFFF5F9FE),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: AppRoutes.bottomNav.asMap().entries.map((entry) {
-              final index = entry.key;
-              final route = entry.value;
-              final isSelected = currentIndex == index;
-              
-              return IconButton(
-                icon: Icon(
-                  route.icon,
-                  color: isSelected ? const Color(0xFF3B1D77) : Colors.grey,
+  @override
+  Widget build(BuildContext context) {
+    final navigations = [
+      BottomNavicon(icon: LucideIcons.bookOpen, route: AppRoutes.surahList),
+      BottomNavicon(icon: LucideIcons.search, route: AppRoutes.search),
+      BottomNavicon(icon: LucideIcons.house, route: AppRoutes.home),
+      BottomNavicon(icon: LucideIcons.handHeart, route: AppRoutes.duas),
+      BottomNavicon(icon: LucideIcons.user, route: AppRoutes.profile),
+    ];
+
+    return AnimatedBuilder(
+      animation: GoRouter.of(context).routerDelegate, 
+      builder: (context, _) {
+        final currentPath = GoRouter.of(context).state.uri.toString(); 
+        final currentIndex =
+            navigations.indexWhere((nav) => nav.route.path == currentPath);
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24, right: 36, left: 36),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
                 ),
-                onPressed: () {
-                  context.push(route.path);
-                },
-              );
-            }).toList(),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                color: const Color(0xFFF5F9FE),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: navigations.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final nav = entry.value;
+                    final isSelected = index == currentIndex;
+
+                    return IconButton(
+                      icon: Icon(
+                        nav.icon,
+                        color: isSelected
+                            ? const Color(0xFF3B1D77)
+                            : Colors.grey,
+                      ),
+                      onPressed: () {
+                        if (!isSelected) {
+                          context.push(nav.route.path);
+                        }
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
-    ),
-  );
+        );
+      },
+    );
+  }
 }

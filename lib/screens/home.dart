@@ -2,11 +2,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/normal_button.dart';
+import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/config/route.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:provider/provider.dart';
 import '../components/rounded_card.dart';
@@ -34,19 +35,7 @@ class HomeMenuItem {
   Color buttonColor;
   Function() action;
 
-  HomeMenuItem(this.title, this.icon, this.buttonColor, this.action);
-  factory HomeMenuItem.fromAppRoutes(
-    AppRoute route,
-    BuildContext context,
-    Color buttonColor,
-  ) {
-    return HomeMenuItem(
-      route.title,
-      route.icon,
-      buttonColor,
-      () => context.push(route.path),
-    );
-  }
+  HomeMenuItem({required this.title,required this.icon,required this.buttonColor,required this.action});
 }
 
 class MainHomeScreen extends StatelessWidget {
@@ -54,44 +43,52 @@ class MainHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HomeMenuItem topItem = HomeMenuItem.fromAppRoutes(
-      AppRoutes.surahList,
-      context,
-      Color(0xFF672CBC),
-    );
+    HomeMenuItem topItem = HomeMenuItem(
+        title: "The Holy Quran",
+        icon: LucideIcons.bookOpen,
+        buttonColor: const Color(0xFF672CBC),
+        action: () => context.push(AppRoutes.surahList.path),
+      );
+
     List<HomeMenuItem> menuItems = [
-      HomeMenuItem.fromAppRoutes(
-          AppRoutes.duas,
-          context,
-        Color(0xFF3B1D77)
-        ),
-        HomeMenuItem.fromAppRoutes(
-          AppRoutes.prayer,
-          context,
-        Color(0xFF3B1D77)
-        ),
-        HomeMenuItem.fromAppRoutes(
-          AppRoutes.qibla,
-          context,
-        Color(0xFF672CBC),
-        ),
-        HomeMenuItem.fromAppRoutes(
-          AppRoutes.favorites,
-          context,
-        Color(0xFF672CBC),
-        ),
-        HomeMenuItem.fromAppRoutes(
-          AppRoutes.explore,
-          context,
-        Color(0xFF3B1D77)
-        ),
-        HomeMenuItem(
-          "Voice Command Mode",
-          LucideIcons.audioLines,
-        Color(0xFF3B1D77),
-          () => GlobalConfig().setVoiceMode(true)
-        ),
+      HomeMenuItem(
+        title: "Duas Collection",
+        icon: LucideIcons.handHeart,
+        buttonColor: const Color(0xFF3B1D77),
+        action: () => context.push(AppRoutes.duas.path),
+      ),
+      HomeMenuItem(
+        title: "Prayer Times",
+        icon: LucideIcons.hourglass,
+        buttonColor: const Color(0xFF3B1D77),
+        action: () => context.push(AppRoutes.prayer.path),
+      ),
+      HomeMenuItem(
+        title: "Prayer Qibla",
+        icon: LucideIcons.compass,
+        buttonColor: const Color(0xFF672CBC),
+        action: () => context.push(AppRoutes.qibla.path),
+      ),
+      HomeMenuItem(
+        title: "Favorites",
+        icon: LucideIcons.bookMarked,
+        buttonColor: const Color(0xFF672CBC),
+        action: () => context.push(AppRoutes.favorites.path),
+      ),
+      HomeMenuItem(
+        title: "Explore",
+        icon: LucideIcons.search,
+        buttonColor: const Color(0xFF3B1D77),
+        action: () => context.push(AppRoutes.search.path),
+      ),
+      HomeMenuItem(
+        title: "Voice Command Mode",
+        icon: LucideIcons.audioLines,
+        buttonColor: const Color(0xFF3B1D77),
+        action: () => GlobalConfig().setVoiceMode(true),
+      ),
     ];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 85),
       child: SizedBox(
@@ -101,7 +98,7 @@ class MainHomeScreen extends StatelessWidget {
           children: [
             Expanded(
               flex: 1, 
-              child: _homeTitle(),
+              child: _homeTitle(context),
             ),
             Expanded(
               flex: 1,
@@ -118,92 +115,102 @@ class MainHomeScreen extends StatelessWidget {
   }
 
 
-  Widget _homeTitle() {
+  Widget _homeTitle(BuildContext context) {
     return roundedCard(
+        padding: EdgeInsets.only(top: 20, left: 24, right: 24, bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset('assets/img/logo.png', height: 40),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Assalamu'alaikum",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontFamily: 'Plus Jakarta',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
+            TopBarUtility.buildDefaultTopBar(context:context, title: "InQuran" ),  
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/img/logo.png', height: 40),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Assalamu'alaikum",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontFamily: 'Plus Jakarta',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Text(
+                              'Sebelas Maret',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Plus Jakarta',
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        'Sebelas Maret',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Plus Jakarta',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(width: double.infinity, height: 1, color: Colors.white38),
-            const SizedBox(height: 24),
-            const Center(
-              child: AutoSizeText(
-                'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
-                'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
-                textAlign: TextAlign.center,
-                maxFontSize: 16,
-                minFontSize: 10,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  height: 1.4,
-                ),
+                  const SizedBox(height: 16),
+                  Container(width: double.infinity, height: 1, color: Colors.white38),
+                  const SizedBox(height: 24),
+                  const Center(
+                    child: AutoSizeText(
+                      'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
+                      'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
+                      textAlign: TextAlign.center,
+                      maxFontSize: 16,
+                      minFontSize: 10,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Center(
+                    child: AutoSizeText(
+                      '“Indeed, those who have believed and done righteous deeds - '
+                      'the Most Merciful will appoint for them affection.”',
+                      textAlign: TextAlign.center,
+                      maxFontSize: 10,
+                      minFontSize: 8,
+                      style: TextStyle(
+                        fontFamily: 'Plus Jakarta',
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF994EF8),
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Center(
+                    child: Text(
+                      'Thaha : 96',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Plus Jakarta',
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFF994EF8),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            const Center(
-              child: AutoSizeText(
-                '“Indeed, those who have believed and done righteous deeds - '
-                'the Most Merciful will appoint for them affection.”',
-                textAlign: TextAlign.center,
-                maxFontSize: 10,
-                minFontSize: 8,
-                style: TextStyle(
-                  fontFamily: 'Plus Jakarta',
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF994EF8),
-                  height: 1.4,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Center(
-              child: Text(
-                'Thaha : 96',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Plus Jakarta',
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                  color: Color(0xFF994EF8),
-                ),
-              ),
-            ),
+            )
           ],
         ),
       );

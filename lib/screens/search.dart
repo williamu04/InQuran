@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
+import 'package:mtqmnuns/components/top_bar.dart';
+import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:path/path.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -91,38 +96,25 @@ class SearchScreen extends StatelessWidget {
       body: Column(
         children: [
           // Fixed Gradient Top Section
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(
-              top: 48,
-              left: 0,
-              right: 0,
-              bottom: 24,
-            ),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(32),
-                bottomRight: Radius.circular(32),
-              ),
+          roundedCard(
+            padding: const EdgeInsets.symmetric(
+              vertical: 20,
+              horizontal: 24
             ),
             child: Column(
               children: [
+                TopBarUtility.buildDefaultTopBar(context:context, title: "Explore"),  
                 // Top bar spacing
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 // Info Card
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
                   padding: const EdgeInsets.symmetric(
                     vertical: 16,
-                    horizontal: 18,
+                    horizontal: 20,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Color(0xFF672CBC),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -138,15 +130,17 @@ class SearchScreen extends StatelessWidget {
                         TextSpan(
                           text: 'Quran and Hadeeth',
                           style: TextStyle(
-                            color: Color(0xFF672CBC),
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 11
                           ),
                         ),
                         TextSpan(
                           text: ' Answering All Your Question!',
                           style: TextStyle(
-                            color: Color(0xFF240F4F),
+                            color: Colors.white,
                             fontWeight: FontWeight.w500,
+                            fontSize: 11
                           ),
                         ),
                       ],
@@ -157,7 +151,6 @@ class SearchScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 24),
           // Scrollable Category Cards
           Expanded(
             child: SingleChildScrollView(
@@ -165,6 +158,7 @@ class SearchScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
+                    const SizedBox(height: 24),
                     _buildCategoryCard(
                       'Core Islamic',
                       'Beliefs and Practices',

@@ -4,7 +4,6 @@ import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 
 void navigateToSurah(BuildContext context, SurahInfoDto surah) {
-  AppRoutes.surah.title = 'Reading ${surah.nameLatin}';
   context.push(Uri(
     path: AppRoutes.surah.path,
     queryParameters: {

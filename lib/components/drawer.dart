@@ -103,12 +103,11 @@ class SlideDrawerState extends State<SlideDrawer>
           ),
           const SizedBox(height: 10),
 
-          // <-- Here: ListView gets a new key & controller when drawer closes
           Expanded(
             child: ListView.builder(
-              key: _listKey,                    // <- unique identity
-              controller: _listScrollController,// <- fresh controller
-              primary: false,                   // avoid primary scroll behavior
+              key: _listKey,
+              controller: _listScrollController,
+              primary: false,
               padding: const EdgeInsets.all(10),
               itemCount: widget.textButtonList.length,
               itemBuilder: (context, index) {

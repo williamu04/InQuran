@@ -2,9 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/providers/location.dart';
 import 'package:mtqmnuns/services/qibla.dart';
-import 'package:provider/provider.dart';
 
 class QiblaScreen extends StatefulWidget {
   const QiblaScreen({super.key});

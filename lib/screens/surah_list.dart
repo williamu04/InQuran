@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/navigation.dart';
+import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/search_box.dart';
+import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:mtqmnuns/dto/juz.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/state/surah_list.dart';
@@ -13,15 +16,25 @@ class SurahListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 36),
-      height: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       child: Column(
         children: [
-          const SizedBox(height: 4),
-          SearchBox(),
-          const SizedBox(height: 20),
-          const Expanded(child: SurahListContentWidget()),
+          TopBarUtility.buildPurpleTitleTopbar(context:context, title: "The Holy Quran"),  
+          Expanded( 
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  SearchBox(),
+                  const SizedBox(height: 20),
+                  Expanded( 
+                    child: SurahListContentWidget(),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -47,10 +60,13 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     return Column(
       children: [
         _buildTabNavigation(viewModel),
-        _buildTabContent(),
+        Expanded( 
+          child: _buildTabContent(),
+        ),
       ],
     );
   }
+
   Widget _buildTabNavigation(SurahListViewModel viewModel) {
     return Consumer<SurahListViewModel>(
       builder: (context, viewModel, child) {
@@ -92,7 +108,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white, // background color of the square
+          color: Colors.white, 
           border: Border(
             bottom: BorderSide(
               color: isActive ? activeColor : Colors.grey.shade200,
@@ -120,32 +136,23 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           case SurahListLoading():
             return Padding(
                 padding: EdgeInsets.only(top: 20),
-                child: CircularProgressIndicator()
-              ); 
+                child: CircularProgressIndicator());
           case SurahListError(:var message):
             return Padding(
                 padding: EdgeInsets.only(top: 20),
-                child: Text("Error: $message")
-              ); 
+                child: Text("Error: $message"));
           case SurahListSuccessTypeSurah(:var surahs):
-            return Expanded(
-                child : SingleChildScrollView(
-                  controller: _surahScrollController,
-                  child: _buildSurahList(context, surahs)
-                )
-              );
+            return SingleChildScrollView( 
+                controller: _surahScrollController,
+                child: _buildSurahList(context, surahs));
           case SurahListSuccessTypeJuz(:var juz):
-            return Expanded( 
-              child: SingleChildScrollView(
+            return SingleChildScrollView( 
                 controller: _juzScrollController,
-                child: _buildJuzList(juz)
-              )
-            );
+                child: _buildJuzList(juz));
           case SurahListSuccessEmpty():
             return Padding(
                 padding: EdgeInsets.only(top: 20),
-                child: Text("No Result Found")
-              ); 
+                child: Text("No Result Found"));
         }
       },
     );
@@ -269,7 +276,6 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-
   Widget _buildJuzList(List<JuzInfoDto> juzList) {
     return ListView.builder(
       shrinkWrap: true,
@@ -283,31 +289,31 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-Widget _buildJuzListItem(JuzInfoDto juzInfo) {
-  final isSameSurah = juzInfo.startSurahName == juzInfo.endSurahName;
+  Widget _buildJuzListItem(JuzInfoDto juzInfo) {
+    final isSameSurah = juzInfo.startSurahName == juzInfo.endSurahName;
 
-  return Card(
-    elevation: 0,
-    margin: const EdgeInsets.symmetric(vertical: 8.0),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8.0),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildJuzHeader(juzInfo),
-          const SizedBox(height: 16.0),
-          if (isSameSurah)
-            _buildSameSurahRange(juzInfo)
-          else
-            _buildMultipleSurahRange(juzInfo),
-        ],
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
       ),
-    ),
-  );
-}
+      child: Padding(
+        padding: const EdgeInsets.all(0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildJuzHeader(juzInfo),
+            const SizedBox(height: 16.0),
+            if (isSameSurah)
+              _buildSameSurahRange(juzInfo)
+            else
+              _buildMultipleSurahRange(juzInfo),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildJuzHeader(JuzInfoDto juzInfo) {
     return Row(

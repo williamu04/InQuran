@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:mtqmnuns/components/drawer.dart';
-import 'package:mtqmnuns/components/top_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/drawer.dart';
 import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/config/go_router.dart';
-import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/routes/go_router.dart';
+import 'package:mtqmnuns/routes/route_model.dart';
 import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
@@ -147,11 +146,6 @@ class MainScaffold extends StatelessWidget {
     final String currentPath = state.uri.toString();
     final AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
 
-    final double topPadding =
-        (!currentRoute.isHasTopBar || currentRoute.isHasPurpleBanner)
-            ? 0
-            : MediaQuery.of(context).padding.top + kToolbarHeight;
-
     return SafeArea(
       child: Stack(
         children: [
@@ -160,15 +154,14 @@ class MainScaffold extends StatelessWidget {
             extendBody: true,
             body: Stack(
               children: [
-                _buildMainContent(topPadding),
-                if (currentRoute.isHasTopBar) _buildTopBar(),
+                _buildMainContent(),
                 if (currentRoute.isHasBottomBar) _buildWhiteGradientOverlay(),
                 _buildPurpleGradientOverlay(),
               ],
             ),
             bottomNavigationBar:
                 currentRoute.isHasBottomBar
-                    ? bottomNavBar(context, state)
+                    ? BottomNavBar()
                     : null,
           ),
 
@@ -190,14 +183,10 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  Widget _buildMainContent(double topPadding) {
+  Widget _buildMainContent() {
     return Positioned.fill(
-      child: Padding(padding: EdgeInsets.only(top: topPadding), child: child),
+      child:  child,
     );
-  }
-
-  Widget _buildTopBar() {
-    return Positioned(top: 0, left: 0, right: 0, child: topBar(context, state));
   }
 
   Widget _buildWhiteGradientOverlay() {
