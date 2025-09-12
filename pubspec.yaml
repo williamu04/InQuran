@@ -123,3 +123,6 @@ flutter:
     - family: Al Jazeera
       fonts:
         - asset: assets/fonts/AlJazeeraArabic-Bold.ttf
+    - family: Amiri Quran
+      fonts:
+        - asset: assets/fonts/AmiriQuran-Regular.ttf

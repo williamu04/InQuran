@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
@@ -309,14 +306,14 @@ class MushafSurahScreen extends StatelessWidget {
   Widget _buildSurah(SurahWithAyahDto s) {
     return Padding(
       padding: EdgeInsetsGeometry.only(
-        top: 10,
         left: 20,
         right: 20,
-        bottom: 40,
+        bottom: 107,
       ),
       child: Column(
         children: [
           _buildHeader(s),
+          Expanded(child:_buildMushaf())
         ],
       ),
     );
@@ -400,6 +397,26 @@ class MushafSurahScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMushaf() {
+    return Container(
+      padding: EdgeInsets.only(top: 20, left: 10, right: 10),
+      child: LayoutBuilder(
+      builder: (context, constraints) {
+        double width = constraints.maxWidth;
+        double height = constraints.maxHeight;
+
+        debugPrint("Mushaf size → width: $width, height: $height");
+
+        return Container(
+          color: Colors.blue,
+          width: width,
+          height: height,
+        );
+      },
+    ),
     );
   }
 
