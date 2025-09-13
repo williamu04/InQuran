@@ -90,7 +90,6 @@ class SurahRepository {
     );
   }
 
-
   Future<List<SurahInfoDto>> getAllSurahs() async {
     final entities = await _surahDao.getAllSurahs(); // returns List<SurahData>
     return entities.map((e) => SurahInfoDto.fromEntity(e)).toList();

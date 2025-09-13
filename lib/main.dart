@@ -4,6 +4,8 @@ import 'package:mtqmnuns/components/drawer.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/config/drawer.dart';
 import 'package:mtqmnuns/config/global.dart';
+import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
+import 'package:mtqmnuns/repositories/ayah.dart';
 import 'package:mtqmnuns/routes/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
 import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
@@ -38,12 +40,14 @@ void main() async {
         // DAOs
         Provider(create: (_) => db.surahDao),
         Provider(create: (_) => db.juzDao),
+        Provider(create: (_) => db.ayahDao),
 
         // Repositories
         Provider(
           create: (context) => SurahRepository(context.read<SurahDao>()),
         ),
         Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
+        Provider(create: (context) => AyahRepository(context.read<AyahDao>())),
 
         // Services
         Provider(create: (_) => SttService()),
@@ -71,7 +75,7 @@ void main() async {
         ChangeNotifierProvider(
           create:
               (context) =>
-                  SurahDetailViewModel(context.read<SurahRepository>()),
+                  SurahDetailViewModel(context.read<AyahRepository>()),
         ),
         ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
         ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),

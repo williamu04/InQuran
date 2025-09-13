@@ -1,3 +1,4 @@
+import 'package:mtqmnuns/data/aggregate/surah.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 
 class SurahInfoDto {
@@ -26,6 +27,10 @@ class AyahWithTranslation {
   final String translationText;
 
   AyahWithTranslation(this.number, this.arabText, this.translationText);
+  factory AyahWithTranslation.fromEntity(AyahData entity) {
+    return AyahWithTranslation(entity.ayahNumber, entity.ayahText, entity.indoText);
+
+  }
 }
 
 class SurahWithAyahDto {
@@ -36,4 +41,39 @@ class SurahWithAyahDto {
   final List<AyahWithTranslation> ayahs;
 
   SurahWithAyahDto(this.number,this.arabname, this.nameLatin, this.nameIndo, this.ayahs,);
+}
+
+class AyahWithSurahDto {
+  final int number;
+  final int juzNumber;
+  final int surahNumber;
+  final String surahName;
+  final String nameLatin;
+  final String nameIndo;
+  final String arabText;
+  final String translationText;
+
+  const AyahWithSurahDto(
+    this.number,
+    this.juzNumber,
+    this.surahNumber,
+    this.surahName,
+    this.nameLatin,
+    this.nameIndo,
+    this.arabText,
+    this.translationText,
+  );
+
+  factory AyahWithSurahDto.fromEntity(AyahWithSurah entity) {
+    return AyahWithSurahDto(
+      entity.ayah.ayahNumber,
+      entity.ayah.juz,
+      entity.surah.id,
+      entity.surah.name,
+      entity.surah.nameLatin,
+      entity.surah.nameIndo,
+      entity.ayah.ayahText,
+      entity.ayah.indoText,
+    );
+  }
 }

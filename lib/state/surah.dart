@@ -1,4 +1,3 @@
-import 'package:mtqmnuns/config/Global.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 
 sealed class SurahDetailState {}
@@ -9,7 +8,9 @@ class SurahError extends SurahDetailState {
   SurahError(this.message);
 }
 class SurahSuccess extends SurahDetailState {
-  final SurahWithAyahDto surahWithAyahData;
-  final QuranMode mode;
-  SurahSuccess(this.surahWithAyahData, this.mode);
+  final List<AyahWithSurahDto> ayahs;
+  final String? warning; 
+
+  SurahSuccess(this.ayahs, {this.warning});
 }
+

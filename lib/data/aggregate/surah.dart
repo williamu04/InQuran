@@ -6,3 +6,13 @@ class SurahWithAyahs {
 
   SurahWithAyahs(this.surah, this.ayahs);
 }
+
+class AyahWithSurah {
+  final SurahData surah; 
+  final AyahData ayah;   
+
+  const AyahWithSurah({
+    required this.surah,
+    required this.ayah,
+  });
+}

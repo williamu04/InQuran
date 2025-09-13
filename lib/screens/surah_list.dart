@@ -8,8 +8,14 @@ import 'package:mtqmnuns/state/surah_list.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
 
-class SurahListScreen extends StatelessWidget {
+class SurahListScreen extends StatefulWidget {
   const SurahListScreen({super.key});
+
+  @override
+  State<SurahListScreen> createState() => _SurahListScreenState();
+}
+
+class _SurahListScreenState extends State<SurahListScreen> {
 
   @override
   Widget build(BuildContext context) {
