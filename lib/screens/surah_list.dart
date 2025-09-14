@@ -302,22 +302,29 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildJuzHeader(juzInfo),
-            const SizedBox(height: 16.0),
-            if (isSameSurah)
-              _buildSameSurahRange(juzInfo)
-            else
-              _buildMultipleSurahRange(juzInfo),
-          ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8.0), 
+        onTap: () {
+          navigateToJuz(context, juzInfo);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildJuzHeader(juzInfo),
+              const SizedBox(height: 16.0),
+              if (isSameSurah)
+                _buildSameSurahRange(juzInfo)
+              else
+                _buildMultipleSurahRange(juzInfo),
+            ],
+          ),
         ),
       ),
     );
   }
+
 
   Widget _buildJuzHeader(JuzInfoDto juzInfo) {
     return Row(

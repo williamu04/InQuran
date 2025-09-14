@@ -12,7 +12,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class NormalSurahScreen extends StatefulWidget {
-  const NormalSurahScreen({super.key});
+  final LoadType loadType;
+  const NormalSurahScreen({super.key, required this.loadType});
 
   @override
   State<NormalSurahScreen> createState() => _NormalSurahScreenState();
@@ -52,29 +53,13 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   Future<void> _loadTop(SurahDetailViewModel vm) async {
     if (_isTopLoading) return;
 
-    final positions = _itemPositionsListener.itemPositions.value;
-    final firstVisible = positions
-        .where((pos) => pos.itemLeadingEdge >= 0)
-        .reduce((a, b) => a.itemLeadingEdge < b.itemLeadingEdge ? a : b);
-
-    final firstVisibleIndex = firstVisible.index;
-    final firstVisibleOffset = firstVisible.itemLeadingEdge;
-
     setState(() => _isTopLoading = true);
     _bounceController.forward();
 
-    final prependCount = await vm.preppendBySurah();
-    if (prependCount == 0) return;
-
-    final newIndex = firstVisibleIndex + prependCount;
-    Future.microtask(() {
-      if (mounted) {
-        _itemScrollController.jumpTo(
-          index: newIndex,
-          alignment: firstVisibleOffset + 0.05,
-        );
-      }
-    });
+    await switch (widget.loadType) {
+      LoadType.surah => vm.preppendBySurah(),
+      LoadType.juz => vm.preppendByJuz(),
+    };
 
     await Future.delayed(const Duration(milliseconds: 300));
     if (mounted) _resetPullAnimation();
@@ -84,7 +69,12 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   Future<void> _loadBottom(SurahDetailViewModel vm) async {
     if (_isBottomLoading) return;
     setState(() => _isBottomLoading = true);
-    await vm.appendBySurah();
+
+    await switch (widget.loadType) {
+      LoadType.surah => vm.appendBySurah(),
+      LoadType.juz => vm.appendByJuz(),
+    };
+
     await Future.delayed(const Duration(milliseconds: 300));
     if (mounted) _resetPullAnimation();
   }
@@ -139,19 +129,29 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
             return const Center(child: CircularProgressIndicator());
           case SurahError(:var message):
             return Center(child: Text("Error: $message"));
-          case SurahSuccess(:var ayahs, :var warning):
+          case SurahSuccess(:var ayahs, :var warning, :var jumpIndex):
             if (!_hasShownPopup && warning != null) {
               _hasShownPopup = true;
               WidgetsBinding.instance.addPostFrameCallback(
                   (_) => errorPopup(context, warning));
             }
+            // if (preppendSurahCount != null) {
+            //   if (preppendSurahCount != 0) {
+            //     _itemScrollController.jumpTo(
+            //       index: preppendSurahCount,
+            //     );
+            //   }
+            // }
 
             return NotificationListener<OverscrollNotification>(
               onNotification: (overscroll) => _handleOverscroll(overscroll, vm),
               child: ScrollablePositionedList.builder(
+                key: ValueKey('${ayahs.hashCode}_${jumpIndex ?? 0}'),
                 itemCount: ayahs.length + (_isBottomLoading ? 1 : 0),
                 itemScrollController: _itemScrollController,
                 itemPositionsListener: _itemPositionsListener,
+                initialScrollIndex: jumpIndex ?? 0,
+                initialAlignment: _isTopLoading ? 0.05 : 0,
                 itemBuilder: (context, index) {
                   if (_isBottomLoading && index == ayahs.length) {
                     return Padding(

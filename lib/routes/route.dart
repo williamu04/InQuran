@@ -111,9 +111,7 @@ class AppRoutes {
   static final surah = AppRoute(
     path: '/surah',
     pageBuilder: (context, state) {
-      int? surahId = int.tryParse(state.uri.queryParameters['id'] ?? '');
-      String? surahName = state.uri.queryParameters['surah_name'] ?? '';
-      return NoTransitionPage(child: SurahScreen(surahId: surahId,surahName: surahName,));
+      return NoTransitionPage(child: SurahScreen(queryParam: state.uri.queryParameters));
     },
     isHasBottomBar: true,
   );

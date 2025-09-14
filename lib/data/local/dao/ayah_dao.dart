@@ -100,6 +100,22 @@ class AyahDao extends DatabaseAccessor<AppDatabase> with _$AyahDaoMixin {
     }).toList();
   }
 
+  Future<List<AyahWithSurah>> getAyahWithSurahByJuz(int juzNumber) async {
+    final query = select(surah).join([
+      innerJoin(ayah, ayah.surahId.equalsExp(surah.id)),
+    ])
+      ..where(ayah.juz.equals(juzNumber)); 
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      final surahData = row.readTable(surah);
+      final ayahData = row.readTable(ayah);
+      return AyahWithSurah(surah: surahData, ayah: ayahData);
+    }).toList();
+  }
+
+
   Future<List<AyahWithSurah>> getNextAyahsFromPosition(
     int startSurahId, 
     int startAyahNumber, 

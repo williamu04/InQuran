@@ -54,6 +54,14 @@ class AyahRepository {
     return entities.map((entity) => AyahWithSurahDto.fromEntity(entity)).toList();
   }
 
+  Future<List<AyahWithSurahDto>> getAyahsByJuz(int juz) async {
+    final entities = await _ayahDao.getAyahWithSurahByJuz(juz);
+    if (entities.isEmpty) {
+      throw Exception("ayah not found (500)");
+    }
+    return entities.map((entity) => AyahWithSurahDto.fromEntity(entity)).toList();
+  }
+
   Future<List<AyahWithSurahDto>> getNextAyahs({
     required int startSurahId,
     required int startAyahNumber,
