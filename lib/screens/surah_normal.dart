@@ -308,6 +308,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   }
 }
 
+// ignore: must_be_immutable
 class AyahCard extends StatefulWidget {
   final String arabText;
   final String translationText;
