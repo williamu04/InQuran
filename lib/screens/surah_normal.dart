@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -206,8 +204,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                   ),
                   SizedBox(width: 10),
                   Container(
-                    width: 40,
-                    height: 25,
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Color(0xff994EF8)
