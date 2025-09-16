@@ -34,7 +34,12 @@ class HomeMenuItem {
   Color buttonColor;
   Function() action;
 
-  HomeMenuItem({required this.title,required this.icon,required this.buttonColor,required this.action});
+  HomeMenuItem({
+    required this.title,
+    required this.icon,
+    required this.buttonColor,
+    required this.action,
+  });
 }
 
 class MainHomeScreen extends StatelessWidget {
@@ -43,18 +48,18 @@ class MainHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HomeMenuItem topItem = HomeMenuItem(
-        title: "The Holy Quran",
-        icon: LucideIcons.bookOpen,
-        buttonColor: const Color(0xFF672CBC),
-        action: () => context.push(AppRoutes.surahList.path),
-      );
+      title: "The Holy Quran",
+      icon: LucideIcons.bookOpen,
+      buttonColor: const Color(0xFF672CBC),
+      action: () => context.push(AppRoutes.surahList.path),
+    );
 
     List<HomeMenuItem> menuItems = [
       HomeMenuItem(
         title: "Duas Collection",
         icon: LucideIcons.handHeart,
         buttonColor: const Color(0xFF3B1D77),
-        action: () => context.push(AppRoutes.duas.path),
+        action: () => context.push(AppRoutes.duasList.path),
       ),
       HomeMenuItem(
         title: "Prayer Times",
@@ -95,10 +100,7 @@ class MainHomeScreen extends StatelessWidget {
         height: double.infinity,
         child: Column(
           children: [
-            Expanded(
-              flex: 1, 
-              child: _homeTitle(context),
-            ),
+            Expanded(flex: 1, child: _homeTitle(context)),
             Expanded(
               flex: 1,
               child: _homeMenu(
@@ -106,120 +108,123 @@ class MainHomeScreen extends StatelessWidget {
                 topItem: topItem,
                 menuItems: menuItems,
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-
   Widget _homeTitle(BuildContext context) {
     return roundedCard(
-        padding: EdgeInsets.symmetric(vertical:20 , horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TopBarUtility.buildDefaultTopBar(context:context, title: "InQuran" ),  
-            SizedBox(height: 10),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 18),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/img/logo.png', height: 40),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Assalamu'alaikum",
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontFamily: 'Plus Jakarta',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TopBarUtility.buildDefaultTopBar(context: context, title: "InQuran"),
+          SizedBox(height: 10),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 18),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/img/logo.png', height: 40),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Assalamu'alaikum",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontFamily: 'Plus Jakarta',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
                             ),
-                            Text(
-                              'Sebelas Maret',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Plus Jakarta',
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            'Sebelas Maret',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Plus Jakarta',
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(width: double.infinity, height: 1, color: Colors.white38),
-                  const SizedBox(height: 24),
-                  const Center(
-                    child: AutoSizeText(
-                      'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
-                      'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
-                      textAlign: TextAlign.center,
-                      maxFontSize: 16,
-                      minFontSize: 10,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        height: 1.4,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Center(
-                    child: AutoSizeText(
-                      '“Indeed, those who have believed and done righteous deeds - '
-                      'the Most Merciful will appoint for them affection.”',
-                      textAlign: TextAlign.center,
-                      maxFontSize: 10,
-                      minFontSize: 8,
-                      style: TextStyle(
-                        fontFamily: 'Plus Jakarta',
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF994EF8),
-                        height: 1.4,
-                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                  color: Colors.white38,
+                ),
+                const SizedBox(height: 24),
+                const Center(
+                  child: AutoSizeText(
+                    'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
+                    'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
+                    textAlign: TextAlign.center,
+                    maxFontSize: 16,
+                    minFontSize: 10,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Center(
-                    child: Text(
-                      'Thaha : 96',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Plus Jakarta',
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                        color: Color(0xFF994EF8),
-                      ),
+                ),
+                const SizedBox(height: 8),
+                const Center(
+                  child: AutoSizeText(
+                    '“Indeed, those who have believed and done righteous deeds - '
+                    'the Most Merciful will appoint for them affection.”',
+                    textAlign: TextAlign.center,
+                    maxFontSize: 10,
+                    minFontSize: 8,
+                    style: TextStyle(
+                      fontFamily: 'Plus Jakarta',
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF994EF8),
+                      height: 1.4,
                     ),
                   ),
-                ],
-              ),
-            )
-          ],
-        ),
-      );
+                ),
+                const SizedBox(height: 8),
+                const Center(
+                  child: Text(
+                    'Thaha : 96',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Plus Jakarta',
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                      color: Color(0xFF994EF8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _homeMenu({
     required BuildContext context,
     required HomeMenuItem topItem,
     required List<HomeMenuItem> menuItems,
-    double gap = 8.0, 
+    double gap = 8.0,
   }) {
     return Container(
       padding: EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 15),
@@ -227,7 +232,7 @@ class MainHomeScreen extends StatelessWidget {
         builder: (context, constraints) {
           final totalHeight = constraints.maxHeight;
 
-          int rows = 1; 
+          int rows = 1;
           rows += (menuItems.length / 2).ceil();
           final totalGap = gap * (rows - 1);
           final buttonHeight = (totalHeight - totalGap) / rows;
@@ -245,7 +250,7 @@ class MainHomeScreen extends StatelessWidget {
           );
 
           for (int i = 0; i < menuItems.length; i += 2) {
-            children.add(SizedBox(height: gap)); 
+            children.add(SizedBox(height: gap));
 
             if (i + 1 < menuItems.length) {
               children.add(
@@ -282,8 +287,8 @@ class MainHomeScreen extends StatelessWidget {
           }
           return Column(children: children);
         },
-      )
-    ); 
+      ),
+    );
   }
 
   Widget _buildMenuButton({
@@ -326,7 +331,6 @@ class MainHomeScreen extends StatelessWidget {
     );
   }
 }
-
 
 class VoiceHomeScreen extends StatelessWidget {
   final ValueNotifier<bool> isListening = ValueNotifier(false);

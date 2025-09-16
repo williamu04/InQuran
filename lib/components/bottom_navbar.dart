@@ -19,16 +19,17 @@ class BottomNavBar extends StatelessWidget {
       BottomNavicon(icon: LucideIcons.bookOpen, route: AppRoutes.surahList),
       BottomNavicon(icon: LucideIcons.search, route: AppRoutes.search),
       BottomNavicon(icon: LucideIcons.house, route: AppRoutes.home),
-      BottomNavicon(icon: LucideIcons.handHeart, route: AppRoutes.duas),
+      BottomNavicon(icon: LucideIcons.handHeart, route: AppRoutes.duasList),
       BottomNavicon(icon: LucideIcons.user, route: AppRoutes.profile),
     ];
 
     return AnimatedBuilder(
-      animation: GoRouter.of(context).routerDelegate, 
+      animation: GoRouter.of(context).routerDelegate,
       builder: (context, _) {
-        final currentPath = GoRouter.of(context).state.uri.toString(); 
-        final currentIndex =
-            navigations.indexWhere((nav) => nav.route.path == currentPath);
+        final currentPath = GoRouter.of(context).state.uri.toString();
+        final currentIndex = navigations.indexWhere(
+          (nav) => nav.route.path == currentPath,
+        );
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 24, right: 36, left: 36),
@@ -47,29 +48,33 @@ class BottomNavBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
               child: Container(
                 color: const Color(0xFFF5F9FE),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: navigations.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final nav = entry.value;
-                    final isSelected = index == currentIndex;
+                  children:
+                      navigations.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final nav = entry.value;
+                        final isSelected = index == currentIndex;
 
-                    return IconButton(
-                      icon: Icon(
-                        nav.icon,
-                        color: isSelected
-                            ? const Color(0xFF3B1D77)
-                            : Colors.grey,
-                      ),
-                      onPressed: () {
-                        if (!isSelected) {
-                          context.push(nav.route.path);
-                        }
-                      },
-                    );
-                  }).toList(),
+                        return IconButton(
+                          icon: Icon(
+                            nav.icon,
+                            color:
+                                isSelected
+                                    ? const Color(0xFF3B1D77)
+                                    : Colors.grey,
+                          ),
+                          onPressed: () {
+                            if (!isSelected) {
+                              context.push(nav.route.path);
+                            }
+                          },
+                        );
+                      }).toList(),
                 ),
               ),
             ),

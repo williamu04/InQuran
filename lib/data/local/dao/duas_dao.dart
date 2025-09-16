@@ -14,23 +14,44 @@ class DuasDao extends DatabaseAccessor<AppDatabase> with _$DuasDaoMixin {
   Future<List<DoaData>> getAllDuas() => select(doa).get();
   Future<List<DoaCategoryData>> getDuasCategory() => select(doaCategory).get();
   Future<List<CompleteDuaData>> getAllCompleteDuas() async {
-      final query = select(doa).join([
-        innerJoin(doaCategory, doaCategory.id.equalsExp(doa.categoryId)),
-        innerJoin(ayah, ayah.id.equalsExp(doa.ayahId)),
-      ]);
+    final query = select(doa).join([
+      innerJoin(doaCategory, doaCategory.id.equalsExp(doa.categoryId)),
+      innerJoin(ayah, ayah.id.equalsExp(doa.ayahId)),
+    ]);
 
-      final rows = await query.get();
+    final rows = await query.get();
 
-      return rows.map((row) {
-        final doaRow = row.readTable(doa);
-        final categoryRow = row.readTable(doaCategory);
-        final ayahRow = row.readTable(ayah);
+    return rows.map((row) {
+      final doaRow = row.readTable(doa);
+      final categoryRow = row.readTable(doaCategory);
+      final ayahRow = row.readTable(ayah);
+      final surahRow = row.readTableOrNull(surah);
 
-        return CompleteDuaData(
-          doaRow.id,
-          categoryRow,
-          ayahRow,
-        );
-      }).toList();
+      return CompleteDuaData(doaRow.id, categoryRow, ayahRow, surahRow);
+    }).toList();
+  }
+
+  Future<List<CompleteDuaData>> getDuasByCategory(int categoryId) async {
+    final query = select(doa).join([
+      innerJoin(doaCategory, doaCategory.id.equalsExp(doa.categoryId)),
+      innerJoin(ayah, ayah.id.equalsExp(doa.ayahId)),
+      innerJoin(surah, surah.id.equalsExp(ayah.surahId)), // 🔹 join ke surah
+    ])..where(doa.categoryId.equals(categoryId));
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      final doaRow = row.readTable(doa);
+      final categoryRow = row.readTable(doaCategory);
+      final ayahRow = row.readTable(ayah);
+      final surahRow = row.readTable(surah);
+
+      return CompleteDuaData(
+        doaRow.id,
+        categoryRow,
+        ayahRow,
+        surahRow, // 🔹 include Surah
+      );
+    }).toList();
   }
 }

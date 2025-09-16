@@ -76,14 +76,14 @@ class _PrayerScreenState extends State<PrayerTimeScreen> {
       children: [
         roundedCard(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-          child: TopBarUtility.buildDefaultTopBar(context: context, title: "Prayeer Times")
+          child: TopBarUtility.buildDefaultTopBar(
+            context: context,
+            title: "Prayeer Times",
+          ),
         ),
-        Expanded(
-          child: _buildMainContent(context)
-        )
+        Expanded(child: _buildMainContent(context)),
       ],
     );
-
   }
 
   Scaffold _buildMainContent(BuildContext context) {

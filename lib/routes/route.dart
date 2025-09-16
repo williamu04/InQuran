@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
+import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/explore.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
@@ -10,7 +11,7 @@ import 'package:mtqmnuns/screens/login.dart';
 import 'package:mtqmnuns/screens/profile.dart';
 import 'package:mtqmnuns/screens/qibla.dart';
 import 'package:mtqmnuns/screens/search.dart';
-import 'package:mtqmnuns/screens/duas.dart';
+import 'package:mtqmnuns/screens/duas_list.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/surah.dart';
@@ -60,9 +61,9 @@ class AppRoutes {
     isHasBottomBar: true,
   );
 
-  static final duas = AppRoute(
-    path: '/duas',
-    pageBuilder: (context, state) => NoTransitionPage(child: DuasScreen()),
+  static final duasList = AppRoute(
+    path: '/duas/list',
+    pageBuilder: (context, state) => NoTransitionPage(child: DuasListScreen()),
     isHasBottomBar: true,
   );
 
@@ -74,7 +75,8 @@ class AppRoutes {
 
   static final prayer = AppRoute(
     path: '/times',
-    pageBuilder: (context, state) => NoTransitionPage(child: PrayerTimeScreen()),
+    pageBuilder:
+        (context, state) => NoTransitionPage(child: PrayerTimeScreen()),
     isHasBottomBar: true,
   );
 
@@ -111,7 +113,19 @@ class AppRoutes {
   static final surah = AppRoute(
     path: '/surah',
     pageBuilder: (context, state) {
-      return NoTransitionPage(child: SurahScreen(queryParam: state.uri.queryParameters));
+      return NoTransitionPage(
+        child: SurahScreen(queryParam: state.uri.queryParameters),
+      );
+    },
+    isHasBottomBar: true,
+  );
+
+  static final duas = AppRoute(
+    path: '/duas',
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        child: DuasScreen(queryParam: state.uri.queryParameters),
+      );
     },
     isHasBottomBar: true,
   );
@@ -120,7 +134,7 @@ class AppRoutes {
     surahList,
     search,
     home,
-    duas,
+    duasList,
     profile,
     prayer,
     qibla,
@@ -132,6 +146,7 @@ class AppRoutes {
     surah,
     splashScreen,
     intro,
+    duas,
   ];
 
   static AppRoute getRouteByPath(String path) {

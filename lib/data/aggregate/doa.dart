@@ -4,6 +4,7 @@ class CompleteDuaData {
   int id;
   DoaCategoryData doaCategory;
   AyahData ayah;
+  SurahData? surah;
 
-  CompleteDuaData(this.id, this.doaCategory, this.ayah);
+  CompleteDuaData(this.id, this.doaCategory, this.ayah, this.surah);
 }

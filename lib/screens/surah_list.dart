@@ -16,15 +16,17 @@ class SurahListScreen extends StatefulWidget {
 }
 
 class _SurahListScreenState extends State<SurahListScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       child: Column(
         children: [
-          TopBarUtility.buildPurpleTitleTopbar(context:context, title: "The Holy Quran"),  
-          Expanded( 
+          TopBarUtility.buildPurpleTitleTopbar(
+            context: context,
+            title: "The Holy Quran",
+          ),
+          Expanded(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -32,18 +34,15 @@ class _SurahListScreenState extends State<SurahListScreen> {
                   const SizedBox(height: 8),
                   SearchBox(),
                   const SizedBox(height: 20),
-                  Expanded( 
-                    child: SurahListContentWidget(),
-                  ),
+                  Expanded(child: SurahListContentWidget()),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
-
 }
 
 class SurahListContentWidget extends StatefulWidget {
@@ -64,9 +63,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     return Column(
       children: [
         _buildTabNavigation(viewModel),
-        Expanded( 
-          child: _buildTabContent(),
-        ),
+        Expanded(child: _buildTabContent()),
       ],
     );
   }
@@ -112,7 +109,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white, 
+          color: Colors.white,
           border: Border(
             bottom: BorderSide(
               color: isActive ? activeColor : Colors.grey.shade200,
@@ -138,25 +135,24 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
       builder: (context, viewModel, child) {
         switch (viewModel.state) {
           case SurahListLoading():
-            return Center(
-              child: CircularProgressIndicator()
-            );
+            return Center(child: CircularProgressIndicator());
           case SurahListError(:var message):
-            return Center(
-                child: Text("Error: $message")
-              );
+            return Center(child: Text("Error: $message"));
           case SurahListSuccessTypeSurah(:var surahs):
-            return SingleChildScrollView( 
-                controller: _surahScrollController,
-                child: _buildSurahList(context, surahs));
+            return SingleChildScrollView(
+              controller: _surahScrollController,
+              child: _buildSurahList(context, surahs),
+            );
           case SurahListSuccessTypeJuz(:var juz):
-            return SingleChildScrollView( 
-                controller: _juzScrollController,
-                child: _buildJuzList(juz));
+            return SingleChildScrollView(
+              controller: _juzScrollController,
+              child: _buildJuzList(juz),
+            );
           case SurahListSuccessEmpty():
             return Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Text("No Result Found"));
+              padding: EdgeInsets.only(top: 20),
+              child: Text("No Result Found"),
+            );
         }
       },
     );
@@ -186,9 +182,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
               children: [
                 _buildSurahNumberIcon(surah.number),
                 const SizedBox(width: 16),
-                Expanded(
-                  child: _buildSurahInfo(surah),
-                ),
+                Expanded(child: _buildSurahInfo(surah)),
                 _buildArabicName(surah.name),
               ],
             ),
@@ -243,24 +237,15 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           children: [
             Text(
               surah.place,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF7C8BA0),
-              ),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
             ),
             const Text(
               ' • ',
-              style: TextStyle(
-                fontSize: 12,
-                color: Color(0xFF7C8BA0),
-              ),
+              style: TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
             ),
             Text(
               '${surah.totalAyah} Verse',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF7C8BA0),
-              ),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
             ),
           ],
         ),
@@ -299,11 +284,9 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       child: InkWell(
-        borderRadius: BorderRadius.circular(8.0), 
+        borderRadius: BorderRadius.circular(8.0),
         onTap: () {
           navigateToJuz(context, juzInfo);
         },
@@ -324,7 +307,6 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
       ),
     );
   }
-
 
   Widget _buildJuzHeader(JuzInfoDto juzInfo) {
     return Row(
@@ -373,17 +355,11 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           children: [
             Text(
               juzInfo.startSurahName,
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
             ),
             Text(
               'Verse ${juzInfo.startAyahNumber} - ${juzInfo.endAyahNumber}',
-              style: const TextStyle(
-                fontSize: 12.0,
-                color: Color(0xFF672CBC),
-              ),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
             ),
           ],
         ),
@@ -401,17 +377,11 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           children: [
             Text(
               juzInfo.startSurahName,
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
             ),
             Text(
               'Verse ${juzInfo.startAyahNumber} - ${juzInfo.startSurahTotalAyah}',
-              style: const TextStyle(
-                fontSize: 12.0,
-                color: Color(0xFF672CBC),
-              ),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
             ),
           ],
         ),
@@ -421,17 +391,11 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           children: [
             Text(
               juzInfo.endSurahName,
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
             ),
             Text(
               'Verse 1 - ${juzInfo.endAyahNumber}',
-              style: const TextStyle(
-                fontSize: 12.0,
-                color: Color(0xFF672CBC),
-              ),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
             ),
           ],
         ),

@@ -9,8 +9,8 @@ class Ayah extends Table {
   TextColumn get readText => text()();
   IntColumn get juz => integer()();
   IntColumn get ayahNumber => integer()();
+  TextColumn get audioLink => text()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
-

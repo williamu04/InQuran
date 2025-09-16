@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _fadeOutAndNavigate() async {
     await _animationController.reverse();
-    final globalConfig = GlobalConfig(); 
+    final globalConfig = GlobalConfig();
     final isFirst = globalConfig.isFirstLaunch;
     if (!mounted) return;
     if (!isFirst) {
@@ -97,7 +97,7 @@ class _SplashScreenState extends State<SplashScreen>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
-                            'QuranApp',
+                            'InQuran',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -109,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                           const SizedBox(height: 8),
 
                           const Text(
-                            'Slogan atau Jargon',
+                            'Suarakan niat, Dengarkan ayat, Dekap hidayah',
                             style: TextStyle(
                               fontSize: 16,
                               color: Color(0xFF64748B),

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/dto/surah.dart';
@@ -19,26 +18,19 @@ class MushafSurahScreen extends StatelessWidget {
           case SurahLoading():
             return Center(child: CircularProgressIndicator());
           case SurahError(:var message):
-            return Center(child: Text("Error: $message")); 
+            return Center(child: Text("Error: $message"));
           case SurahSuccess(:var ayahs):
             return _buildSurah(ayahs);
         }
-      }
+      },
     );
   }
 
   Widget _buildSurah(List<AyahWithSurahDto> s) {
     return Padding(
-      padding: EdgeInsetsGeometry.only(
-        left: 20,
-        right: 20,
-        bottom: 107,
-      ),
+      padding: EdgeInsets.only(left: 20, right: 20, bottom: 107),
       child: Column(
-        children: [
-          _buildHeader(s[0]),
-          Expanded(child:_buildMushaf())
-        ],
+        children: [_buildHeader(s[0]), Expanded(child: _buildMushaf())],
       ),
     );
   }
@@ -46,7 +38,7 @@ class MushafSurahScreen extends StatelessWidget {
   Widget _buildHeader(AyahWithSurahDto s) {
     return roundedCard(
       allRounded: true,
-      padding: EdgeInsetsGeometry.symmetric(horizontal: 30, vertical: 15),
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
       child: Column(
         children: [
           Row(
@@ -128,31 +120,24 @@ class MushafSurahScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(top: 20, left: 10, right: 10),
       child: LayoutBuilder(
-      builder: (context, constraints) {
-        double width = constraints.maxWidth;
-        double height = constraints.maxHeight;
+        builder: (context, constraints) {
+          double width = constraints.maxWidth;
+          double height = constraints.maxHeight;
 
-        debugPrint("Mushaf size → width: $width, height: $height");
+          debugPrint("Mushaf size → width: $width, height: $height");
 
-        return Container(
-          color: Colors.blue,
-          width: width,
-          height: height,
-        );
-      },
-    ),
+          return Container(color: Colors.blue, width: width, height: height);
+        },
+      ),
     );
   }
   // Size measureTextSize(String text, TextStyle style, double maxWidth) {
   //   final TextPainter textPainter = TextPainter(
   //     text: TextSpan(text: text, style: style),
-  //     maxLines: null, 
+  //     maxLines: null,
   //     textDirection: TextDirection.ltr,
   //   )..layout(maxWidth: maxWidth);
 
   //   return textPainter.size; // gives width and height
   // }
-
-
-  
 }
