@@ -12,7 +12,11 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class NormalSurahScreen extends StatefulWidget {
   final LoadType loadType;
   final bool memorize;
-  const NormalSurahScreen({super.key, required this.loadType, this.memorize = false});
+  const NormalSurahScreen({
+    super.key,
+    required this.loadType,
+    this.memorize = false,
+  });
 
   @override
   State<NormalSurahScreen> createState() => _NormalSurahScreenState();
@@ -64,7 +68,6 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
     if (mounted) _resetPullAnimation();
   }
 
-
   Future<void> _loadBottom(SurahDetailViewModel vm) async {
     if (_isBottomLoading) return;
     setState(() => _isBottomLoading = true);
@@ -90,13 +93,19 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
     }
   }
 
-  bool _handleOverscroll(OverscrollNotification overscroll, SurahDetailViewModel vm) {
+  bool _handleOverscroll(
+    OverscrollNotification overscroll,
+    SurahDetailViewModel vm,
+  ) {
     if (_isTopLoading || _isBottomLoading) return false;
 
     if (overscroll.metrics.pixels <= overscroll.metrics.minScrollExtent &&
         overscroll.overscroll < 0) {
       setState(() {
-        _pullDistance = (_pullDistance - overscroll.overscroll).clamp(0, _maxPullDistance);
+        _pullDistance = (_pullDistance - overscroll.overscroll).clamp(
+          0,
+          _maxPullDistance,
+        );
         _isReadyToRefresh = _pullDistance >= _triggerDistance;
       });
 
@@ -104,7 +113,6 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
           (_pullDistance - overscroll.overscroll.abs()) < _triggerDistance) {
         HapticFeedback.lightImpact();
       }
-
 
       if (overscroll.overscroll.abs() > 0) _loadTop(vm);
     }
@@ -132,7 +140,8 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
             if (!_hasShownPopup && warning != null) {
               _hasShownPopup = true;
               WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => errorPopup(context, warning));
+                (_) => errorPopup(context, warning),
+              );
             }
 
             return NotificationListener<OverscrollNotification>(
@@ -157,7 +166,13 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     );
                   }
                   final ayah = ayahs[index];
-                  return _buildAyahCard(ayah, padding: index == ayahs.length - 1 ? EdgeInsets.only(bottom: 120) : null);
+                  return _buildAyahCard(
+                    ayah,
+                    padding:
+                        index == ayahs.length - 1
+                            ? EdgeInsets.only(bottom: 120)
+                            : null,
+                  );
                 },
               ),
             );
@@ -207,7 +222,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Color(0xff994EF8)
+                      color: Color(0xff994EF8),
                     ),
                     child: Center(
                       child: Text(
@@ -221,12 +236,9 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     ),
                   ),
                   const Spacer(),
+                  _buildActionButton(icon: LucideIcons.play, onPressed: () {}),
                   _buildActionButton(
-                    icon: LucideIcons.play,
-                    onPressed: () {},
-                  ),
-                  _buildActionButton(
-                    icon: LucideIcons.share,
+                    icon: LucideIcons.share2,
                     onPressed: () {
                       final text =
                           'Surah ${ayah.nameLatin}, Ayat ${ayah.number}:\n\n'
@@ -242,12 +254,12 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
               ),
             ),
             const SizedBox(height: 20),
-            AyahCard(arabText: ayah.arabText, translationText: ayah.translationText, isMemorizeMode: widget.memorize,),
-            Divider(
-              color: Colors.grey.shade300,
-              thickness: 1,
-              height: 1,
+            AyahCard(
+              arabText: ayah.arabText,
+              translationText: ayah.translationText,
+              isMemorizeMode: widget.memorize,
             ),
+            Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
           ],
         ),
       ),
@@ -273,15 +285,11 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
     }
 
     if (padding != null) {
-      return Padding(
-        padding: padding,
-        child: ayahCardContent,
-      );
+      return Padding(padding: padding, child: ayahCardContent);
     }
 
     return ayahCardContent;
   }
-
 
   Widget _buildActionButton({
     required IconData icon,
@@ -296,11 +304,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
           onTap: onPressed,
           child: Container(
             padding: const EdgeInsets.all(8),
-            child: Icon(
-              icon,
-              size: 20,
-              color: const Color(0xFF672CBC),
-            ),
+            child: Icon(icon, size: 20, color: const Color(0xFF672CBC)),
           ),
         ),
       ),
@@ -313,14 +317,14 @@ class AyahCard extends StatefulWidget {
   final String arabText;
   final String translationText;
   final bool isMemorizeMode;
-  late bool showArabic; 
+  late bool showArabic;
 
   AyahCard({
     super.key,
     required this.arabText,
     required this.translationText,
     required this.isMemorizeMode,
-  }){
+  }) {
     showArabic = isMemorizeMode ? false : true;
   }
 
@@ -329,7 +333,6 @@ class AyahCard extends StatefulWidget {
 }
 
 class _AyahCardState extends State<AyahCard> {
-
   void _toggleArabic() {
     setState(() {
       widget.showArabic = !widget.showArabic;
@@ -339,7 +342,7 @@ class _AyahCardState extends State<AyahCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: widget.isMemorizeMode ?  _toggleArabic : () => {}, 
+      onTap: widget.isMemorizeMode ? _toggleArabic : () => {},
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -445,7 +448,7 @@ class SurahHeaderCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-    
+
                 // Nama Arab
                 Align(
                   alignment: Alignment.centerRight,
@@ -476,7 +479,6 @@ class SurahHeaderCard extends StatelessWidget {
                   fit: BoxFit.contain,
                 ),
               ),
-
           ],
         ),
       ),

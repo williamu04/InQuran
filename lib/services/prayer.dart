@@ -3,10 +3,18 @@ import 'package:http/http.dart' as http;
 import 'package:mtqmnuns/models/prayer.dart';
 
 class PrayerService {
-  Future<PrayerTime> getPrayerTimes(double lat, double lon) async {
-    final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  Future<PrayerTime> getPrayerTimes(
+    double lat,
+    double lon, {
+    DateTime? date,
+  }) async {
+    // kalau date tidak dikasih → pakai today
+    final targetDate = date ?? DateTime.now();
+    final timestamp = targetDate.millisecondsSinceEpoch ~/ 1000;
+
     final url = Uri.parse(
-      'http://api.aladhan.com/v1/timings/$timestamp?latitude=$lat&longitude=$lon&method=2',
+      'http://api.aladhan.com/v1/timings/$timestamp'
+      '?latitude=$lat&longitude=$lon&method=2',
     );
 
     final response = await http.get(url);
