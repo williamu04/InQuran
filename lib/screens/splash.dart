@@ -107,14 +107,14 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
 
                           const SizedBox(height: 8),
-
                           const Text(
-                            'Suarakan niat, Dengarkan ayat, Dekap hidayah',
+                            'Suarakan niat\nDengarkan ayat\nDekap hidayah',
                             style: TextStyle(
                               fontSize: 16,
                               color: Color(0xFF64748B),
                               fontWeight: FontWeight.w400,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
