@@ -45,6 +45,18 @@ dependencies:
   share_plus: ^11.0.0
   provider: ^6.1.2
   shared_preferences: ^2.2.2 
+  permission_handler: ^11.3.0  
+  flutter_sound: ^9.28.0
+  flutter_dotenv: ^5.1.0
+  speech_to_text: ^7.1.0
+  auto_size_text: ^3.0.0
+  fuzzywuzzy: ^1.2.0
+  http: ^1.5.0
+  intl: ^0.20.2
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
+  flutter_compass: ^0.8.1
+  scrollable_positioned_list: ^0.3.8
 
 dev_dependencies:
   flutter_test:
@@ -63,10 +75,10 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
@@ -112,3 +124,6 @@ flutter:
     - family: Al Jazeera
       fonts:
         - asset: assets/fonts/AlJazeeraArabic-Bold.ttf
+    - family: Amiri Quran
+      fonts:
+        - asset: assets/fonts/AmiriQuran-Regular.ttf

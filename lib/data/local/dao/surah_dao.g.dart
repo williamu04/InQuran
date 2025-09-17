@@ -5,4 +5,5 @@ part of 'surah_dao.dart';
 // ignore_for_file: type=lint
 mixin _$SurahDaoMixin on DatabaseAccessor<AppDatabase> {
   $SurahTable get surah => attachedDatabase.surah;
+  $AyahTable get ayah => attachedDatabase.ayah;
 }

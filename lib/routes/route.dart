@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/config/route.dart';
-import 'package:mtqmnuns/screens/book.dart';
+import 'package:mtqmnuns/routes/route_model.dart';
+import 'package:mtqmnuns/screens/duas.dart';
+import 'package:mtqmnuns/screens/explore.dart';
+import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
 import 'package:mtqmnuns/screens/favorites.dart';
@@ -10,177 +11,130 @@ import 'package:mtqmnuns/screens/login.dart';
 import 'package:mtqmnuns/screens/profile.dart';
 import 'package:mtqmnuns/screens/qibla.dart';
 import 'package:mtqmnuns/screens/search.dart';
-import 'package:mtqmnuns/screens/duas.dart';
+import 'package:mtqmnuns/screens/duas_list.dart';
 import 'package:mtqmnuns/screens/home.dart';
 import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/surah.dart';
-import 'package:mtqmnuns/screens/splash_screen.dart';
+import 'package:mtqmnuns/screens/splash.dart';
 import 'package:mtqmnuns/screens/times.dart';
-
 
 class AppRoutes {
   static final signUp = AppRoute(
-    title: 'Sign Up',
     path: '/signup',
     pageBuilder: (context, state) => NoTransitionPage(child: SignUpScreen()),
-    icon: LucideIcons.user,
-    isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasBottomBar: false,
   );
 
   static final intro = AppRoute(
-    title: 'intro',
     path: '/intro',
     pageBuilder: (context, state) => NoTransitionPage(child: IntroScreen()),
-    icon: LucideIcons.listStart,
-    isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasBottomBar: false,
   );
 
   static final login = AppRoute(
-    title: 'login',
     path: '/login',
     pageBuilder: (context, state) => NoTransitionPage(child: LoginScreen()),
-    icon: LucideIcons.user,
-    isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasBottomBar: false,
   );
 
   static final splashScreen = AppRoute(
-    title: 'Splash Screen',
     path: '/splash',
     pageBuilder: (context, state) => NoTransitionPage(child: SplashScreen()),
-    icon: LucideIcons.user,
-    isHasPurpleBanner: false,
-    isHasBar: false,
+    isHasBottomBar: false,
   );
-
 
   static final home = AppRoute(
-    title: 'QuranApp',
     path: '/',
+    isHasBottomBar: true,
     pageBuilder: (context, state) => NoTransitionPage(child: HomeScreen()),
-    icon: LucideIcons.house,
-    isHasPurpleBanner: true,
-    isHasBar: true,
   );
 
-  static final book = AppRoute(
-    title: 'The Holy Quran',
-    path: '/book',
-    pageBuilder: (context, state) => NoTransitionPage(child: BookScreen()),
-    icon: LucideIcons.bookOpen,
-    isHasPurpleBanner: false,
-    isHasBar: true,
+  static final surahList = AppRoute(
+    path: '/surah/list',
+    pageBuilder: (context, state) => NoTransitionPage(child: SurahListScreen()),
+    isHasBottomBar: true,
   );
 
   static final search = AppRoute(
-    title: 'Explore',
     path: '/search',
     pageBuilder: (context, state) => NoTransitionPage(child: SearchScreen()),
-    icon: LucideIcons.search,
-    isHasPurpleBanner: true,
-    isHasBar: true,
+    isHasBottomBar: true,
   );
 
-  static final duas = AppRoute(
-    title: 'Duas Collection',
-    path: '/duas',
-    pageBuilder: (context, state) => NoTransitionPage(child: DuasScreen()),
-    icon: LucideIcons.handHeart,
-    isHasPurpleBanner: true,
-    isHasBar: true,
+  static final duasList = AppRoute(
+    path: '/duas/list',
+    pageBuilder: (context, state) => NoTransitionPage(child: DuasListScreen()),
+    isHasBottomBar: true,
   );
 
   static final profile = AppRoute(
-    title: 'Account Profile',
     path: '/profile',
     pageBuilder: (context, state) => NoTransitionPage(child: ProfileScreen()),
-    icon: LucideIcons.user,
-    isHasPurpleBanner: true,
-    isHasBar: true,
+    isHasBottomBar: true,
   );
 
   static final prayer = AppRoute(
-    title: 'Prayer Times',
     path: '/times',
     pageBuilder:
         (context, state) => NoTransitionPage(child: PrayerTimeScreen()),
-    icon: LucideIcons.hourglass,
-    isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasBottomBar: true,
   );
 
   static final qibla = AppRoute(
-    title: 'Prayer Qibla',
     path: '/qibla',
     pageBuilder: (context, state) => NoTransitionPage(child: QiblaScreen()),
-    icon: LucideIcons.compass,
-    isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasBottomBar: true,
   );
 
   static final favorites = AppRoute(
-    title: 'Favorites',
     path: '/favorite',
     pageBuilder: (context, state) => NoTransitionPage(child: FavoriteScreen()),
-    icon: LucideIcons.bookMarked,
-    isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasBottomBar: true,
   );
 
   static final calendar = AppRoute(
-    title: 'Calendar',
     path: '/calendar',
     pageBuilder: (context, state) => NoTransitionPage(child: CalendarScreen()),
-    icon: LucideIcons.calendar,
-    isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasBottomBar: true,
+  );
+
+  static final explore = AppRoute(
+    path: '/explore',
+    pageBuilder: (context, state) => NoTransitionPage(child: ExploreScreen()),
+    isHasBottomBar: true,
   );
 
   static final etc = AppRoute(
-    title: 'Etc',
     path: '/etc',
     pageBuilder: (context, state) => NoTransitionPage(child: EtcScreen()),
-    icon: LucideIcons.bell,
-    isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasBottomBar: true,
   );
 
   static final surah = AppRoute(
-    title: 'Surah Screen',
     path: '/surah',
     pageBuilder: (context, state) {
-      return NoTransitionPage(child: SurahScreen(state: state));
+      return NoTransitionPage(
+        child: SurahScreen(queryParam: state.uri.queryParameters),
+      );
     },
-    icon: LucideIcons.book,
-    isHasPurpleBanner: false,
-    isHasBar: true,
+    isHasBottomBar: true,
   );
 
-  static final List<AppRoute> homeMenu = [
-    book,
-    duas,
-    prayer,
-    qibla,
-    favorites,
-    calendar,
-    etc,
-  ];
-
-  static final List<AppRoute> bottomNav = [
-    book,
-    search,
-    home,
-    duas,
-    profile,
-  ];
+  static final duas = AppRoute(
+    path: '/duas',
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        child: DuasScreen(queryParam: state.uri.queryParameters),
+      );
+    },
+    isHasBottomBar: true,
+  );
 
   static final List<AppRoute> all = [
-    book,
+    surahList,
     search,
     home,
-    duas,
+    duasList,
     profile,
     prayer,
     qibla,
@@ -191,9 +145,9 @@ class AppRoutes {
     login,
     surah,
     splashScreen,
-    intro
+    intro,
+    duas,
   ];
-
 
   static AppRoute getRouteByPath(String path) {
     final cleanPath = Uri.parse(path).path;

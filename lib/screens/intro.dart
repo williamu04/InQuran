@@ -13,13 +13,10 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(
+    return SizedBox(
         width: double.infinity,
         height: double.infinity,
-        child: SafeArea(
-          child: Padding(
+        child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +34,6 @@ class _IntroScreenState extends State<IntroScreen> {
                   ),
                 ),
 
-                // App Title
                 const Text(
                   'QuranApp',
                   textAlign: TextAlign.center,
@@ -50,7 +46,6 @@ class _IntroScreenState extends State<IntroScreen> {
                 
                 const SizedBox(height: 8),
                 
-                // Subtitle
                 const Text(
                   'Slogan atau Jargon',
                   textAlign: TextAlign.center,
@@ -61,35 +56,33 @@ class _IntroScreenState extends State<IntroScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: 24), // Reduced gap
+                const SizedBox(height: 24), 
                 
-                // Description
                 const Text(
                   '"Read and Understand\nThe Meaning of The Holy Verses Easily,\nAnytime and Anywhere."',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 14, // Reduced font size
-                    height: 1.3, // Reduced line height
+                    fontSize: 14,  
+                    height: 1.3, 
                     color: Color(0xFF7C8BA0),
                   ),
                 ),
                 
-                const SizedBox(height: 40), // Reduced gap
+                const SizedBox(height: 40), 
                 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Start Reading Button (Left)
-                    Expanded(
+                    SizedBox (
                       child: SizedBox(
-                        height: 48, // Reduced button height
+                        height: 40, 
                         child: ElevatedButton(
                           onPressed: () async {
-                            final isFirst = await GlobalConfig().isFirstLaunch();
+                            final isFirst = GlobalConfig().isFirstLaunch;
                             if (isFirst) {
-                              await GlobalConfig().markLaunched();
+                              await GlobalConfig().markLaunched(isDisabilityMode: false);
                             }
-                            if (!mounted) return;
+                            if (!context.mounted) return;
                             context.go(AppRoutes.home.path);
                           },
                           style: ElevatedButton.styleFrom(
@@ -97,13 +90,13 @@ class _IntroScreenState extends State<IntroScreen> {
                             foregroundColor: Colors.white,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(50),
                             ),
                           ),
                           child: const Text(
                             'Start Reading',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -113,29 +106,33 @@ class _IntroScreenState extends State<IntroScreen> {
                     
                     const SizedBox(width: 16),
                     
-                    // I Already Have an Account Button (Right)
-                    Expanded(
+                    SizedBox(
                       child: SizedBox(
-                        height: 48, // Reduced button height
+                        height: 40, // Reduced button height
                         child: OutlinedButton(
-                          onPressed: () {
-                            context.push(AppRoutes.login.path);
+                          onPressed: () async {
+                            final isFirst = GlobalConfig().isFirstLaunch;
+                            if (isFirst) {
+                              await GlobalConfig().markLaunched(isDisabilityMode: true);
+                            }
+                            if (!context.mounted) return;
+                            context.go(AppRoutes.home.path);
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF672CBC),
                             side: const BorderSide(
                               color: Color(0xFF672CBC),
-                              width: 2,
+                              width: 1.5,
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(50),
                             ),
                             backgroundColor: Colors.transparent,
                           ),
                           child: const Text(
-                            'I Already Have an Account',
+                            'Voice Command Mode',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 10,
                               fontWeight: FontWeight.w600,
                             ),
                             textAlign: TextAlign.center,
@@ -146,12 +143,10 @@ class _IntroScreenState extends State<IntroScreen> {
                   ],
                 ),
                 
-                const Spacer(), // Push everything up slightly
+                const SizedBox(height: 150), 
               ],
             ),
           ),
-        ),
-      ),
-    );
+      );
   }
 }

@@ -1,61 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
-import 'package:mtqmnuns/components/top_bar.dart';
+import 'package:mtqmnuns/components/drawer.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/config/go_router.dart';
-import 'package:mtqmnuns/config/route.dart';
+import 'package:mtqmnuns/config/drawer.dart';
+import 'package:mtqmnuns/config/global.dart';
+import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
+import 'package:mtqmnuns/repositories/ayah.dart';
+import 'package:mtqmnuns/routes/go_router.dart';
+import 'package:mtqmnuns/routes/route_model.dart';
+import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
+import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/providers/location.dart';
+import 'package:mtqmnuns/repositories/juz.dart';
+import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/viewmodel/book_viewmodel.dart';
+import 'package:mtqmnuns/services/stt.dart';
+import 'package:mtqmnuns/services/surah_filter.dart';
+import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:mtqmnuns/viewmodel/stt.dart';
+import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
 
-main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final globalConfig = GlobalConfig();
+  await globalConfig.initialize();
+
+  final db = AppDatabase();
+
   runApp(
     MultiProvider(
       providers: [
-        // viewmodel list here
-        ChangeNotifierProvider(create: (_) => BookViewModel()),
+        // Global config
+        ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
+
+        // DAOs
+        Provider(create: (_) => db.surahDao),
+        Provider(create: (_) => db.juzDao),
+        Provider(create: (_) => db.ayahDao),
+
+        // Repositories
+        Provider(
+          create: (context) => SurahRepository(context.read<SurahDao>()),
+        ),
+        Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
+        Provider(create: (context) => AyahRepository(context.read<AyahDao>())),
+
+        // Services
+        Provider(create: (_) => SttService()),
+        Provider(create: (_) => SurahFilterService()),
+
+        // ViewModels
+        ChangeNotifierProvider(
+          create:
+              (context) => SurahListViewModel(
+                context.read<SurahRepository>(),
+                context.read<SurahFilterService>(),
+                context.read<JuzRepository>(), // optional if needed
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) => SttViewModel(
+                context.read<SttService>(),
+                context.read<SurahRepository>(),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocationProvider()..loadLocation(),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) =>
+                  SurahDetailViewModel(context.read<AyahRepository>()),
+        ),
+        ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
+        ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),
       ],
       child: const MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final router = _buildRouterConfig().buildRouter();
+  State<MyApp> createState() => _MyAppState();
+}
 
-    return MaterialApp.router(
-      routerConfig: router,
-      theme: _buildAppTheme(),
-    );
-  }
+class _MyAppState extends State<MyApp> {
+  late final GoRouter _router;
 
-  AppRouterConfig _buildRouterConfig() {
-    return AppRouterConfig(
+  @override
+  void initState() {
+    super.initState();
+    final config = AppRouterConfig(
       initialLocation: AppRoutes.splashScreen.path,
-      mainShellBuilder: _mainShellBuilder(),
-      appRoutes: _appRoutes(),
+      mainShellBuilder: (context, state, child) {
+        return MainScaffold(context: context, state: state, child: child);
+      },
+      appRoutes:
+          AppRoutes.all
+              .map(
+                (route) =>
+                    GoRoute(path: route.path, pageBuilder: route.pageBuilder),
+              )
+              .toList(),
     );
+
+    _router = config.buildRouter();
   }
 
-  ShellBuilder _mainShellBuilder() {
-    return (BuildContext context, GoRouterState state, Widget child) {
-      return MainScaffold(context: context, state: state, child: child);
-    };
-  }
-
-  List<GoRoute> _appRoutes() {
-    return AppRoutes.all
-        .map(
-          (route) => GoRoute(
-            path: route.path,
-            pageBuilder: route.pageBuilder,
-          ),
-        ).toList();
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(routerConfig: _router, theme: _buildAppTheme());
   }
 
   ThemeData _buildAppTheme() {
@@ -88,39 +150,47 @@ class MainScaffold extends StatelessWidget {
     final String currentPath = state.uri.toString();
     final AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
 
-    final double topPadding =
-        (!currentRoute.isHasBar || currentRoute.isHasPurpleBanner)
-            ? 0
-            : MediaQuery.of(context).padding.top + kToolbarHeight;
-
     return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        extendBody: true,
-        body: Stack(
-          children: [
-            _buildMainContent(topPadding),
-            if (currentRoute.isHasBar) ...[
-              _buildTopBar(),
-              _buildWhiteGradientOverlay(),
-            ],
-            _buildPurpleGradientOverlay(),
-          ],
-        ),
-        bottomNavigationBar:
-            currentRoute.isHasBar ? bottomNavBar(context, state) : null,
+      child: Stack(
+        children: [
+          Scaffold(
+            resizeToAvoidBottomInset: false,
+            extendBody: true,
+            body: Stack(
+              children: [
+                _buildMainContent(),
+                if (currentRoute.isHasBottomBar) _buildWhiteGradientOverlay(),
+                _buildPurpleGradientOverlay(),
+              ],
+            ),
+            bottomNavigationBar:
+                currentRoute.isHasBottomBar
+                    ? BottomNavBar()
+                    : null,
+          ),
+
+          SlideDrawer(
+            title: "InQuran",
+            side: DrawerSide.left,
+            viewModel: context.read<MenuSlideDrawerViewModel>(),
+            textButtonList: DrawerConfig().getMenuDrawerTextButtonList(context),
+          ),
+
+          SlideDrawer(
+            title: "Settings",
+            side: DrawerSide.right,
+            viewModel: context.read<SettingSlideDrawerViewModel>(),
+            textButtonList: DrawerConfig().getSettingDrawerTextButtonList(context),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildMainContent(double topPadding) {
+  Widget _buildMainContent() {
     return Positioned.fill(
-      child: Padding(padding: EdgeInsets.only(top: topPadding), child: child),
+      child:  child,
     );
-  }
-
-  Widget _buildTopBar() {
-    return Positioned(top: 0, left: 0, right: 0, child: topBar(context, state));
   }
 
   Widget _buildWhiteGradientOverlay() {
@@ -130,7 +200,7 @@ class MainScaffold extends StatelessWidget {
       bottom: 0,
       child: IgnorePointer(
         child: Container(
-          height: 200,
+          height: 150,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -173,3 +243,4 @@ class MainScaffold extends StatelessWidget {
     );
   }
 }
+
