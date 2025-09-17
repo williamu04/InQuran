@@ -1,93 +1,82 @@
 
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/components/drawer_text_button.dart';
 import 'package:mtqmnuns/config/global.dart';
+import 'package:mtqmnuns/models/disclosure_button.dart';
+import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:provider/provider.dart';
 
 class DrawerConfig {
-  List<TextButtonDrawerModel> getSettingDrawerTextButtonList(
-    BuildContext context,
-  ) {
-    final globalConfig = GlobalConfig();
-
+  List<DisclosureButtonModel> getProfileDrawer() {
     return [
-      TextButtonDrawerModel(
-        text: "Language",
-        action: ExpandNestedDrawerAction([]),
+      DisclosureButtonModel(
+        text: "Notes",
+        showIcon: false,
+        action: SystemAction(() => {}),
       ),
-      TextButtonDrawerModel(
-        text: "General",
-        action: ExpandNestedDrawerAction([]),
+      DisclosureButtonModel(
+        text: "Favourite",
+        showIcon: false,
+        action: SystemAction(() => {}),
       ),
-      TextButtonDrawerModel(
-        text: "Quran Mode",
-        consumer: globalConfig,
-        action: ExpandNestedDrawerAction([
-            TextButtonDrawerModel(
-              text: "Normal Mode",
-              showIcon: false,
-              dynamicColor: () => _getQuranModeActiveColor(QuranMode.normal),
-              action: SystemAction(() => globalConfig.setQuranMode(QuranMode.normal)),
-            ),
-            TextButtonDrawerModel(
-              text: "Memorize Mode",
-              showIcon: false,
-              dynamicColor: () => _getQuranModeActiveColor(QuranMode.memorize),
-              action: SystemAction(() => globalConfig.setQuranMode(QuranMode.memorize)),
-            ),
-            TextButtonDrawerModel(
-              text: "Mushaf Mode",
-              showIcon: false,
-              dynamicColor: () => _getQuranModeActiveColor(QuranMode.mushaf),
-              action: SystemAction(() => globalConfig.setQuranMode(QuranMode.mushaf)),
-            ),
-          ]
-        ),
+      DisclosureButtonModel(
+        text: "Points",
+        showIcon: false,
+        action: SystemAction(() => {}),
+      ),
+      DisclosureButtonModel(
+        text: "Help & Support",
+        showIcon: false,
+        action: SystemAction(() => {}),
+      ),
+      DisclosureButtonModel(
+        text: "logout",
+        action: SystemAction(()=> {}),
+        showIcon: false,
+        color: Color(0xFFEA4335)
       ),
     ];
   }
 
-  List<TextButtonDrawerModel> getMenuDrawerTextButtonList(
+  List<DisclosureButtonModel> getMenuDrawerTextButtonList(
     BuildContext context,
   ) {
     final globalConfig = context.watch<GlobalConfig>();
 
     return [
-      TextButtonDrawerModel(
+      DisclosureButtonModel(
         text: "Daily Task",
         action: ExpandNestedDrawerAction([]),
       ),
-      TextButtonDrawerModel(
+      DisclosureButtonModel(
         text: "Voice Command Mode",
-        consumer: globalConfig,
         action: ExpandNestedDrawerAction([
-          TextButtonDrawerModel(
+          DisclosureButtonModel(
             text: "On", 
             showIcon: false,
-            dynamicColor: () => _getVoiceActiveColor(true),
+            color: _getVoiceActiveColor(true),
             action: SystemAction(() => globalConfig.setVoiceMode(true))
           ),
-          TextButtonDrawerModel(
+          DisclosureButtonModel(
             text: "Off", 
             showIcon: false,
-            dynamicColor: () => _getVoiceActiveColor(false),
+            color: _getVoiceActiveColor(false),
             action: SystemAction(() => globalConfig.setVoiceMode(false))
           )
         ]),
       ),
-      TextButtonDrawerModel(
+      DisclosureButtonModel(
         text: "Profile Setting",
         action: ExpandNestedDrawerAction([]),
       ),
-      TextButtonDrawerModel(
+      DisclosureButtonModel(
         text: "Help & Support",
         action: ExpandNestedDrawerAction([]),
       ),
-      TextButtonDrawerModel(
+      DisclosureButtonModel(
         text: "logout",
         action: SystemAction(()=> {}),
         showIcon: false,
-        dynamicColor: () => Color(0xFFEA4335)
+        color: Color(0xFFEA4335)
       ),
     ];
   }

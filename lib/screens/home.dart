@@ -349,6 +349,10 @@ class VoiceHomeScreen extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            child: TopBarUtility.buildPurpleTitleTopbar(context: context, title: "InQuran"),
+          ),
           _title(height),
           SizedBox(height: height * 0.055),
           MicButton(size: height * 0.3),

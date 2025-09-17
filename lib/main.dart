@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
-import 'package:mtqmnuns/components/drawer.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/config/drawer.dart';
+import 'package:mtqmnuns/components/drawer_menu.dart';
+import 'package:mtqmnuns/components/drawer_setting.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
@@ -18,6 +18,7 @@ import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
 import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:mtqmnuns/viewmodel/mushaf.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
@@ -76,6 +77,11 @@ void main() async {
           create:
               (context) =>
                   SurahDetailViewModel(context.read<AyahRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) =>
+                  MushafViewModel(context.read<AyahRepository>()),
         ),
         ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
         ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),
@@ -168,20 +174,8 @@ class MainScaffold extends StatelessWidget {
                     ? BottomNavBar()
                     : null,
           ),
-
-          SlideDrawer(
-            title: "InQuran",
-            side: DrawerSide.left,
-            viewModel: context.read<MenuSlideDrawerViewModel>(),
-            textButtonList: DrawerConfig().getMenuDrawerTextButtonList(context),
-          ),
-
-          SlideDrawer(
-            title: "Settings",
-            side: DrawerSide.right,
-            viewModel: context.read<SettingSlideDrawerViewModel>(),
-            textButtonList: DrawerConfig().getSettingDrawerTextButtonList(context),
-          ),
+          MenuDrawer(),
+          SettingDrawer(),
         ],
       ),
     );

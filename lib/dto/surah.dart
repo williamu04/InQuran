@@ -80,3 +80,11 @@ class AyahWithSurahDto {
     );
   }
 }
+
+class SurahParameter {
+  final int startSurahId;
+  final int startSurahAyah;
+  final int endSurahId;
+  final int endSurahAyah;
+  SurahParameter(this.startSurahId, this.startSurahAyah, this.endSurahId, this.endSurahAyah);
+}

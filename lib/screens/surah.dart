@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/screens/surah_mushaf.dart';
@@ -42,12 +44,16 @@ class _SurahScreenState extends State<SurahScreen> {
       }
 
       if (!mounted) return;
-      context.read<SurahDetailViewModel>().loadSurah(
-        startSurahId,
-        startSurahAyah,
-        endSurahId,
-        endSurahAyah,
-      );
+      final quranMode = context.read<GlobalConfig>().quranMode;
+      if (quranMode == QuranMode.normal || quranMode == QuranMode.memorize) {
+        context.read<SurahDetailViewModel>().loadSurah(
+          startSurahId,
+          startSurahAyah,
+          endSurahId,
+          endSurahAyah,
+        );
+      }
+
 
       setState(() {
         title = "Reading Quran";
@@ -67,6 +73,7 @@ class _SurahScreenState extends State<SurahScreen> {
         Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           child: TopBarUtility.buildPurpleTitleTopbar(
+            leftIcon: TopBarIconModel(icon: LucideIcons.arrowLeft, onPressed: () => context.pop(), color: Colors.grey),
             context: context,
             title: title,
           ),

@@ -127,3 +127,6 @@ flutter:
     - family: Amiri Quran
       fonts:
         - asset: assets/fonts/AmiriQuran-Regular.ttf
+    - family: Uthmani
+      fonts:
+        - asset: assets/fonts/KFGQPCUthmanicScriptHAFS-Regular.otf
