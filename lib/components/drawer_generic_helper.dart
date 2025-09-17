@@ -104,7 +104,7 @@ class _GenericDrawerState<T extends SlideDrawerViewModel> extends State<GenericD
               itemBuilder: (context, index) {
                 final button = buttonList[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -137,11 +137,14 @@ class _GenericDrawerState<T extends SlideDrawerViewModel> extends State<GenericD
           final nestedIndex = entry.key;
           final button = entry.value;
 
-          return DisclosureButton(
-            model: button,
-            isExpanded: _expandedIndices.contains(nestedIndex),
-            onTap: () => _handleButtonTap(button, nestedIndex),
-          );
+          return Padding(
+            padding: const EdgeInsets.only(top:14),
+            child: DisclosureButton(
+              model: button,
+              isExpanded: _expandedIndices.contains(nestedIndex),
+              onTap: () => _handleButtonTap(button, nestedIndex),
+            )
+          ,); 
         }).toList(),
       ),
     );

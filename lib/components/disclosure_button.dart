@@ -4,7 +4,7 @@ import 'package:mtqmnuns/models/disclosure_button.dart';
 
 class DisclosureButton extends StatelessWidget {
   final DisclosureButtonModel model;
-  final bool isExpanded;  
+  final bool isExpanded;
   final Function() onTap;
 
   const DisclosureButton({
@@ -18,27 +18,17 @@ class DisclosureButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              model.text,
-              style: TextStyle(
-                fontSize: 16,
-                color: model.color,
-                fontWeight: FontWeight.bold,
-              ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          model.textWidget,
+          if (model.showIcon)
+            Icon(
+              isExpanded ? LucideIcons.chevronDown : LucideIcons.chevronRight,
+              size: 20,
+              color: model.textWidget.style?.color ??  Color(0xFF672CBC),
             ),
-            if (model.showIcon)
-              Icon(
-                isExpanded ? LucideIcons.chevronDown : LucideIcons.chevronRight,
-                size: 20,
-                color: model.color,
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

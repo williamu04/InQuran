@@ -22,32 +22,37 @@ class SettingDrawer extends StatelessWidget {
 
   List<DisclosureButtonModel> _createSettingButtonList(GlobalConfig globalConfig) {
     return [
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "Language",
+        color: Color(0xFF994EF8),
         action: ExpandNestedDrawerAction([]),
       ),
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "General",
+        color: Color(0xFF994EF8),
         action: ExpandNestedDrawerAction([]),
       ),
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "Quran Mode",
         action: ExpandNestedDrawerAction([
-          DisclosureButtonModel(
+          DisclosureButtonModel.withDefaultTextStyle(
             text: "Normal Mode",
             showIcon: false,
+            fontWeight: FontWeight.w300,
             color: globalConfig.quranMode == QuranMode.normal ? const Color(0xFF672CBC) : Colors.grey,
             action: SystemAction(() => globalConfig.setQuranMode(QuranMode.normal)),
           ),
-          DisclosureButtonModel(
+          DisclosureButtonModel.withDefaultTextStyle(
             text: "Memorize Mode",
             showIcon: false,
+            fontWeight: FontWeight.w300,
             color: globalConfig.quranMode == QuranMode.memorize ? const Color(0xFF672CBC) : Colors.grey,
             action: SystemAction(() => globalConfig.setQuranMode(QuranMode.memorize)),
           ),
-          DisclosureButtonModel(
+          DisclosureButtonModel.withDefaultTextStyle(
             text: "Mushaf Mode",
             showIcon: false,
+            fontWeight: FontWeight.w300,
             color: globalConfig.quranMode == QuranMode.mushaf ? const Color(0xFF672CBC) : Colors.grey,
             action: SystemAction(() => globalConfig.setQuranMode(QuranMode.mushaf)),
           ),

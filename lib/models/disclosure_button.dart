@@ -2,15 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 
 class DisclosureButtonModel {
-  final String text;
   final DisclosureButtonAction action;
   final bool showIcon;
-  Color color;
+  final Text textWidget;
 
   DisclosureButtonModel({
-    required this.text,
     required this.action,
     this.showIcon = true,
-    this.color = const Color(0xFF672CBC)
+    required this.textWidget,
   });
+
+  DisclosureButtonModel.withDefaultTextStyle({
+    required this.action,
+    required String text,
+    double fontSize = 16,
+    FontWeight fontWeight = FontWeight.bold,
+    Color color = const Color(0xFF672CBC),
+    this.showIcon = true,
+  }) : textWidget = Text(
+          text,
+          style: TextStyle(
+            fontSize: fontSize,
+            color: color, 
+            fontWeight: fontWeight,
+          ),
+        );
 }

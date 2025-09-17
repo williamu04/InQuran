@@ -21,36 +21,38 @@ class MenuDrawer extends StatelessWidget {
 
   List<DisclosureButtonModel> _createMenuButtonList(GlobalConfig globalConfig) {
     return [
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "Daily Task",
         action: ExpandNestedDrawerAction([]),
       ),
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "Voice Command Mode",
         action: ExpandNestedDrawerAction([
-          DisclosureButtonModel(
-            text: "On",
+          DisclosureButtonModel.withDefaultTextStyle(
+            text: "ON",
             showIcon: false,
+            fontWeight: FontWeight.w300,
             color: globalConfig.isVoiceMode == true ? const Color(0xFF672CBC) : Colors.grey,
             action: SystemAction(() => globalConfig.setVoiceMode(true))
           ),
-          DisclosureButtonModel(
-            text: "Off",
+          DisclosureButtonModel.withDefaultTextStyle(
+            text: "OFF",
+            fontWeight: FontWeight.w300,
             showIcon: false,
             color: globalConfig.isVoiceMode == false ? const Color(0xFF672CBC) : Colors.grey,
             action: SystemAction(() => globalConfig.setVoiceMode(false))
           )
         ]),
       ),
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "Profile Setting",
         action: ExpandNestedDrawerAction([]),
       ),
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "Help & Support",
         action: ExpandNestedDrawerAction([]),
       ),
-      DisclosureButtonModel(
+      DisclosureButtonModel.withDefaultTextStyle(
         text: "logout",
         action: SystemAction(() => {}),
         showIcon: false,
