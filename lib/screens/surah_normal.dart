@@ -152,7 +152,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                 itemScrollController: _itemScrollController,
                 itemPositionsListener: _itemPositionsListener,
                 initialScrollIndex: jumpIndex ?? 0,
-                initialAlignment: _isTopLoading ? 0.05 : -0.05,
+                initialAlignment: _isTopLoading || _isBottomLoading ? 0.05 : 0,
                 itemBuilder: (context, index) {
                   if (_isBottomLoading && index == ayahs.length) {
                     return Padding(

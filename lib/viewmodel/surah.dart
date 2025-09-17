@@ -63,7 +63,7 @@ class SurahDetailViewModel extends ChangeNotifier {
       }
       if (last.surahNumber == 114) return;
       final newAyahs = await _ayahRepo.getAyahsBySurahId(last.surahNumber + 1);
-      _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 2);
+      _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
     });
   }
 
@@ -92,7 +92,7 @@ class SurahDetailViewModel extends ChangeNotifier {
       }
       if (last.juzNumber == 30) return;
       final newAyahs = await _ayahRepo.getAyahsByJuz(last.juzNumber + 1);
-      _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 2);
+      _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
     });
   }
 
@@ -125,7 +125,7 @@ class SurahDetailViewModel extends ChangeNotifier {
         endAyahNumber: first.number,
         count: count,
       );
-      _updateSuccess([...newAyahs, ...ayahs], jumpIndex: ayahs.length - 2);
+      _updateSuccess([...newAyahs, ...ayahs], jumpIndex: ayahs.length - 1);
     });
   }
 
