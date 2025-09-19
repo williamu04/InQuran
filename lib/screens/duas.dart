@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
@@ -17,7 +18,7 @@ class DuasScreen extends StatelessWidget {
       body: Container(
         padding: const EdgeInsets.symmetric(
           vertical: 20,
-          horizontal: 24,
+          // horizontal: 24,
         ), // ⬅️ padding luar
         child: Column(
           children: [
@@ -47,22 +48,23 @@ class DuasScreen extends StatelessWidget {
                   final duas = snapshot.data!;
                   return ListView(
                     padding: const EdgeInsets.only(
-                      top: 20,
+                      // top: 20,
                       bottom: 90,
-                      left: 16,
-                      right: 16,
+                      left: 20,
+                      right: 20,
                     ), // ⬅️ aman dari bottom bar
                     children: [
                       // 🔹 Judul kategori
                       Padding(
+                        // padding: const EdgeInsets.symmetric(vertical: 16.0),
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
                             "About \n$categoryName",
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
                               color: Color(0xff672CBC),
                             ),
                           ),
@@ -79,38 +81,36 @@ class DuasScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Teks Arab
-                                Text(
-                                  dua.ayah.ayahText,
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(
-                                    fontSize: 28,
-                                    fontFamily: 'Arab Typesetting',
-                                    color: Color(0xFF3B1D77),
+                                // 🔹 Loop semua ayat
+                                for (final ayah in dua.ayatList) ...[
+                                  Text(
+                                    ayah.ayahText,
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 28,
+                                      fontFamily: 'Arab Typesetting',
+                                      color: Color(0xFF3B1D77),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Divider
-                                const Divider(
-                                  color: Color(0xFF994EF8),
-                                  thickness: 1,
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Arti
-                                Text(
-                                  dua.ayah.indoText,
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Color(0xFF3B1D77),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    ayah.indoText,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Color(0xFF3B1D77),
+                                    ),
                                   ),
-                                ),
+                                  const Divider(
+                                    color: Color(0xFF994EF8),
+                                    thickness: 1,
+                                  ),
+                                ],
+
                                 const SizedBox(height: 8),
 
-                                // Sumber Surah
+                                // Surah info
                                 Text(
-                                  "Surah ${dua.surah?.nameLatin ?? '-'} verse ${dua.ayah.ayahNumber}",
+                                  "Surah ${dua.surah.nameLatin} (ayat ${dua.ayatList.first.ayahNumber} - ${dua.ayatList.last.ayahNumber})",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Color(0xff672CBC),
@@ -126,24 +126,15 @@ class DuasScreen extends StatelessWidget {
                                   children: [
                                     IconButton(
                                       onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.play_arrow,
-                                        color: Color(0xFF3B1D77),
-                                      ),
+                                      icon: const Icon(LucideIcons.play),
                                     ),
                                     IconButton(
                                       onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.share,
-                                        color: Color(0xFF3B1D77),
-                                      ),
+                                      icon: const Icon(LucideIcons.share2),
                                     ),
                                     IconButton(
                                       onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.bookmark_border,
-                                        color: Color(0xFF3B1D77),
-                                      ),
+                                      icon: const Icon(LucideIcons.bookmark),
                                     ),
                                   ],
                                 ),

@@ -366,7 +366,7 @@ class PrayerCard extends StatelessWidget {
                 style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
             ),
-            const SizedBox(width: 12),
+            // const SizedBox(width: 12),
             IconButton(
               icon: const Icon(LucideIcons.alarmClockPlus, color: Colors.white),
               onPressed: () {

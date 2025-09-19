@@ -1174,20 +1174,50 @@ class $DoaTable extends Doa with TableInfo<$DoaTable, DoaData> {
       'REFERENCES doaCategory (id)',
     ),
   );
-  static const VerificationMeta _ayahIdMeta = const VerificationMeta('ayahId');
+  static const VerificationMeta _surahIdMeta = const VerificationMeta(
+    'surahId',
+  );
   @override
-  late final GeneratedColumn<int> ayahId = GeneratedColumn<int>(
-    'ayahId',
+  late final GeneratedColumn<int> surahId = GeneratedColumn<int>(
+    'surahId',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES ayah (id)',
+      'REFERENCES surah (id)',
     ),
   );
+  static const VerificationMeta _startAyahMeta = const VerificationMeta(
+    'startAyah',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, categoryId, ayahId];
+  late final GeneratedColumn<int> startAyah = GeneratedColumn<int>(
+    'startAyah',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endAyahMeta = const VerificationMeta(
+    'endAyah',
+  );
+  @override
+  late final GeneratedColumn<int> endAyah = GeneratedColumn<int>(
+    'endAyah',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    categoryId,
+    surahId,
+    startAyah,
+    endAyah,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1211,13 +1241,29 @@ class $DoaTable extends Doa with TableInfo<$DoaTable, DoaData> {
     } else if (isInserting) {
       context.missing(_categoryIdMeta);
     }
-    if (data.containsKey('ayahId')) {
+    if (data.containsKey('surahId')) {
       context.handle(
-        _ayahIdMeta,
-        ayahId.isAcceptableOrUnknown(data['ayahId']!, _ayahIdMeta),
+        _surahIdMeta,
+        surahId.isAcceptableOrUnknown(data['surahId']!, _surahIdMeta),
       );
     } else if (isInserting) {
-      context.missing(_ayahIdMeta);
+      context.missing(_surahIdMeta);
+    }
+    if (data.containsKey('startAyah')) {
+      context.handle(
+        _startAyahMeta,
+        startAyah.isAcceptableOrUnknown(data['startAyah']!, _startAyahMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startAyahMeta);
+    }
+    if (data.containsKey('endAyah')) {
+      context.handle(
+        _endAyahMeta,
+        endAyah.isAcceptableOrUnknown(data['endAyah']!, _endAyahMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endAyahMeta);
     }
     return context;
   }
@@ -1238,10 +1284,20 @@ class $DoaTable extends Doa with TableInfo<$DoaTable, DoaData> {
             DriftSqlType.int,
             data['${effectivePrefix}categoryId'],
           )!,
-      ayahId:
+      surahId:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
-            data['${effectivePrefix}ayahId'],
+            data['${effectivePrefix}surahId'],
+          )!,
+      startAyah:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}startAyah'],
+          )!,
+      endAyah:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}endAyah'],
           )!,
     );
   }
@@ -1255,18 +1311,24 @@ class $DoaTable extends Doa with TableInfo<$DoaTable, DoaData> {
 class DoaData extends DataClass implements Insertable<DoaData> {
   final int id;
   final int categoryId;
-  final int ayahId;
+  final int surahId;
+  final int startAyah;
+  final int endAyah;
   const DoaData({
     required this.id,
     required this.categoryId,
-    required this.ayahId,
+    required this.surahId,
+    required this.startAyah,
+    required this.endAyah,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['categoryId'] = Variable<int>(categoryId);
-    map['ayahId'] = Variable<int>(ayahId);
+    map['surahId'] = Variable<int>(surahId);
+    map['startAyah'] = Variable<int>(startAyah);
+    map['endAyah'] = Variable<int>(endAyah);
     return map;
   }
 
@@ -1274,7 +1336,9 @@ class DoaData extends DataClass implements Insertable<DoaData> {
     return DoaCompanion(
       id: Value(id),
       categoryId: Value(categoryId),
-      ayahId: Value(ayahId),
+      surahId: Value(surahId),
+      startAyah: Value(startAyah),
+      endAyah: Value(endAyah),
     );
   }
 
@@ -1286,7 +1350,9 @@ class DoaData extends DataClass implements Insertable<DoaData> {
     return DoaData(
       id: serializer.fromJson<int>(json['id']),
       categoryId: serializer.fromJson<int>(json['categoryId']),
-      ayahId: serializer.fromJson<int>(json['ayahId']),
+      surahId: serializer.fromJson<int>(json['surahId']),
+      startAyah: serializer.fromJson<int>(json['startAyah']),
+      endAyah: serializer.fromJson<int>(json['endAyah']),
     );
   }
   @override
@@ -1295,21 +1361,33 @@ class DoaData extends DataClass implements Insertable<DoaData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'categoryId': serializer.toJson<int>(categoryId),
-      'ayahId': serializer.toJson<int>(ayahId),
+      'surahId': serializer.toJson<int>(surahId),
+      'startAyah': serializer.toJson<int>(startAyah),
+      'endAyah': serializer.toJson<int>(endAyah),
     };
   }
 
-  DoaData copyWith({int? id, int? categoryId, int? ayahId}) => DoaData(
+  DoaData copyWith({
+    int? id,
+    int? categoryId,
+    int? surahId,
+    int? startAyah,
+    int? endAyah,
+  }) => DoaData(
     id: id ?? this.id,
     categoryId: categoryId ?? this.categoryId,
-    ayahId: ayahId ?? this.ayahId,
+    surahId: surahId ?? this.surahId,
+    startAyah: startAyah ?? this.startAyah,
+    endAyah: endAyah ?? this.endAyah,
   );
   DoaData copyWithCompanion(DoaCompanion data) {
     return DoaData(
       id: data.id.present ? data.id.value : this.id,
       categoryId:
           data.categoryId.present ? data.categoryId.value : this.categoryId,
-      ayahId: data.ayahId.present ? data.ayahId.value : this.ayahId,
+      surahId: data.surahId.present ? data.surahId.value : this.surahId,
+      startAyah: data.startAyah.present ? data.startAyah.value : this.startAyah,
+      endAyah: data.endAyah.present ? data.endAyah.value : this.endAyah,
     );
   }
 
@@ -1318,58 +1396,78 @@ class DoaData extends DataClass implements Insertable<DoaData> {
     return (StringBuffer('DoaData(')
           ..write('id: $id, ')
           ..write('categoryId: $categoryId, ')
-          ..write('ayahId: $ayahId')
+          ..write('surahId: $surahId, ')
+          ..write('startAyah: $startAyah, ')
+          ..write('endAyah: $endAyah')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, categoryId, ayahId);
+  int get hashCode => Object.hash(id, categoryId, surahId, startAyah, endAyah);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DoaData &&
           other.id == this.id &&
           other.categoryId == this.categoryId &&
-          other.ayahId == this.ayahId);
+          other.surahId == this.surahId &&
+          other.startAyah == this.startAyah &&
+          other.endAyah == this.endAyah);
 }
 
 class DoaCompanion extends UpdateCompanion<DoaData> {
   final Value<int> id;
   final Value<int> categoryId;
-  final Value<int> ayahId;
+  final Value<int> surahId;
+  final Value<int> startAyah;
+  final Value<int> endAyah;
   const DoaCompanion({
     this.id = const Value.absent(),
     this.categoryId = const Value.absent(),
-    this.ayahId = const Value.absent(),
+    this.surahId = const Value.absent(),
+    this.startAyah = const Value.absent(),
+    this.endAyah = const Value.absent(),
   });
   DoaCompanion.insert({
     this.id = const Value.absent(),
     required int categoryId,
-    required int ayahId,
+    required int surahId,
+    required int startAyah,
+    required int endAyah,
   }) : categoryId = Value(categoryId),
-       ayahId = Value(ayahId);
+       surahId = Value(surahId),
+       startAyah = Value(startAyah),
+       endAyah = Value(endAyah);
   static Insertable<DoaData> custom({
     Expression<int>? id,
     Expression<int>? categoryId,
-    Expression<int>? ayahId,
+    Expression<int>? surahId,
+    Expression<int>? startAyah,
+    Expression<int>? endAyah,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (categoryId != null) 'categoryId': categoryId,
-      if (ayahId != null) 'ayahId': ayahId,
+      if (surahId != null) 'surahId': surahId,
+      if (startAyah != null) 'startAyah': startAyah,
+      if (endAyah != null) 'endAyah': endAyah,
     });
   }
 
   DoaCompanion copyWith({
     Value<int>? id,
     Value<int>? categoryId,
-    Value<int>? ayahId,
+    Value<int>? surahId,
+    Value<int>? startAyah,
+    Value<int>? endAyah,
   }) {
     return DoaCompanion(
       id: id ?? this.id,
       categoryId: categoryId ?? this.categoryId,
-      ayahId: ayahId ?? this.ayahId,
+      surahId: surahId ?? this.surahId,
+      startAyah: startAyah ?? this.startAyah,
+      endAyah: endAyah ?? this.endAyah,
     );
   }
 
@@ -1382,8 +1480,14 @@ class DoaCompanion extends UpdateCompanion<DoaData> {
     if (categoryId.present) {
       map['categoryId'] = Variable<int>(categoryId.value);
     }
-    if (ayahId.present) {
-      map['ayahId'] = Variable<int>(ayahId.value);
+    if (surahId.present) {
+      map['surahId'] = Variable<int>(surahId.value);
+    }
+    if (startAyah.present) {
+      map['startAyah'] = Variable<int>(startAyah.value);
+    }
+    if (endAyah.present) {
+      map['endAyah'] = Variable<int>(endAyah.value);
     }
     return map;
   }
@@ -1393,7 +1497,9 @@ class DoaCompanion extends UpdateCompanion<DoaData> {
     return (StringBuffer('DoaCompanion(')
           ..write('id: $id, ')
           ..write('categoryId: $categoryId, ')
-          ..write('ayahId: $ayahId')
+          ..write('surahId: $surahId, ')
+          ..write('startAyah: $startAyah, ')
+          ..write('endAyah: $endAyah')
           ..write(')'))
         .toString();
   }
@@ -1465,6 +1571,25 @@ final class $$SurahTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$DoaTable, List<DoaData>> _doaRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.doa,
+    aliasName: $_aliasNameGenerator(db.surah.id, db.doa.surahId),
+  );
+
+  $$DoaTableProcessedTableManager get doaRefs {
+    final manager = $$DoaTableTableManager(
+      $_db,
+      $_db.doa,
+    ).filter((f) => f.surahId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_doaRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$SurahTableFilterComposer extends Composer<_$AppDatabase, $SurahTable> {
@@ -1526,6 +1651,31 @@ class $$SurahTableFilterComposer extends Composer<_$AppDatabase, $SurahTable> {
           }) => $$AyahTableFilterComposer(
             $db: $db,
             $table: $db.ayah,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> doaRefs(
+    Expression<bool> Function($$DoaTableFilterComposer f) f,
+  ) {
+    final $$DoaTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.doa,
+      getReferencedColumn: (t) => t.surahId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoaTableFilterComposer(
+            $db: $db,
+            $table: $db.doa,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1637,6 +1787,31 @@ class $$SurahTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> doaRefs<T extends Object>(
+    Expression<T> Function($$DoaTableAnnotationComposer a) f,
+  ) {
+    final $$DoaTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.doa,
+      getReferencedColumn: (t) => t.surahId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoaTableAnnotationComposer(
+            $db: $db,
+            $table: $db.doa,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$SurahTableTableManager
@@ -1652,7 +1827,7 @@ class $$SurahTableTableManager
           $$SurahTableUpdateCompanionBuilder,
           (SurahData, $$SurahTableReferences),
           SurahData,
-          PrefetchHooks Function({bool ayahRefs})
+          PrefetchHooks Function({bool ayahRefs, bool doaRefs})
         > {
   $$SurahTableTableManager(_$AppDatabase db, $SurahTable table)
     : super(
@@ -1711,10 +1886,13 @@ class $$SurahTableTableManager
                         ),
                       )
                       .toList(),
-          prefetchHooksCallback: ({ayahRefs = false}) {
+          prefetchHooksCallback: ({ayahRefs = false, doaRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [if (ayahRefs) db.ayah],
+              explicitlyWatchedTables: [
+                if (ayahRefs) db.ayah,
+                if (doaRefs) db.doa,
+              ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
                 return [
@@ -1727,6 +1905,18 @@ class $$SurahTableTableManager
                       managerFromTypedResult:
                           (p0) =>
                               $$SurahTableReferences(db, table, p0).ayahRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) => referencedItems.where(
+                            (e) => e.surahId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                  if (doaRefs)
+                    await $_getPrefetchedData<SurahData, $SurahTable, DoaData>(
+                      currentTable: table,
+                      referencedTable: $$SurahTableReferences._doaRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) => $$SurahTableReferences(db, table, p0).doaRefs,
                       referencedItemsForCurrentItem:
                           (item, referencedItems) => referencedItems.where(
                             (e) => e.surahId == item.id,
@@ -1753,7 +1943,7 @@ typedef $$SurahTableProcessedTableManager =
       $$SurahTableUpdateCompanionBuilder,
       (SurahData, $$SurahTableReferences),
       SurahData,
-      PrefetchHooks Function({bool ayahRefs})
+      PrefetchHooks Function({bool ayahRefs, bool doaRefs})
     >;
 typedef $$AyahTableCreateCompanionBuilder =
     AyahCompanion Function({
@@ -1796,25 +1986,6 @@ final class $$AyahTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$DoaTable, List<DoaData>> _doaRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.doa,
-    aliasName: $_aliasNameGenerator(db.ayah.id, db.doa.ayahId),
-  );
-
-  $$DoaTableProcessedTableManager get doaRefs {
-    final manager = $$DoaTableTableManager(
-      $_db,
-      $_db.doa,
-    ).filter((f) => f.ayahId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_doaRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 }
@@ -1883,31 +2054,6 @@ class $$AyahTableFilterComposer extends Composer<_$AppDatabase, $AyahTable> {
           ),
     );
     return composer;
-  }
-
-  Expression<bool> doaRefs(
-    Expression<bool> Function($$DoaTableFilterComposer f) f,
-  ) {
-    final $$DoaTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.doa,
-      getReferencedColumn: (t) => t.ayahId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DoaTableFilterComposer(
-            $db: $db,
-            $table: $db.doa,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
   }
 }
 
@@ -2032,31 +2178,6 @@ class $$AyahTableAnnotationComposer
     );
     return composer;
   }
-
-  Expression<T> doaRefs<T extends Object>(
-    Expression<T> Function($$DoaTableAnnotationComposer a) f,
-  ) {
-    final $$DoaTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.doa,
-      getReferencedColumn: (t) => t.ayahId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DoaTableAnnotationComposer(
-            $db: $db,
-            $table: $db.doa,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$AyahTableTableManager
@@ -2072,7 +2193,7 @@ class $$AyahTableTableManager
           $$AyahTableUpdateCompanionBuilder,
           (AyahData, $$AyahTableReferences),
           AyahData,
-          PrefetchHooks Function({bool surahId, bool doaRefs})
+          PrefetchHooks Function({bool surahId})
         > {
   $$AyahTableTableManager(_$AppDatabase db, $AyahTable table)
     : super(
@@ -2135,10 +2256,10 @@ class $$AyahTableTableManager
                         ),
                       )
                       .toList(),
-          prefetchHooksCallback: ({surahId = false, doaRefs = false}) {
+          prefetchHooksCallback: ({surahId = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [if (doaRefs) db.doa],
+              explicitlyWatchedTables: [],
               addJoins: <
                 T extends TableManagerState<
                   dynamic,
@@ -2170,19 +2291,7 @@ class $$AyahTableTableManager
                 return state;
               },
               getPrefetchedDataCallback: (items) async {
-                return [
-                  if (doaRefs)
-                    await $_getPrefetchedData<AyahData, $AyahTable, DoaData>(
-                      currentTable: table,
-                      referencedTable: $$AyahTableReferences._doaRefsTable(db),
-                      managerFromTypedResult:
-                          (p0) => $$AyahTableReferences(db, table, p0).doaRefs,
-                      referencedItemsForCurrentItem:
-                          (item, referencedItems) =>
-                              referencedItems.where((e) => e.ayahId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+                return [];
               },
             );
           },
@@ -2202,7 +2311,7 @@ typedef $$AyahTableProcessedTableManager =
       $$AyahTableUpdateCompanionBuilder,
       (AyahData, $$AyahTableReferences),
       AyahData,
-      PrefetchHooks Function({bool surahId, bool doaRefs})
+      PrefetchHooks Function({bool surahId})
     >;
 typedef $$DoaCategoryTableCreateCompanionBuilder =
     DoaCategoryCompanion Function({Value<int> id, required String nama});
@@ -2439,13 +2548,17 @@ typedef $$DoaTableCreateCompanionBuilder =
     DoaCompanion Function({
       Value<int> id,
       required int categoryId,
-      required int ayahId,
+      required int surahId,
+      required int startAyah,
+      required int endAyah,
     });
 typedef $$DoaTableUpdateCompanionBuilder =
     DoaCompanion Function({
       Value<int> id,
       Value<int> categoryId,
-      Value<int> ayahId,
+      Value<int> surahId,
+      Value<int> startAyah,
+      Value<int> endAyah,
     });
 
 final class $$DoaTableReferences
@@ -2469,17 +2582,17 @@ final class $$DoaTableReferences
     );
   }
 
-  static $AyahTable _ayahIdTable(_$AppDatabase db) =>
-      db.ayah.createAlias($_aliasNameGenerator(db.doa.ayahId, db.ayah.id));
+  static $SurahTable _surahIdTable(_$AppDatabase db) =>
+      db.surah.createAlias($_aliasNameGenerator(db.doa.surahId, db.surah.id));
 
-  $$AyahTableProcessedTableManager get ayahId {
-    final $_column = $_itemColumn<int>('ayahId')!;
+  $$SurahTableProcessedTableManager get surahId {
+    final $_column = $_itemColumn<int>('surahId')!;
 
-    final manager = $$AyahTableTableManager(
+    final manager = $$SurahTableTableManager(
       $_db,
-      $_db.ayah,
+      $_db.surah,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_ayahIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_surahIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -2497,6 +2610,16 @@ class $$DoaTableFilterComposer extends Composer<_$AppDatabase, $DoaTable> {
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get startAyah => $composableBuilder(
+    column: $table.startAyah,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get endAyah => $composableBuilder(
+    column: $table.endAyah,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2523,20 +2646,20 @@ class $$DoaTableFilterComposer extends Composer<_$AppDatabase, $DoaTable> {
     return composer;
   }
 
-  $$AyahTableFilterComposer get ayahId {
-    final $$AyahTableFilterComposer composer = $composerBuilder(
+  $$SurahTableFilterComposer get surahId {
+    final $$SurahTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.ayahId,
-      referencedTable: $db.ayah,
+      getCurrentColumn: (t) => t.surahId,
+      referencedTable: $db.surah,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$AyahTableFilterComposer(
+          }) => $$SurahTableFilterComposer(
             $db: $db,
-            $table: $db.ayah,
+            $table: $db.surah,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2557,6 +2680,16 @@ class $$DoaTableOrderingComposer extends Composer<_$AppDatabase, $DoaTable> {
   });
   ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get startAyah => $composableBuilder(
+    column: $table.startAyah,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get endAyah => $composableBuilder(
+    column: $table.endAyah,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2583,20 +2716,20 @@ class $$DoaTableOrderingComposer extends Composer<_$AppDatabase, $DoaTable> {
     return composer;
   }
 
-  $$AyahTableOrderingComposer get ayahId {
-    final $$AyahTableOrderingComposer composer = $composerBuilder(
+  $$SurahTableOrderingComposer get surahId {
+    final $$SurahTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.ayahId,
-      referencedTable: $db.ayah,
+      getCurrentColumn: (t) => t.surahId,
+      referencedTable: $db.surah,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$AyahTableOrderingComposer(
+          }) => $$SurahTableOrderingComposer(
             $db: $db,
-            $table: $db.ayah,
+            $table: $db.surah,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2617,6 +2750,12 @@ class $$DoaTableAnnotationComposer extends Composer<_$AppDatabase, $DoaTable> {
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get startAyah =>
+      $composableBuilder(column: $table.startAyah, builder: (column) => column);
+
+  GeneratedColumn<int> get endAyah =>
+      $composableBuilder(column: $table.endAyah, builder: (column) => column);
 
   $$DoaCategoryTableAnnotationComposer get categoryId {
     final $$DoaCategoryTableAnnotationComposer composer = $composerBuilder(
@@ -2641,20 +2780,20 @@ class $$DoaTableAnnotationComposer extends Composer<_$AppDatabase, $DoaTable> {
     return composer;
   }
 
-  $$AyahTableAnnotationComposer get ayahId {
-    final $$AyahTableAnnotationComposer composer = $composerBuilder(
+  $$SurahTableAnnotationComposer get surahId {
+    final $$SurahTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.ayahId,
-      referencedTable: $db.ayah,
+      getCurrentColumn: (t) => t.surahId,
+      referencedTable: $db.surah,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$AyahTableAnnotationComposer(
+          }) => $$SurahTableAnnotationComposer(
             $db: $db,
-            $table: $db.ayah,
+            $table: $db.surah,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2678,7 +2817,7 @@ class $$DoaTableTableManager
           $$DoaTableUpdateCompanionBuilder,
           (DoaData, $$DoaTableReferences),
           DoaData,
-          PrefetchHooks Function({bool categoryId, bool ayahId})
+          PrefetchHooks Function({bool categoryId, bool surahId})
         > {
   $$DoaTableTableManager(_$AppDatabase db, $DoaTable table)
     : super(
@@ -2695,18 +2834,29 @@ class $$DoaTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> categoryId = const Value.absent(),
-                Value<int> ayahId = const Value.absent(),
-              }) =>
-                  DoaCompanion(id: id, categoryId: categoryId, ayahId: ayahId),
+                Value<int> surahId = const Value.absent(),
+                Value<int> startAyah = const Value.absent(),
+                Value<int> endAyah = const Value.absent(),
+              }) => DoaCompanion(
+                id: id,
+                categoryId: categoryId,
+                surahId: surahId,
+                startAyah: startAyah,
+                endAyah: endAyah,
+              ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required int categoryId,
-                required int ayahId,
+                required int surahId,
+                required int startAyah,
+                required int endAyah,
               }) => DoaCompanion.insert(
                 id: id,
                 categoryId: categoryId,
-                ayahId: ayahId,
+                surahId: surahId,
+                startAyah: startAyah,
+                endAyah: endAyah,
               ),
           withReferenceMapper:
               (p0) =>
@@ -2718,7 +2868,7 @@ class $$DoaTableTableManager
                         ),
                       )
                       .toList(),
-          prefetchHooksCallback: ({categoryId = false, ayahId = false}) {
+          prefetchHooksCallback: ({categoryId = false, surahId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -2749,16 +2899,16 @@ class $$DoaTableTableManager
                           )
                           as T;
                 }
-                if (ayahId) {
+                if (surahId) {
                   state =
                       state.withJoin(
                             currentTable: table,
-                            currentColumn: table.ayahId,
-                            referencedTable: $$DoaTableReferences._ayahIdTable(
+                            currentColumn: table.surahId,
+                            referencedTable: $$DoaTableReferences._surahIdTable(
                               db,
                             ),
                             referencedColumn:
-                                $$DoaTableReferences._ayahIdTable(db).id,
+                                $$DoaTableReferences._surahIdTable(db).id,
                           )
                           as T;
                 }
@@ -2786,7 +2936,7 @@ typedef $$DoaTableProcessedTableManager =
       $$DoaTableUpdateCompanionBuilder,
       (DoaData, $$DoaTableReferences),
       DoaData,
-      PrefetchHooks Function({bool categoryId, bool ayahId})
+      PrefetchHooks Function({bool categoryId, bool surahId})
     >;
 
 class $AppDatabaseManager {

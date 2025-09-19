@@ -6,6 +6,6 @@ part of 'duas_dao.dart';
 mixin _$DuasDaoMixin on DatabaseAccessor<AppDatabase> {
   $DoaCategoryTable get doaCategory => attachedDatabase.doaCategory;
   $SurahTable get surah => attachedDatabase.surah;
-  $AyahTable get ayah => attachedDatabase.ayah;
   $DoaTable get doa => attachedDatabase.doa;
+  $AyahTable get ayah => attachedDatabase.ayah;
 }

@@ -151,8 +151,8 @@ class QiblaCompass extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
               colors: [Color(0xff240F4F), Color(0xff863ED5)],
             ),
             boxShadow: [
@@ -187,15 +187,32 @@ class QiblaCaption extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 24.0, left: 40, right: 40),
-      child: Text(
-        isFacingQibla
-            ? "Anda sudah menghadap ke arah kiblat"
-            : "Putar ponsel Anda hingga panah menghadap target untuk menghadap ke arah kiblat",
+      child: RichText(
         textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Color(0xff3B1D77),
-          fontWeight: FontWeight.w500,
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 20,
+            color: Color(0xff672CBC),
+            fontFamily: 'Plus Jakarta',
+          ),
+          children:
+              isFacingQibla
+                  ? [
+                    const TextSpan(
+                      text: "Anda Menghadap ",
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    const TextSpan(text: "\nke Arah Kiblat!"),
+                  ]
+                  : [
+                    const TextSpan(
+                      text: "Putar Ponsel Anda ",
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    const TextSpan(
+                      text: "\nhingga Panah Menghadap ke Arah Target",
+                    ),
+                  ],
         ),
       ),
     );
