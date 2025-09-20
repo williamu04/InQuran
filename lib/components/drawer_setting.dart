@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/drawer_generic_helper.dart';
 import 'package:mtqmnuns/config/global.dart';
@@ -13,51 +12,68 @@ class SettingDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GenericDrawer<SettingSlideDrawerViewModel>(
-      title: 'Settings',
+      title: 'Pengaturan',
       slideDirection: SlideDirection.right,
       createButtonList: _createSettingButtonList,
       getViewModel: (context) => context.read<SettingSlideDrawerViewModel>(),
     );
   }
 
-  List<DisclosureButtonModel> _createSettingButtonList(GlobalConfig globalConfig) {
+  List<DisclosureButtonModel> _createSettingButtonList(
+    GlobalConfig globalConfig,
+  ) {
     return [
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Language",
+        text: "Bahasa",
         color: Color(0xFF994EF8),
         action: ExpandNestedDrawerAction([]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "General",
+        text: "Umum",
         color: Color(0xFF994EF8),
         action: ExpandNestedDrawerAction([]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Quran Mode",
+        text: "Mode Al-Qur'an",
         action: ExpandNestedDrawerAction([
           DisclosureButtonModel.withDefaultTextStyle(
-            text: "Normal Mode",
+            text: "Mode Normal",
             showIcon: false,
             fontWeight: FontWeight.w300,
-            color: globalConfig.quranMode == QuranMode.normal ? const Color(0xFF672CBC) : Colors.grey,
-            action: SystemAction(() => globalConfig.setQuranMode(QuranMode.normal)),
+            color:
+                globalConfig.quranMode == QuranMode.normal
+                    ? const Color(0xFF672CBC)
+                    : Colors.grey,
+            action: SystemAction(
+              () => globalConfig.setQuranMode(QuranMode.normal),
+            ),
           ),
           DisclosureButtonModel.withDefaultTextStyle(
-            text: "Memorize Mode",
+            text: "Mode Hafalan",
             showIcon: false,
             fontWeight: FontWeight.w300,
-            color: globalConfig.quranMode == QuranMode.memorize ? const Color(0xFF672CBC) : Colors.grey,
-            action: SystemAction(() => globalConfig.setQuranMode(QuranMode.memorize)),
+            color:
+                globalConfig.quranMode == QuranMode.memorize
+                    ? const Color(0xFF672CBC)
+                    : Colors.grey,
+            action: SystemAction(
+              () => globalConfig.setQuranMode(QuranMode.memorize),
+            ),
           ),
           DisclosureButtonModel.withDefaultTextStyle(
-            text: "Mushaf Mode",
+            text: "Mode Mushaf",
             showIcon: false,
             fontWeight: FontWeight.w300,
-            color: globalConfig.quranMode == QuranMode.mushaf ? const Color(0xFF672CBC) : Colors.grey,
-            action: SystemAction(() => globalConfig.setQuranMode(QuranMode.mushaf)),
+            color:
+                globalConfig.quranMode == QuranMode.mushaf
+                    ? const Color(0xFF672CBC)
+                    : Colors.grey,
+            action: SystemAction(
+              () => globalConfig.setQuranMode(QuranMode.mushaf),
+            ),
           ),
-        ])
-      )
+        ]),
+      ),
     ];
   }
 }

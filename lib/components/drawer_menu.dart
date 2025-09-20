@@ -22,41 +22,47 @@ class MenuDrawer extends StatelessWidget {
   List<DisclosureButtonModel> _createMenuButtonList(GlobalConfig globalConfig) {
     return [
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Daily Task",
+        text: "Tugas Harian",
         action: ExpandNestedDrawerAction([]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Voice Command Mode",
+        text: "Mode Voice Command",
         action: ExpandNestedDrawerAction([
           DisclosureButtonModel.withDefaultTextStyle(
-            text: "ON",
+            text: "AKTIF",
             showIcon: false,
             fontWeight: FontWeight.w300,
-            color: globalConfig.isVoiceMode == true ? const Color(0xFF672CBC) : Colors.grey,
-            action: SystemAction(() => globalConfig.setVoiceMode(true))
+            color:
+                globalConfig.isVoiceMode == true
+                    ? const Color(0xFF672CBC)
+                    : Colors.grey,
+            action: SystemAction(() => globalConfig.setVoiceMode(true)),
           ),
           DisclosureButtonModel.withDefaultTextStyle(
-            text: "OFF",
+            text: "NONAKTIF",
             fontWeight: FontWeight.w300,
             showIcon: false,
-            color: globalConfig.isVoiceMode == false ? const Color(0xFF672CBC) : Colors.grey,
-            action: SystemAction(() => globalConfig.setVoiceMode(false))
-          )
+            color:
+                globalConfig.isVoiceMode == false
+                    ? const Color(0xFF672CBC)
+                    : Colors.grey,
+            action: SystemAction(() => globalConfig.setVoiceMode(false)),
+          ),
         ]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Profile Setting",
+        text: "Pengaturan Profil",
         action: ExpandNestedDrawerAction([]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Help & Support",
+        text: "Bantuan & Dukungan",
         action: ExpandNestedDrawerAction([]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "logout",
+        text: "Keluar",
         action: SystemAction(() => {}),
         showIcon: false,
-        color: Color(0xFFEA4335)
+        color: Color(0xFFEA4335),
       ),
     ];
   }
