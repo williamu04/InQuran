@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/common/translator.dart';
 
 class DuasScreen extends StatelessWidget {
   final Map<String, String> queryParam;
@@ -58,7 +59,7 @@ class DuasScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
-                            "Tentang \n$categoryName",
+                            "Tentang\n${terjemahkanKategori(categoryName)}",
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 36,
