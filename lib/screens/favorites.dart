@@ -11,7 +11,7 @@ class FavoriteScreen extends StatelessWidget {
       child : Column(
         children: [
           Center(
-            child: Text("Favorites")
+            child: Text("Favorit")
           )
         ],
       ),

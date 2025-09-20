@@ -73,7 +73,7 @@ class SearchScreen extends StatelessWidget {
               children: [
                 ...chips.map((chip) => _buildChip(chip)),
                 _buildChip(
-                  'Etc',
+                  'Lainnya',
                   color: etcColor ?? const Color(0xFF672CBC),
                   textColor: Colors.white,
                 ),
@@ -99,7 +99,7 @@ class SearchScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                TopBarUtility.buildDefaultTopBar(context:context, title: "Explore"),  
+                TopBarUtility.buildDefaultTopBar(context:context, title: "Jelajahi"),  
                 // Top bar spacing
                 const SizedBox(height: 10),
                 // Info Card
@@ -124,7 +124,7 @@ class SearchScreen extends StatelessWidget {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Quran and Hadeeth',
+                          text: 'Al-Qur\'an dan Hadits',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -132,7 +132,7 @@ class SearchScreen extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: ' Answering All Your Question!',
+                          text: ' Sumber Petunjuk dalam Kehidupan!',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
@@ -156,37 +156,34 @@ class SearchScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 24),
                     _buildCategoryCard(
-                      'Core Islamic',
-                      'Beliefs and Practices',
+                      'Dasar-Dasar Islam',
+                      'Akidah dan Ibadah',
                       [
-                        'Pillars of Islam',
-                        'Names of Allah',
-                        'Invocations',
-                        'Repentance',
-                        'Virtues & Conduct',
+                        'Rukun Islam',
+                        'Asmaul Husna',
+                        'Taubat',
+                        'Akhlak & Adab',
                       ],
                     ),
-                    _buildCategoryCard('Social & Ethical', 'Guidelines', [
-                      'Relationships',
-                      'Business & Trade',
-                      'Clothing',
-                      'Justice',
-                      'Food',
-                      'Marriage',
-                      'Women',
+                    _buildCategoryCard('Sosial & Etika', 'Pedoman Hidup', [
+                      'Hubungan Antar Manusia',
+                      'Muamalah & Perdagangan',
+                      'Pakaian Islami',
+                      'Keadilan',
+                      'Makanan Halal',
+                      'Pernikahan',
+                      'Peran Perempuan',
                     ]),
                     _buildCategoryCard(
-                      "Life's Realities",
-                      'and Beyond',
+                      "Hakikat Kehidupan",
+                      'dan Akhirat',
                       [
-                        'Science',
-                        'Plague',
-                        'Life Hereafter',
-                        'Death',
-                        'The Unseen',
-                        'Occult Practices & Magic',
+                        'Ilmu & Sains',
+                        'Kehidupan Akhirat',
+                        'Kematian',
+                        'Alam Ghaib',
                       ],
-                      etcColor: const Color(0xFF240F4F),
+                      // etcColor: const Color(0xFF240F4F),
                     ),
                     const SizedBox(height: 32),
                     // Add bottom padding to account for bottom navigation bar

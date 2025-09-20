@@ -24,7 +24,7 @@ class DuasScreen extends StatelessWidget {
             // 🔹 Topbar
             TopBarUtility.buildPurpleTitleTopbar(
               context: context,
-              title: "Duas Collection",
+              title: "Koleksi Doa-Doa",
             ),
 
             // 🔹 Konten utama
@@ -58,7 +58,7 @@ class DuasScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
-                            "About \n$categoryName",
+                            "Tentang \n$categoryName",
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 36,
@@ -110,7 +110,7 @@ class DuasScreen extends StatelessWidget {
 
                                 // Sumber Surah
                                 Text(
-                                  "Surah ${dua.surah?.nameLatin ?? '-'} verse ${dua.ayah.ayahNumber}",
+                                  "Surah ${dua.surah?.nameLatin ?? '-'} ayat ${dua.ayah.ayahNumber}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Color(0xff672CBC),

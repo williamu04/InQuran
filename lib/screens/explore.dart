@@ -8,7 +8,7 @@ class ExploreScreen extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child: Column(children: [Center(child: Text("Explore"))]),
+      child: Column(children: [Center(child: Text("Jelajahi"))]),
     );
   }
 }

@@ -49,7 +49,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           child: TopBarUtility.buildDefaultTopBar(
             context: context,
-            title: "Duas From Quran",
+            title: "Koleksi Doa-Doa",
           ),
         ),
         Expanded(
@@ -123,7 +123,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Duas About",
+                                  "Doa tentang",
                                   style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 10,
