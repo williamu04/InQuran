@@ -5,7 +5,11 @@ import 'package:mtqmnuns/components/disclosure_button.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
+import 'package:mtqmnuns/routes/guard_navigation.dart';
+import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
+import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/drawer.dart';
 import 'package:provider/provider.dart';
 
@@ -153,6 +157,13 @@ class _GenericDrawerState<T extends SlideDrawerViewModel> extends State<GenericD
   void _handleButtonTap(DisclosureButtonModel button, int index) {
     switch (button.action) {
       case NavigateAction(:var route):
+        final auth = context.read<AuthViewModel>();
+
+        if (route.requiresAuth && auth.state is! AuthAuthenticated) {
+          context.read<AuthPopUpViewModel>().open();
+          return;
+        }
+
         context.push(route.path);
         _closeDrawer();
 

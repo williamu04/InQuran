@@ -7,6 +7,7 @@ import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 import 'package:mtqmnuns/config/global.dart';
+import 'package:mtqmnuns/routes/guard_navigation.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:provider/provider.dart';
 import '../components/rounded_card.dart';
@@ -77,7 +78,7 @@ class MainHomeScreen extends StatelessWidget {
         title: "Favorites",
         icon: LucideIcons.bookMarked,
         buttonColor: const Color(0xFF672CBC),
-        action: () => context.push(AppRoutes.favorites.path),
+        action: () => context.authPush(AppRoutes.favorites.path),
       ),
       HomeMenuItem(
         title: "Explore",

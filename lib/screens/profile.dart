@@ -4,7 +4,10 @@ import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/disclosure_button.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
+import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
+import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -23,8 +26,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     buttonList = _createButtonList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthViewModel>().init();
+    });
   }
-  
 
   List<DisclosureButtonModel> _createButtonList() {
     return [
@@ -71,6 +76,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<AuthViewModel>(
+      builder: (context, vm, _) {
+        switch (vm.state) {
+          case AuthInitial():
+            return const Center(child: CircularProgressIndicator());
+          case AuthLoading():
+            return const Center(child: CircularProgressIndicator());
+          case AuthAuthenticated():
+            return _authenticated(context);
+          case AuthUnauthenticated():
+            return Center(child: Text("Error unauthenticated"));
+          case AuthError():
+            throw Center(child: Text("Terjadi Kesalah, coba lagi"));
+          case AuthOffline():
+            throw UnimplementedError();
+        }
+      }
+    );
+  }
+
+
+  Widget _authenticated(BuildContext context) {
     return Column(
         children: [
           roundedCard(
@@ -126,7 +153,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                   ),
-              
             ),
           ),
 
@@ -201,29 +227,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
         });
     }
-  }
-
-  Widget unauthorized(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 24),
-
-        OutlinedButton(
-          onPressed: () {
-            context.push('/signup');
-          },
-          child: const Text("Go to Signup"),
-        ),
-        const SizedBox(height: 12),
-        OutlinedButton(
-          onPressed: () {
-            context.push('/login');
-          },
-          child: const Text("Go to Login"),
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
-
   }
 }

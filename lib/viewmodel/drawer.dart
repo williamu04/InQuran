@@ -26,3 +26,6 @@ class SettingSlideDrawerViewModel extends SlideDrawerViewModel {
 
 class MenuSlideDrawerViewModel extends SlideDrawerViewModel {
 }
+
+class AuthPopUpViewModel extends SlideDrawerViewModel {
+}

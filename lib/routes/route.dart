@@ -71,6 +71,7 @@ class AppRoutes {
     path: '/profile',
     pageBuilder: (context, state) => NoTransitionPage(child: ProfileScreen()),
     isHasBottomBar: true,
+    requiresAuth: true
   );
 
   static final prayer = AppRoute(
@@ -90,6 +91,7 @@ class AppRoutes {
     path: '/favorite',
     pageBuilder: (context, state) => NoTransitionPage(child: FavoriteScreen()),
     isHasBottomBar: true,
+
   );
 
   static final calendar = AppRoute(

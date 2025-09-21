@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/drawer_generic_helper.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
+import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:mtqmnuns/viewmodel/drawer.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,7 @@ class MenuDrawer extends StatelessWidget {
       ),
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Profile Setting",
-        action: ExpandNestedDrawerAction([]),
+        action: NavigateAction(AppRoutes.profile),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Help & Support",

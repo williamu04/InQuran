@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/routes/guard_navigation.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
 
@@ -70,7 +71,7 @@ class BottomNavBar extends StatelessWidget {
                           ),
                           onPressed: () {
                             if (!isSelected) {
-                              context.push(nav.route.path);
+                              context.authPush(nav.route.path);
                             }
                           },
                         );

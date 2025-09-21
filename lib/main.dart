@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mtqmnuns/components/auth_popup.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/drawer_menu.dart';
 import 'package:mtqmnuns/components/drawer_setting.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
+import 'package:mtqmnuns/data/remote/auth.dart';
+import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
 import 'package:mtqmnuns/routes/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
@@ -17,6 +20,7 @@ import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
+import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/drawer.dart';
 import 'package:mtqmnuns/viewmodel/mushaf.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
@@ -43,12 +47,14 @@ void main() async {
         Provider(create: (_) => db.juzDao),
         Provider(create: (_) => db.ayahDao),
 
+        // Remote
+        Provider(create: (_) => TokenRemoteDataSource()),
+
         // Repositories
-        Provider(
-          create: (context) => SurahRepository(context.read<SurahDao>()),
-        ),
+        Provider(create: (context) => SurahRepository(context.read<SurahDao>()),),
         Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
         Provider(create: (context) => AyahRepository(context.read<AyahDao>())),
+        Provider(create: (context) => AuthRepository(context.read<TokenRemoteDataSource>())),
 
         // Services
         Provider(create: (_) => SttService()),
@@ -63,28 +69,18 @@ void main() async {
                 context.read<JuzRepository>(), // optional if needed
               ),
         ),
-        ChangeNotifierProvider(
-          create:
-              (context) => SttViewModel(
-                context.read<SttService>(),
-                context.read<SurahRepository>(),
-              ),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => LocationProvider()..loadLocation(),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) =>
-                  SurahDetailViewModel(context.read<AyahRepository>()),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) =>
-                  MushafViewModel(context.read<AyahRepository>()),
-        ),
+        ChangeNotifierProvider(create: (context) => SttViewModel(context.read<SttService>(),context.read<SurahRepository>())),
+        ChangeNotifierProvider(create: (_) => LocationProvider()..loadLocation()),
+        ChangeNotifierProvider(create: (context) => SurahDetailViewModel(context.read<AyahRepository>())),
+        ChangeNotifierProvider(create:(context) => MushafViewModel(context.read<AyahRepository>())),
         ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
         ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),
+        ChangeNotifierProvider(create: (_) => AuthPopUpViewModel()),
+        ChangeNotifierProvider(create: (context) {
+          final vm = AuthViewModel(context.read<AuthRepository>());
+          Future.microtask(() => vm.init());
+          return vm;
+        }),
       ],
       child: const MyApp(),
     ),
@@ -176,6 +172,7 @@ class MainScaffold extends StatelessWidget {
           ),
           MenuDrawer(),
           SettingDrawer(),
+          AuthRequiredPopUp(),
         ],
       ),
     );

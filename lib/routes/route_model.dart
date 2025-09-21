@@ -7,10 +7,12 @@ class AppRoute {
   final Page<dynamic> Function(BuildContext context, GoRouterState state)
   pageBuilder;
   final bool isHasBottomBar;
+  final bool requiresAuth;
 
   AppRoute ({
     required this.path,
     required this.pageBuilder,
     required this.isHasBottomBar,
+    this.requiresAuth = false, 
   });
 }
