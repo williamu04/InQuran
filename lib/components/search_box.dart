@@ -8,7 +8,6 @@ class SearchBox extends StatefulWidget {
 
   @override
   State<SearchBox> createState() => _SearchBoxState();
-
 }
 
 class _SearchBoxState extends State<SearchBox> {
@@ -35,7 +34,7 @@ class _SearchBoxState extends State<SearchBox> {
                 });
               },
               decoration: InputDecoration(
-                hintText: "Search by Surah, Juz, or Verse",
+                hintText: "Cari nama Surah, Juz, atau Ayat",
                 hintStyle: TextStyle(
                   fontSize: 12,
                   color: Color.fromRGBO(0, 0, 0, 0.3),

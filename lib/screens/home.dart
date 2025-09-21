@@ -49,7 +49,7 @@ class MainHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HomeMenuItem topItem = HomeMenuItem(
-      title: "The Holy Quran",
+      title: "Baca Al Qur'an",
       icon: LucideIcons.bookOpen,
       buttonColor: const Color(0xFF672CBC),
       action: () => context.push(AppRoutes.surahList.path),
@@ -57,37 +57,37 @@ class MainHomeScreen extends StatelessWidget {
 
     List<HomeMenuItem> menuItems = [
       HomeMenuItem(
-        title: "Duas Collection",
+        title: "Koleksi Doa-Doa",
         icon: LucideIcons.handHeart,
         buttonColor: const Color(0xFF3B1D77),
         action: () => context.push(AppRoutes.duasList.path),
       ),
       HomeMenuItem(
-        title: "Prayer Times",
+        title: "Waktu Salat",
         icon: LucideIcons.hourglass,
         buttonColor: const Color(0xFF3B1D77),
         action: () => context.push(AppRoutes.prayer.path),
       ),
       HomeMenuItem(
-        title: "Prayer Qibla",
+        title: "Arah Kiblat",
         icon: LucideIcons.compass,
         buttonColor: const Color(0xFF672CBC),
         action: () => context.push(AppRoutes.qibla.path),
       ),
       HomeMenuItem(
-        title: "Favorites",
+        title: "Favorit",
         icon: LucideIcons.bookMarked,
         buttonColor: const Color(0xFF672CBC),
         action: () => context.authPush(AppRoutes.favorites.path),
       ),
       HomeMenuItem(
-        title: "Explore",
+        title: "Jelajahi",
         icon: LucideIcons.search,
         buttonColor: const Color(0xFF3B1D77),
         action: () => context.push(AppRoutes.search.path),
       ),
       HomeMenuItem(
-        title: "Voice Command Mode",
+        title: "Mode Voice Command",
         icon: LucideIcons.audioLines,
         buttonColor: const Color(0xFF3B1D77),
         action: () => GlobalConfig().setVoiceMode(true),
@@ -148,7 +148,7 @@ class MainHomeScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Sebelas Maret',
+                            'Muhammad Naufal',
                             style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'Plus Jakarta',
@@ -168,14 +168,14 @@ class MainHomeScreen extends StatelessWidget {
                   height: 1,
                   color: Colors.white38,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 const Center(
                   child: AutoSizeText(
                     'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
                     'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
                     textAlign: TextAlign.center,
-                    maxFontSize: 16,
-                    minFontSize: 10,
+                    maxFontSize: 22,
+                    minFontSize: 18,
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -186,11 +186,10 @@ class MainHomeScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 const Center(
                   child: AutoSizeText(
-                    '“Indeed, those who have believed and done righteous deeds - '
-                    'the Most Merciful will appoint for them affection.”',
+                    '“Sesungguhnya bagi orang-orang yang beriman dan beramal saleh, (Allah) Yang Maha Pengasih akan menanamkan rasa cinta (dalam hati) mereka.”',
                     textAlign: TextAlign.center,
                     maxFontSize: 10,
-                    minFontSize: 8,
+                    minFontSize: 9,
                     style: TextStyle(
                       fontFamily: 'Plus Jakarta',
                       fontStyle: FontStyle.italic,
@@ -203,7 +202,7 @@ class MainHomeScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 const Center(
                   child: Text(
-                    'Thaha : 96',
+                    'Maryam : 96',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Plus Jakarta',
@@ -378,7 +377,7 @@ class VoiceHomeScreen extends StatelessWidget {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: height * 0.25),
       child: Text(
-        "Help those who are visually impaired to press the button",
+        "Membantu mereka yang memiliki gangguan penglihatan untuk menekan tombol.",
         textAlign: TextAlign.center,
         style: TextStyle(
           color: const Color(0xFF7C8BA0),
@@ -392,6 +391,14 @@ class VoiceHomeScreen extends StatelessWidget {
   Widget _title(double height) {
     return Column(
       children: [
+        Text(
+          "Mode",
+          style: TextStyle(
+            fontFamily: "Plus Jakarta",
+            fontSize: height * 0.035,
+            color: const Color(0xFF672CBC),
+          ),
+        ),
         Text(
           "Voice",
           style: TextStyle(
@@ -410,14 +417,6 @@ class VoiceHomeScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: const Color(0xFF672CBC),
             height: 1.0,
-          ),
-        ),
-        Text(
-          "Mode",
-          style: TextStyle(
-            fontFamily: "Plus Jakarta",
-            fontSize: height * 0.035,
-            color: const Color(0xFF672CBC),
           ),
         ),
       ],

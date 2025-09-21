@@ -5,8 +5,6 @@ import 'package:mtqmnuns/components/disclosure_button.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
-import 'package:mtqmnuns/routes/guard_navigation.dart';
-import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';

@@ -179,7 +179,7 @@ class _LoginFormState extends State<LoginForm> {
       child: GestureDetector(
         onTap: _handleForgetPassword,
         child: Text(
-          'Forget Password?',
+          'Lupa Password?',
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
@@ -232,7 +232,7 @@ class _LoginFormState extends State<LoginForm> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Don't have account? ",
+          "Tidak memiliki akun? ",
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
@@ -242,7 +242,7 @@ class _LoginFormState extends State<LoginForm> {
         GestureDetector(
           onTap: () => context.push(AppRoutes.signUp.path),
           child: const Text(
-            'Sign Up',
+            'Daftar',
             style: TextStyle(
               color: AppColors.primary,
               fontSize: 14,

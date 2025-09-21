@@ -91,7 +91,7 @@ class _PrayerTimeScreenState extends State<PrayerTimeScreen> {
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           child: TopBarUtility.buildDefaultTopBar(
             context: context,
-            title: "Prayer Times",
+            title: "Waktu Salat",
           ),
         ),
         Expanded(child: _buildMainContent(context)),
@@ -153,11 +153,11 @@ class PrayerHeader extends StatelessWidget {
     final target = DateTime(date.year, date.month, date.day);
 
     if (target == today) {
-      return "Today";
+      return "Hari ini";
     } else if (target == today.subtract(const Duration(days: 1))) {
-      return "Yesterday";
+      return "Kemarin";
     } else if (target == today.add(const Duration(days: 1))) {
-      return "Tomorrow";
+      return "Besok";
     } else {
       return DateFormat('EEEE').format(date);
     }
@@ -226,7 +226,7 @@ class PrayerLocationBox extends StatelessWidget {
       children: [
         ElevatedButton.icon(
           label: const Text(
-            "Current",
+            "Saat ini",
             style: TextStyle(color: Color(0xff7C8BA0)),
           ),
           style: ElevatedButton.styleFrom(

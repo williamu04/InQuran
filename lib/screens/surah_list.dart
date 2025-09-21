@@ -24,7 +24,7 @@ class _SurahListScreenState extends State<SurahListScreen> {
         children: [
           TopBarUtility.buildPurpleTitleTopbar(
             context: context,
-            title: "The Holy Quran",
+            title: "Baca Al-Qur\'an",
           ),
           Expanded(
             child: Container(
@@ -151,7 +151,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           case SurahListSuccessEmpty():
             return Padding(
               padding: EdgeInsets.only(top: 20),
-              child: Text("No Result Found"),
+              child: Text("Tidak ditemukan."),
             );
         }
       },
@@ -244,7 +244,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
               style: TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
             ),
             Text(
-              '${surah.totalAyah} Verse',
+              '${surah.totalAyah} Ayat',
               style: const TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
             ),
           ],
@@ -358,7 +358,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
               style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
             ),
             Text(
-              'Verse ${juzInfo.startAyahNumber} - ${juzInfo.endAyahNumber}',
+              'Ayat ${juzInfo.startAyahNumber} - ${juzInfo.endAyahNumber}',
               style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
             ),
           ],
@@ -380,7 +380,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
               style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
             ),
             Text(
-              'Verse ${juzInfo.startAyahNumber} - ${juzInfo.startSurahTotalAyah}',
+              'Ayat ${juzInfo.startAyahNumber} - ${juzInfo.startSurahTotalAyah}',
               style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
             ),
           ],
@@ -394,7 +394,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
               style: TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
             ),
             Text(
-              'Verse 1 - ${juzInfo.endAyahNumber}',
+              'Ayat 1 - ${juzInfo.endAyahNumber}',
               style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
             ),
           ],

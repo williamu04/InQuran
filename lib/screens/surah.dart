@@ -56,7 +56,7 @@ class _SurahScreenState extends State<SurahScreen> {
 
 
       setState(() {
-        title = "Reading Quran";
+        title = "Membaca Al-Qur'an";
         isLoading = false; 
       });
     });

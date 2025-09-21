@@ -34,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<DisclosureButtonModel> _createButtonList() {
     return [
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Notes",
+        text: "Catatan",
         fontSize: 14,
         action: SystemAction(() => {}),
       ),
@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         textWidget: Text.rich(
           TextSpan(children: [
             TextSpan(
-             text:  'Favourites  ·  ',
+             text:  'Favorit  ·  ',
              style: TextStyle(fontSize: 14, color: Color(0xFF672CBC), fontWeight: FontWeight.bold)
             ),
             TextSpan(
@@ -55,17 +55,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         action: SystemAction(() => {}),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Points",
+        text: "Poin",
         fontSize: 14,
         action: SystemAction(() => {}),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: 'Help & Support',
+        text: 'Bantuan & Dukungan',
         fontSize: 14,
         action: SystemAction(() => {}),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "logout",
+        text: "Keluar",
         action: SystemAction(()=> {}),
         fontSize: 14,
         showIcon: false,
@@ -113,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.only(top: 20, left: 24, right: 24),
                             child: TopBarUtility.buildDefaultTopBar(
                               context: context,
-                              title: "Account Profile",
+                              title: "Profil Pengguna",
                             ),
                           ),
                           Container(
@@ -128,7 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Column(
                             children: [
                               const Text(
-                                "Sebelas Maret",
+                                "Muhammad Naufal",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -140,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
                                   Text(
-                                    "Basic Account ",
+                                    "Akun Basic ",
                                     style: TextStyle(color: Color(0xFF994EF8), fontWeight: FontWeight.bold),
                                   ),
                                   Icon(Icons.info_outline, color: Color(0xFF994EF8), size: 14),

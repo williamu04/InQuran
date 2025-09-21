@@ -5,6 +5,7 @@ import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/common/translator.dart';
 
 class DuasListScreen extends StatefulWidget {
   const DuasListScreen({super.key});
@@ -49,7 +50,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           child: TopBarUtility.buildDefaultTopBar(
             context: context,
-            title: "Duas From Quran",
+            title: "Koleksi Doa-Doa",
           ),
         ),
         Expanded(
@@ -123,7 +124,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Duas About",
+                                  "Doa tentang",
                                   style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 10,
@@ -131,7 +132,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  category.nama,
+                                  terjemahkanKategori(category.nama),
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     color: Colors.white,

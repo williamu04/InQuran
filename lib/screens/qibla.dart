@@ -6,6 +6,7 @@ import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/services/qibla.dart';
 import 'package:vibration/vibration.dart';
+import 'package:geolocator/geolocator.dart';
 
 class QiblaScreen extends StatefulWidget {
   const QiblaScreen({super.key});
@@ -48,7 +49,32 @@ class _QiblaScreenState extends State<QiblaScreen> {
     }
 
     if (_error != null) {
-      return Scaffold(body: Center(child: Text("Error: $_error")));
+      if (_error.toString().contains("Location services are disabled")) {
+        return Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Akses lokasi belum diaktifkan.\nSilakan aktifkan lokasi untuk melanjutkan.",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () async {
+                    await Geolocator.openLocationSettings();
+                    // cek ulang status lokasi setelah balik dari settings
+                    _initQibla();
+                  },
+                  child: const Text("Izinkan akses lokasi"),
+                ),
+              ],
+            ),
+          ),
+        );
+      } else {
+        return Scaffold(body: Center(child: Text("Error: $_error")));
+      }
     }
 
     return Scaffold(
@@ -58,7 +84,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
             child: TopBarUtility.buildDefaultTopBar(
               context: context,
-              title: "Qibla Finder",
+              title: "Pencari Kiblat",
             ),
           ),
           Expanded(

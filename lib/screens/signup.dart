@@ -57,7 +57,7 @@ class SignUpScreen extends StatelessWidget {
 
   Widget _buildTitle() {
     return const Text(
-      'Sign Up',
+      'Daftar',
       style: TextStyle(
         fontSize: 40,
         fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class SignUpScreen extends StatelessWidget {
     return const Column(
       children: [
         Text(
-          'QuranApp',
+          'InQuran',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
@@ -120,7 +120,7 @@ class _SignUpFormState extends State<SignUpForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GoogleSignInButton(isLoading: _isLoading, onPressed: _handleGoogleSignUp, text: 'Login with Google'),
+        GoogleSignInButton(isLoading: _isLoading, onPressed: _handleGoogleSignUp, text: 'Masuk dengan Google'),
         const SizedBox(height: 32),
         _buildOrDivider(),
         const SizedBox(height: 32),
@@ -142,7 +142,7 @@ class _SignUpFormState extends State<SignUpForm> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'Or',
+            'atau',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,
@@ -160,13 +160,13 @@ class _SignUpFormState extends State<SignUpForm> {
       children: [
         CustomTextField(
           controller: _nameController,
-          hintText: 'Name',
+          hintText: 'Nama',
           keyboardType: TextInputType.name,
         ),
         const SizedBox(height: 20),
         CustomTextField(
           controller: _emailController,
-          hintText: 'Email/Phone Number',
+          hintText: 'Email/Nomor Telepon',
           keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 20),
@@ -213,7 +213,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 ),
               )
             : const Text(
-                'Create Account',
+                'Buat Akun',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -230,7 +230,7 @@ class _SignUpFormState extends State<SignUpForm> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Do you have account? ',
+          'Sudah memiliki akun? ',
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
@@ -240,7 +240,7 @@ class _SignUpFormState extends State<SignUpForm> {
         GestureDetector(
           onTap: () => context.push(AppRoutes.login.path),
           child: const Text(
-            'Login',
+            'Masuk',
             style: TextStyle(
               color: AppColors.primary,
               fontSize: 14,
@@ -269,9 +269,9 @@ class _SignUpFormState extends State<SignUpForm> {
 
     try {
       await Future.delayed(const Duration(seconds: 2));
-      _showSuccessMessage('Account created successfully with Google!');
+      _showSuccessMessage('Akun berhasil dibuat dengan Google!');
     } catch (e) {
-      _showErrorMessage('Failed to sign up with Google: ${e.toString()}');
+      _showErrorMessage('Gagal mendaftar dengan Google: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -283,9 +283,9 @@ class _SignUpFormState extends State<SignUpForm> {
     setState(() => _isLoading = true);
     try {
       await Future.delayed(const Duration(seconds: 2));
-      _showSuccessMessage('Account created successfully!');
+      _showSuccessMessage('Akun berhasil dibuat!');
     } catch (e) {
-      _showErrorMessage('Failed to create account: ${e.toString()}');
+      _showErrorMessage('Gagal membuat akun: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -293,15 +293,15 @@ class _SignUpFormState extends State<SignUpForm> {
 
   bool _validateForm() {
     if (_nameController.text.trim().isEmpty) {
-      _showErrorMessage('Please enter your name');
+      _showErrorMessage('Silakan masukkan nama Anda');
       return false;
     }
     if (_emailController.text.trim().isEmpty) {
-      _showErrorMessage('Please enter your email or phone number');
+      _showErrorMessage('Silakan masukkan email atau nomor telepon Anda');
       return false;
     }
     if (_passwordController.text.length < 6) {
-      _showErrorMessage('Password must be at least 6 characters');
+      _showErrorMessage('Password harus terdiri dari minimal 6 karakter');
       return false;
     }
     return true;
@@ -437,18 +437,18 @@ class TermsCheckbox extends StatelessWidget {
                     height: 1.5,
                   ),
                   children: [
-                    const TextSpan(text: "I'm agree to The "),
+                    const TextSpan(text: "Saya setuju dengan "),
                     TextSpan(
-                      text: 'Terms of Service',
+                      text: 'Ketentuan Layanan',
                       style: TextStyle(
                         color: Colors.blue[600],
                         decoration: TextDecoration.underline,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const TextSpan(text: ' and '),
+                    const TextSpan(text: ' dan '),
                     TextSpan(
-                      text: 'Privacy Policy',
+                      text: 'Kebijakan Privasi',
                       style: TextStyle(
                         color: Colors.blue[600],
                         decoration: TextDecoration.underline,

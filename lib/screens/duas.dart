@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/common/translator.dart';
 
 class DuasScreen extends StatelessWidget {
   final Map<String, String> queryParam;
@@ -24,7 +25,7 @@ class DuasScreen extends StatelessWidget {
             // 🔹 Topbar
             TopBarUtility.buildPurpleTitleTopbar(
               context: context,
-              title: "Duas Collection",
+              title: "Koleksi Doa-Doa",
             ),
 
             // 🔹 Konten utama
@@ -58,7 +59,7 @@ class DuasScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
-                            "About \n$categoryName",
+                            "Tentang\n${terjemahkanKategori(categoryName)}",
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 36,
@@ -110,7 +111,7 @@ class DuasScreen extends StatelessWidget {
 
                                 // Sumber Surah
                                 Text(
-                                  "Surah ${dua.surah?.nameLatin ?? '-'} verse ${dua.ayah.ayahNumber}",
+                                  "Surah ${dua.surah?.nameLatin ?? '-'} ayat ${dua.ayah.ayahNumber}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Color(0xff672CBC),
