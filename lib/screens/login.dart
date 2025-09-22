@@ -1,69 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/common/app_color.dart';
 import 'package:mtqmnuns/components/google_auth.dart';
 import 'package:mtqmnuns/components/logo.dart';
+import 'package:mtqmnuns/components/text_field.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/screens/signup.dart';
+import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:provider/provider.dart';
 
-class AppColors {
-  static const Color primary = Color(0xFF672CBC);
-  static const Color primaryDark = Color(0xFF4E2999);
-  static const Color backgroundLight = Color(0xFFF5EFFB);
-  static const Color textPrimary = Color(0xFF61677D);
-  static const Color textSecondary = Color(0xFF7C8BA0);
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color divider = Color(0xFFD1D5DB);
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController(text: '');
+  final TextEditingController _passwordController = TextEditingController(text: '');
+
+  bool _isLoading = false;
+  bool _isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_onTextChanged);
+    _passwordController.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    _emailController.removeListener(_onTextChanged);
+    _passwordController.removeListener(_onTextChanged);
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {
+    _isFormValid = _emailController.text.trim().isNotEmpty && _passwordController.text.trim().isNotEmpty;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5EFFB),
-              Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 80),
+              buildLogo(),
+              const SizedBox(height: 30),
+              _buildTitle(),
+              const SizedBox(height: 30),
+              _buildLoginForm(),
+              const SizedBox(height: 60),
+              _buildAppBranding(),
+              const SizedBox(height: 60),
             ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 60),
-                buildLogo(),
-                const SizedBox(height: 40),
-                _buildTitle(),
-                const SizedBox(height: 40),
-                const LoginForm(),
-                const SizedBox(height: 60),
-                _buildAppBranding(),
-                const SizedBox(height: 40),
-              ],
-            ),
           ),
         ),
       ),
     );
   }
 
-
   Widget _buildTitle() {
     return const Text(
       'Login',
       style: TextStyle(
-        fontSize: 40,
-        fontWeight: FontWeight.bold,
+        fontSize: 45,
+        fontWeight: FontWeight.w900,
         color: AppColors.primary,
-        letterSpacing: -0.5,
       ),
     );
   }
@@ -82,7 +95,7 @@ class LoginScreen extends StatelessWidget {
         ),
         SizedBox(height: 8),
         Text(
-          'Slogan atau Jargon',
+          'Aplikasi Quran Untuk Semua',
           style: TextStyle(
             fontSize: 14,
             color: AppColors.textSecondary,
@@ -91,41 +104,18 @@ class LoginScreen extends StatelessWidget {
       ],
     );
   }
-}
 
-class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
-
-  @override
-  State<LoginForm> createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
-  final TextEditingController _emailController = TextEditingController(text: '');
-  final TextEditingController _passwordController = TextEditingController(text: '');
-  
-  bool _isPasswordVisible = false;
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildLoginForm() {
     return Column(
       children: [
-        GoogleSignInButton(isLoading: _isLoading, onPressed: _handleGoogleLogin, text: 'Login with Google'),
-        const SizedBox(height: 32),
+        GoogleSignInButton(isLoading: _isLoading, onPressed: _handleGoogleLogin, text: 'Masuk dengan '),
+        const SizedBox(height: 16),
         _buildOrDivider(),
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
         _buildFormFields(),
         const SizedBox(height: 20),
         _buildForgetPasswordLink(),
-        const SizedBox(height: 32),
+        const SizedBox(height: 40),
         _buildLoginButton(),
         const SizedBox(height: 24),
         _buildSignUpLink(),
@@ -140,9 +130,9 @@ class _LoginFormState extends State<LoginForm> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'Or',
+            'Atau',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.primary,
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
@@ -166,8 +156,6 @@ class _LoginFormState extends State<LoginForm> {
           controller: _passwordController,
           hintText: 'Password',
           isPassword: true,
-          isPasswordVisible: _isPasswordVisible,
-          onTogglePasswordVisibility: _togglePasswordVisibility,
         ),
       ],
     );
@@ -195,10 +183,10 @@ class _LoginFormState extends State<LoginForm> {
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _handleLogin,
+        onPressed: (_isLoading || !_isFormValid) ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+          backgroundColor: _isFormValid ? AppColors.primary : AppColors.divider,
+          disabledBackgroundColor: Colors.grey.shade400,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -214,10 +202,10 @@ class _LoginFormState extends State<LoginForm> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : const Text(
+            : Text(
                 'Login',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: _isFormValid ? Colors.white : Colors.grey.shade600,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
@@ -254,15 +242,8 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void _togglePasswordVisibility() {
-    setState(() {
-      _isPasswordVisible = !_isPasswordVisible;
-    });
-  }
-
   Future<void> _handleGoogleLogin() async {
     setState(() => _isLoading = true);
-    
     try {
       await Future.delayed(const Duration(seconds: 2));
       _showSuccessMessage('Logged in successfully with Google!');
@@ -274,14 +255,14 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _handleLogin() async {
-    if (!_validateForm()) return;
-
     setState(() => _isLoading = true);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
     try {
-      await Future.delayed(const Duration(seconds: 2));
-      _showSuccessMessage('Logged in successfully!');
+      await context.read<AuthViewModel>().loginEmail(email, password);
     } catch (e) {
-      _showErrorMessage('Failed to login: ${e.toString()}');
+      _showErrorMessage('login Gagal: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -291,42 +272,21 @@ class _LoginFormState extends State<LoginForm> {
     _showInfoMessage('Password reset functionality will be implemented here.');
   }
 
-  bool _validateForm() {
-    if (_emailController.text.trim().isEmpty) {
-      _showErrorMessage('Please enter your email');
-      return false;
-    }
-    if (_passwordController.text.isEmpty) {
-      _showErrorMessage('Please enter your password');
-      return false;
-    }
-    return true;
-  }
-
   void _showSuccessMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
   }
 
   void _showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
   void _showInfoMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.blue,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.blue),
     );
   }
 }

@@ -4,11 +4,14 @@ import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/drawer_menu.dart';
 import 'package:mtqmnuns/components/drawer_setting.dart';
+import 'package:mtqmnuns/config/dio.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
 import 'package:mtqmnuns/data/remote/auth.dart';
+import 'package:mtqmnuns/data/remote/user.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
+import 'package:mtqmnuns/repositories/user.dart';
 import 'package:mtqmnuns/routes/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
 import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
@@ -26,15 +29,22 @@ import 'package:mtqmnuns/viewmodel/mushaf.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
+import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final dio = DioConfig().init();
 
   final globalConfig = GlobalConfig();
   await globalConfig.initialize();
 
   final db = AppDatabase();
+
+  final authRemote = AuthRemoteDataSource(client: dio);
+  final authRepository = AuthRepository(authRemote);
+  final authVM = AuthViewModel(authRepository);
+  await authVM.init(); 
 
   runApp(
     MultiProvider(
@@ -43,18 +53,20 @@ void main() async {
         ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
 
         // DAOs
-        Provider(create: (_) => db.surahDao),
-        Provider(create: (_) => db.juzDao),
-        Provider(create: (_) => db.ayahDao),
+        Provider.value(value: db.surahDao),
+        Provider.value(value: db.juzDao),
+        Provider.value(value: db.ayahDao),
 
         // Remote
-        Provider(create: (_) => TokenRemoteDataSource()),
+        Provider.value(value: authRemote),
+        Provider(create: (_) => UserRemoteDataSource(client: dio)),
 
         // Repositories
         Provider(create: (context) => SurahRepository(context.read<SurahDao>()),),
         Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
         Provider(create: (context) => AyahRepository(context.read<AyahDao>())),
-        Provider(create: (context) => AuthRepository(context.read<TokenRemoteDataSource>())),
+        Provider(create: (context) => UserRepository(context.read<UserRemoteDataSource>())),
+        Provider.value(value: authRepository),
 
         // Services
         Provider(create: (_) => SttService()),
@@ -66,7 +78,7 @@ void main() async {
               (context) => SurahListViewModel(
                 context.read<SurahRepository>(),
                 context.read<SurahFilterService>(),
-                context.read<JuzRepository>(), // optional if needed
+                context.read<JuzRepository>(), 
               ),
         ),
         ChangeNotifierProvider(create: (context) => SttViewModel(context.read<SttService>(),context.read<SurahRepository>())),
@@ -76,11 +88,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
         ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),
         ChangeNotifierProvider(create: (_) => AuthPopUpViewModel()),
-        ChangeNotifierProvider(create: (context) {
-          final vm = AuthViewModel(context.read<AuthRepository>());
-          Future.microtask(() => vm.init());
-          return vm;
-        }),
+        ChangeNotifierProvider(create: (context) => UserViewModel(context.read<UserRepository>())),
+        ChangeNotifierProvider.value(value: authVM),
       ],
       child: const MyApp(),
     ),

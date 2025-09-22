@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/common/app_color.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/models/prayer.dart';
 import 'package:mtqmnuns/providers/location.dart';
-import 'package:mtqmnuns/screens/login.dart';
 import 'package:mtqmnuns/services/geocode.dart';
 import 'package:mtqmnuns/services/prayer.dart';
 import 'package:provider/provider.dart';

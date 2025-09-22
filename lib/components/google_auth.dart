@@ -20,30 +20,34 @@ class GoogleSignInButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
+          backgroundColor: Color(0xFFF5F9FE),
+          side: const BorderSide(color: Color(0xFFF5F9FE), width: 1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 0,
         ),
         child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
+            ? const Center(child: CircularProgressIndicator(strokeWidth: 2),)
             : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   _buildGoogleIcon(),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 10,),
                   Text(
                     text,
                     style: const TextStyle(
                       color: Color(0xFF6B7280),
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    "Google",
+                    style: const TextStyle(
+                      color: Color(0xFF6B7280),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ],
@@ -53,15 +57,14 @@ class GoogleSignInButton extends StatelessWidget {
   }
 
   Widget _buildGoogleIcon() {
-    return Container(
-      width: 20,
-      height: 20,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: NetworkImage('https://developers.google.com/identity/images/g-logo.png'),
-          fit: BoxFit.contain,
-        ),
+    return SizedBox(
+      width: 30,  
+      height: 30,
+      child: Image.asset(
+        'assets/img/google-logo.png',
+        fit: BoxFit.contain,
       ),
     );
   }
+
 }

@@ -1,43 +1,92 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:mtqmnuns/common/exception.dart';
 import 'package:mtqmnuns/config/env.dart';
-import 'package:mtqmnuns/exception/invalid_token.dart';
+import 'package:mtqmnuns/dto/auth.dart';
+import 'package:dio/dio.dart';
+import 'package:mtqmnuns/exception/auth.dart';
 
-class TokenRemoteDataSource {
-  final http.Client client;
+class AuthRemoteDataSource {
+  final Dio client;
 
-  TokenRemoteDataSource({http.Client? client}) : client = client ?? http.Client();
+  AuthRemoteDataSource({Dio? client}) : client = client ?? Dio();
 
-  Future<Map<String, dynamic>> fetchTokenRaw(String refreshToken, String sessionId) async {
-    try {
-      final response = await client.post(
-        Uri.parse('${Env.baseUrl}/refresh'),
+  Options get _defaultOptions => Options(
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': Env.apiKey,
         },
-        body: jsonEncode({
-          'refreshToken': refreshToken,
-          'sessionId' : sessionId
-          
-        }),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body);
-      } else if (response.statusCode == 400 || response.statusCode == 401) {
-        throw InvalidRefreshTokenException('Sesi invalid atau expored');
-      } else if (response.statusCode >= 500) {
-        throw HttpException('Server error (${response.statusCode})');
-      } else {
-        throw HttpException('Unexpected error (${response.statusCode})');}
-    } on http.ClientException catch (e) {
-      throw HttpException('Kesalahan jaringan: ${e.message}');
-    } on FormatException catch (e) {
-      throw HttpException('Format respons tidak valid: ${e.message}');
+  Future<TokenDto> fetchTokenRaw(String refreshToken, String sessionId) async {
+    try {
+      final response = await client.post(
+        '${Env.baseUrl}/auth/refresh-token',
+        data: {'refreshToken': refreshToken, 'sessionId': sessionId},
+        options: _defaultOptions,
+      );
+
+      return _handleTokenResponse(response);
+    } on SocketException catch (e) {
+      throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
+    } on DioException catch (e) {
+      dioExceptionHandler(e);
+    }
+  }
+
+Future<TokenDto> loginEmail(String email, String password) async {
+  try {
+    final response = await client.post(
+      '${Env.baseUrl}/auth/login',
+      data: {'email': email, 'password': password, 'loginType': 'email'},
+      options: _defaultOptions,
+    );
+
+    return _handleTokenResponse(response);
+  } on SocketException catch (e) {
+    throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
+  } on DioException catch (e) {
+    dioExceptionHandler(e);
+  }
+}
+
+  Future<TokenDto> register(
+    String username,
+    String email,
+    String password,
+  ) async {
+    try {
+      final response = await client.post(
+        '${Env.baseUrl}/auth/register',
+        data: {'username': username, 'email': email, 'password': password},
+        options: _defaultOptions,
+      );
+      return _handleTokenResponse(response);
+    } on SocketException catch (e) {
+      throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
+    } on DioException catch (e) {
+      dioExceptionHandler(e);
+    }
+  }
+
+  Future<void> logout(String sessionId) async {
+    try {
+      await client.post(
+        '${Env.baseUrl}/auth/register',
+        data: {'sessionId' : sessionId },
+        options: _defaultOptions,
+      );
+    } on SocketException catch (e) {
+      throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
+    } on DioException catch (e) {
+      dioExceptionHandler(e);
+    }
+  }
+
+  TokenDto _handleTokenResponse(Response response) {
+    try {
+      return TokenDto.fromJson(Map<String, dynamic>.from(response.data['data']));
     } catch (e) {
-      throw HttpException('Kesalahan tidak terduga: ${e.toString()}');
+      throw DataParsingError('Gagal parsing data: ${e.toString()}');
     }
   }
 }

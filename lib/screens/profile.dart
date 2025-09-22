@@ -3,10 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/disclosure_button.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
+import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
-import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
+import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -26,9 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     buttonList = _createButtonList();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AuthViewModel>().init();
-    });
+    final authVm = context.read<AuthViewModel>();
+    context.read<UserViewModel>().loadUser(authVm.state, authVm.isLoggedIn());
   }
 
   List<DisclosureButtonModel> _createButtonList() {
@@ -76,28 +77,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthViewModel>(
+    return Consumer<UserViewModel>(
       builder: (context, vm, _) {
         switch (vm.state) {
-          case AuthInitial():
+          case UserLoadLoading():
             return const Center(child: CircularProgressIndicator());
-          case AuthLoading():
-            return const Center(child: CircularProgressIndicator());
-          case AuthAuthenticated():
-            return _authenticated(context);
-          case AuthUnauthenticated():
-            return Center(child: Text("Error unauthenticated"));
-          case AuthError():
-            throw Center(child: Text("Terjadi Kesalah, coba lagi"));
-          case AuthOffline():
-            throw UnimplementedError();
+          case UserLoadError(:final message):
+            return Center(child: Text("error: $message"));
+          case UserLoaded(:final user):
+            return _buildProfilePage(user);
+          case UserLoadUnauthenticated():
+            return Center(child: Text("Unauthorized: silahkan login untuk mengakses fitur ini"));
         }
       }
     );
   }
 
 
-  Widget _authenticated(BuildContext context) {
+  Widget _buildProfilePage(UserDto user) {
     return Column(
         children: [
           roundedCard(
@@ -127,9 +124,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Column(
                             children: [
-                              const Text(
-                                "Muhammad Naufal",
-                                style: TextStyle(
+                              Text(
+                                user.fullName ?? user.username,
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,

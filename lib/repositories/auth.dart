@@ -1,27 +1,24 @@
-import 'dart:io';
 import 'package:mtqmnuns/data/remote/auth.dart';
 import 'package:mtqmnuns/dto/auth.dart';
-import 'package:mtqmnuns/exception/invalid_token.dart';
 
 class AuthRepository {
-  final TokenRemoteDataSource remoteDataSource;
+  final AuthRemoteDataSource remoteDataSource;
 
   AuthRepository(this.remoteDataSource);
 
-  Future<TokenDto> refreshToken(String refreshToken, String sessionId) async {
-    try {
-      final tokenData = await remoteDataSource.fetchTokenRaw(refreshToken, sessionId);
-      return TokenDto(
-        sessionId: tokenData['sessionId'] as String,
-        jwtToken: tokenData['accessToken'] as String,
-        refreshToken: tokenData['refreshToken'] as String,
-      );
-    } on InvalidRefreshTokenException {
-      rethrow;
-    } on HttpException {
-      rethrow; 
-    } catch (e) {
-      throw HttpException('Gagal memperbarui token: ${e.toString()}');
-    }
+  Future<TokenDto> loginEmail(String email, String password) {
+    return remoteDataSource.loginEmail(email, password);
+  }
+
+  Future<TokenDto> refreshToken(String refreshToken, String sessionId) {
+    return remoteDataSource.fetchTokenRaw(refreshToken, sessionId);
+  }
+
+  Future<TokenDto> registerUser(String username, String email, String password) {
+    return remoteDataSource.register(username, email, password);
+  }
+
+  Future<void> logout(String sessionId) {
+    return remoteDataSource.logout(sessionId);
   }
 }

@@ -1,66 +1,95 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mtqmnuns/common/app_color.dart';
 import 'package:mtqmnuns/components/google_auth.dart';
 import 'package:mtqmnuns/components/logo.dart';
+import 'package:mtqmnuns/components/text_field.dart';
 import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:provider/provider.dart';
 
-class AppColors {
-  static const Color primary = Color(0xFF672CBC);
-  static const Color primaryDark = Color(0xFF4E2999);
-  static const Color backgroundLight = Color(0xFFF5EFFB);
-  static const Color textPrimary = Color(0xFF61677D);
-  static const Color textSecondary = Color(0xFF7C8BA0);
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color divider = Color(0xFFD1D5DB);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isTermsAgreed = false;
+  bool _isLoading = false;
+  bool _isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_updateFormValidity);
+    _emailController.addListener(_updateFormValidity);
+    _passwordController.addListener(_updateFormValidity);
+  }
+
+  @override
+  void dispose() {
+    _nameController.removeListener(_updateFormValidity);
+    _emailController.removeListener(_updateFormValidity);
+    _passwordController.removeListener(_updateFormValidity);
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _updateFormValidity() {
+    setState(() {
+      final isUsernameValid = _validateUsername(_nameController.text) == null;
+      final isEmailValid = _validateEmail(_emailController.text) == null;
+      final isPasswordValid = _validatePassword(_passwordController.text) == null;
+      
+      _isFormValid = isUsernameValid && 
+                    isEmailValid && 
+                    isPasswordValid && 
+                    _isTermsAgreed &&
+                    _nameController.text.isNotEmpty &&
+                    _emailController.text.isNotEmpty &&
+                    _passwordController.text.isNotEmpty;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5EFFB),
-              Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 80),
+              buildLogo(),
+              const SizedBox(height: 30),
+              _buildTitle(),
+              const SizedBox(height: 30),
+              _buildSignUpForm(),
+              const SizedBox(height: 60),
+              _buildAppBranding(),
+              const SizedBox(height: 60),
             ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                buildLogo(),
-                const SizedBox(height: 40),
-                _buildTitle(),
-                const SizedBox(height: 40),
-                const SignUpForm(),
-                const SizedBox(height: 40),
-                _buildAppBranding(),
-                const SizedBox(height: 40),
-              ],
-            ),
           ),
         ),
       ),
     );
   }
 
-
   Widget _buildTitle() {
     return const Text(
       'Daftar',
       style: TextStyle(
-        fontSize: 40,
-        fontWeight: FontWeight.bold,
+        fontSize: 45,
+        fontWeight: FontWeight.w900,
         color: AppColors.primary,
         letterSpacing: -0.5,
       ),
@@ -90,44 +119,22 @@ class SignUpScreen extends StatelessWidget {
       ],
     );
   }
-}
 
-class SignUpForm extends StatefulWidget {
-  const SignUpForm({super.key});
-
-  @override
-  State<SignUpForm> createState() => _SignUpFormState();
-}
-
-class _SignUpFormState extends State<SignUpForm> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  bool _isPasswordVisible = false;
-  bool _isTermsAgreed = false;
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSignUpForm() {
     return Column(
       children: [
-        GoogleSignInButton(isLoading: _isLoading, onPressed: _handleGoogleSignUp, text: 'Masuk dengan Google'),
-        const SizedBox(height: 32),
+        GoogleSignInButton(
+          isLoading: _isLoading, 
+          onPressed: _handleGoogleSignUp, 
+          text: 'Daftar dengan ',
+        ),
+        const SizedBox(height: 16),
         _buildOrDivider(),
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
         _buildFormFields(),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
         _buildTermsCheckbox(),
-        const SizedBox(height: 32),
+        const SizedBox(height: 40),
         _buildCreateAccountButton(),
         const SizedBox(height: 24),
         _buildLoginLink(),
@@ -142,9 +149,9 @@ class _SignUpFormState extends State<SignUpForm> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'atau',
+            'Atau',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.primary,
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
@@ -160,31 +167,86 @@ class _SignUpFormState extends State<SignUpForm> {
       children: [
         CustomTextField(
           controller: _nameController,
-          hintText: 'Nama',
+          hintText: 'Username',
           keyboardType: TextInputType.name,
+          validator: _validateUsername,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16), 
         CustomTextField(
           controller: _emailController,
-          hintText: 'Email/Nomor Telepon',
+          hintText: 'Email',
           keyboardType: TextInputType.emailAddress,
+          validator: _validateEmail,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16), 
         CustomTextField(
           controller: _passwordController,
           hintText: 'Password',
           isPassword: true,
-          isPasswordVisible: _isPasswordVisible,
-          onTogglePasswordVisibility: _togglePasswordVisibility,
+          validator: _validatePassword,
         ),
       ],
     );
   }
 
   Widget _buildTermsCheckbox() {
-    return TermsCheckbox(
-      isChecked: _isTermsAgreed,
-      onChanged: _handleTermsChanged,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Transform.scale(
+          scale: 1.1,
+          child: Checkbox(
+            value: _isTermsAgreed,
+            onChanged: _handleTermsChanged,
+            activeColor: AppColors.primary,
+            checkColor: Colors.white,
+            side: const BorderSide(
+              color: Color(0xFFD1D5DB),
+              width: 1.5,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  color: Color(0xFF374151),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                ),
+                children: [
+                  const TextSpan(text: "Saya setuju dengan "),
+                  TextSpan(
+                    text: 'Ketentuan Layanan',
+                    style: TextStyle(
+                      color: Colors.blue[600],
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const TextSpan(text: ' dan '),
+                  TextSpan(
+                    text: 'Kebijakan Privasi',
+                    style: TextStyle(
+                      color: Colors.blue[600],
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -193,10 +255,10 @@ class _SignUpFormState extends State<SignUpForm> {
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: (_isTermsAgreed && !_isLoading) ? _handleCreateAccount : null,
+        onPressed: (_isLoading || !_isFormValid) ? null : _handleCreateAccount,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+          backgroundColor: _isFormValid ? AppColors.primary : Colors.grey.shade400,
+          disabledBackgroundColor: Colors.grey.shade400,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -212,10 +274,10 @@ class _SignUpFormState extends State<SignUpForm> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : const Text(
+            : Text(
                 'Buat Akun',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: _isFormValid ? Colors.white : Colors.grey.shade600,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
@@ -252,15 +314,11 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  void _togglePasswordVisibility() {
-    setState(() {
-      _isPasswordVisible = !_isPasswordVisible;
-    });
-  }
 
   void _handleTermsChanged(bool? value) {
     setState(() {
       _isTermsAgreed = value ?? false;
+      _updateFormValidity();
     });
   }
 
@@ -278,33 +336,18 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> _handleCreateAccount() async {
-    if (!_validateForm()) return;
-
     setState(() => _isLoading = true);
+    final username = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
     try {
-      await Future.delayed(const Duration(seconds: 2));
-      _showSuccessMessage('Akun berhasil dibuat!');
+      await context.read<AuthViewModel>().signup(username, email, password);
     } catch (e) {
       _showErrorMessage('Gagal membuat akun: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
-  }
-
-  bool _validateForm() {
-    if (_nameController.text.trim().isEmpty) {
-      _showErrorMessage('Silakan masukkan nama Anda');
-      return false;
-    }
-    if (_emailController.text.trim().isEmpty) {
-      _showErrorMessage('Silakan masukkan email atau nomor telepon Anda');
-      return false;
-    }
-    if (_passwordController.text.length < 6) {
-      _showErrorMessage('Password harus terdiri dari minimal 6 karakter');
-      return false;
-    }
-    return true;
   }
 
   void _showSuccessMessage(String message) {
@@ -324,144 +367,49 @@ class _SignUpFormState extends State<SignUpForm> {
       ),
     );
   }
-}
 
-class CustomTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hintText;
-  final TextInputType keyboardType;
-  final bool isPassword;
-  final bool isPasswordVisible;
-  final VoidCallback? onTogglePasswordVisibility;
-
-  const CustomTextField({
-    super.key,
-    required this.controller,
-    required this.hintText,
-    this.keyboardType = TextInputType.text,
-    this.isPassword = false,
-    this.isPasswordVisible = false,
-    this.onTogglePasswordVisibility,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 52,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-      ),
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: isPassword && !isPasswordVisible,
-        style: const TextStyle(
-          color: Color(0xFF374151),
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
-        ),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Color(0xFF9CA3AF),
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
-          suffixIcon: isPassword
-              ? IconButton(
-                  icon: Icon(
-                    isPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                    color: const Color(0xFF6B7280),
-                    size: 20,
-                  ),
-                  onPressed: onTogglePasswordVisibility,
-                )
-              : null,
-        ),
-      ),
-    );
+  String? _validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Username wajib diisi';
+    }
+    if (value.length < 2) {
+      return 'Username minimal 2 karakter';
+    }
+    if (value.length > 50) {
+      return 'Username tidak boleh lebih dari 50 karakter';
+    }
+    return null;
   }
-}
 
-class TermsCheckbox extends StatelessWidget {
-  final bool isChecked;
-  final ValueChanged<bool?> onChanged;
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email wajib diisi';
+    }
 
-  const TermsCheckbox({
-    super.key,
-    required this.isChecked,
-    required this.onChanged,
-  });
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Transform.scale(
-          scale: 1.1,
-          child: Checkbox(
-            value: isChecked,
-            onChanged: onChanged,
-            activeColor: AppColors.primary,
-            checkColor: Colors.white,
-            side: const BorderSide(
-              color: Color(0xFFD1D5DB),
-              width: 1.5,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: GestureDetector(
-            onTap: () => onChanged(!isChecked),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: RichText(
-                text: TextSpan(
-                  style: const TextStyle(
-                    color: Color(0xFF374151),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    height: 1.5,
-                  ),
-                  children: [
-                    const TextSpan(text: "Saya setuju dengan "),
-                    TextSpan(
-                      text: 'Ketentuan Layanan',
-                      style: TextStyle(
-                        color: Colors.blue[600],
-                        decoration: TextDecoration.underline,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const TextSpan(text: ' dan '),
-                    TextSpan(
-                      text: 'Kebijakan Privasi',
-                      style: TextStyle(
-                        color: Colors.blue[600],
-                        decoration: TextDecoration.underline,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+    if (!emailRegex.hasMatch(value)) {
+      return 'Email harus menggunakan format email yang valid';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password wajib diisi';
+    }
+    if (value.length < 8) {
+      return 'Password minimal 8 karakter';
+    }
+    if (value.length > 100) {
+      return 'Password tidak boleh lebih dari 100 karakter';
+    }
+
+    final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$');
+
+    if (!passwordRegex.hasMatch(value)) {
+      return 'Password harus mengandung minimal satu huruf dan satu angka';
+    }
+    return null;
   }
 }
