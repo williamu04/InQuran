@@ -28,7 +28,7 @@ class SttRepository {
   //     ),
   //   ),
 
-  Future<void Function(BuildContext context)> processTranscription(BuildContext context, String input) async {
+  Future<void Function(BuildContext context)> processTranscription(String input) async {
     final surah = await fuzzyFindSurahFromText(input);
     if (surah != null) {
       return (context) => navigateToSurah(context, surah);

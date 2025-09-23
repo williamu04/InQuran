@@ -17,9 +17,7 @@ class SttViewModel extends StatefulViewModel<SttState> {
   }
 
   void _bindStreams(BuildContext context) {
-    _sttService.finalResultStream.listen(
-      (text) => _onFinalTranscription(context, text),
-    );
+    _sttService.finalResultStream.listen(_onFinalTranscription);
 
     _sttService.errorStream.listen((message) async {
       final trimmed = message.trim();
@@ -38,10 +36,10 @@ class SttViewModel extends StatefulViewModel<SttState> {
     setState(SttIdle());
   }
 
-  void _onFinalTranscription(BuildContext context, String text) async {
+  void _onFinalTranscription(String text) async {
     setState(SttProcessing(text));
     try {
-      final action = await _sttRepo.processTranscription(context, text);
+      final action = await _sttRepo.processTranscription(text);
       await _sttService.stopListening();
       if (state is SttProcessing) setState(SttSuccess(action));
     } catch (_) {
