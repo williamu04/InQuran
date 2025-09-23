@@ -5,7 +5,6 @@ import 'package:mtqmnuns/components/drawer_menu.dart';
 import 'package:mtqmnuns/components/drawer_setting.dart';
 import 'package:mtqmnuns/components/loading_viewmodel.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
-import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/reusable_modal.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 import 'package:mtqmnuns/config/dio.dart';

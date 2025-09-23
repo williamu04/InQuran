@@ -1,9 +1,4 @@
-
-import 'dart:math';
-
-import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 
 class SurahRepository {
