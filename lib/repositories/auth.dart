@@ -11,7 +11,7 @@ class AuthRepository {
   }
 
   Future<TokenDto> refreshToken(String refreshToken, String sessionId) {
-    return remoteDataSource.fetchTokenRaw(refreshToken, sessionId);
+    return remoteDataSource.refreshToken(refreshToken, sessionId);
   }
 
   Future<TokenDto> registerUser(String username, String email, String password) {

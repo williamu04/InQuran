@@ -3,7 +3,7 @@ import 'package:mtqmnuns/components/drawer_generic_helper.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
-import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
 class SettingDrawer extends StatelessWidget {
@@ -11,11 +11,11 @@ class SettingDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GenericDrawer<SettingSlideDrawerViewModel>(
+    return GenericDrawer<SettingSlideDrawer>(
       title: 'Pengaturan',
       slideDirection: SlideDirection.right,
       createButtonList: _createSettingButtonList,
-      getViewModel: (context) => context.read<SettingSlideDrawerViewModel>(),
+      getViewModel: (context) => context.read<SettingSlideDrawer>(),
     );
   }
 

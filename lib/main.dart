@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/components/auth_popup.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/drawer_menu.dart';
 import 'package:mtqmnuns/components/drawer_setting.dart';
+import 'package:mtqmnuns/components/loading_viewmodel.dart';
+import 'package:mtqmnuns/components/reusable_modal.dart';
 import 'package:mtqmnuns/config/dio.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
@@ -23,12 +24,13 @@ import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
+import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
-import 'package:mtqmnuns/viewmodel/drawer.dart';
 import 'package:mtqmnuns/viewmodel/mushaf.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
 
@@ -85,11 +87,17 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LocationProvider()..loadLocation()),
         ChangeNotifierProvider(create: (context) => SurahDetailViewModel(context.read<AyahRepository>())),
         ChangeNotifierProvider(create:(context) => MushafViewModel(context.read<AyahRepository>())),
-        ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
-        ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),
-        ChangeNotifierProvider(create: (_) => AuthPopUpViewModel()),
-        ChangeNotifierProvider(create: (context) => UserViewModel(context.read<UserRepository>())),
         ChangeNotifierProvider.value(value: authVM),
+        ChangeNotifierProvider(create: (context) => UserViewModel(context.read<UserRepository>(), context.read<AuthViewModel>())),
+
+        //toggleable ui state
+        ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
+        ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
+        ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
+        ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
+        ChangeNotifierProvider(create: (_) => LogoutErrorPopUp()),
+        ChangeNotifierProvider(create: (_) => LoginErrorPopUp()),
+        ChangeNotifierProvider(create: (_) => SignInErrorPopUp()),
       ],
       child: const MyApp(),
     ),
@@ -181,7 +189,98 @@ class MainScaffold extends StatelessWidget {
           ),
           MenuDrawer(),
           SettingDrawer(),
-          AuthRequiredPopUp(),
+          ReusableModal<UnauthenticatedPopUp>(
+            title: "Kamu Belum Login",
+            subtitle: "Kamu harus login untuk mengakses fitur ini",
+            buttonList: [
+              ButtonModalModel(
+                text: "Login", 
+                onButtonPressed: () {
+                  context.read<UnauthenticatedPopUp>().close();
+                  context.push(AppRoutes.login.path);
+                },
+              )
+            ],
+          ),
+          ReusableModal<LogoutDialoguePopUp>(
+            title: "Logout",
+            subtitle: "Kamu yakin ingin keluar?",
+            buttonList: [
+              ButtonModalModel(
+                text: "Logout", 
+                onButtonPressed: () {
+                  context.read<AuthViewModel>().logout();
+                }
+              ),
+              ButtonModalModel(
+                text: "Batal", 
+                textColor: Colors.red,
+                buttonColor: Colors.white,
+                onButtonPressed: () {
+                  context.read<LogoutDialoguePopUp>().close();
+                }
+              )
+            ],
+
+          ),
+          ReusableModal<UnauthenticatedPopUp>(
+            title: "Kamu Belum Login",
+            subtitle: "Kamu harus login untuk mengakses fitur ini",
+            buttonList: [
+              ButtonModalModel(
+                text: "Login", 
+                onButtonPressed: () {
+                  context.read<UnauthenticatedPopUp>().close();
+                  context.push(AppRoutes.login.path);
+                },
+              )
+            ],
+          ),
+
+          ReusableModal<LogoutErrorPopUp>(
+            title: "Logout Gagal",
+            subtitle: context.read<LogoutErrorPopUp>().errorMessage ?? "Terjadi Kesalahan Tak terduga",
+            buttonList: [
+              ButtonModalModel(
+                text: "Ok", 
+                onButtonPressed: () {
+                  context.read<LogoutErrorPopUp>().close();
+                },
+              )
+            ],
+          ),
+
+          ReusableModal<LoginErrorPopUp>(
+            title: "Login gagal",
+            subtitle: context.read<LoginErrorPopUp>().errorMessage ?? "Terjadi Kesalahan Tak terduga",
+            buttonList: [
+              ButtonModalModel(
+                text: "Ok", 
+                onButtonPressed: () {
+                  context.read<LoginErrorPopUp>().close();
+                },
+              )
+            ],
+          ),
+
+          ReusableModal<SignInErrorPopUp>(
+            title: "Pembuatan Akun Gagal",
+            subtitle: context.read<SignInErrorPopUp>().errorMessage ?? "Terjadi Kesalahan Tak terduga",
+            buttonList: [
+              ButtonModalModel(
+                text: "Ok", 
+                onButtonPressed: () {
+                  context.read<SignInErrorPopUp>().close();
+                },
+              )
+            ],
+          ),
+
+          LoadingModal<AuthViewModel>(
+            text: "Logging out...",
+            showForState: AuthLoggingOut,
+          ),
+
         ],
       ),
     );

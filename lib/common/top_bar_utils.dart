@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/top_bar.dart';
-import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
 class TopBarIconModel {
@@ -20,12 +20,12 @@ class TopBarUtility {
   }
 
   static openMenuDrawer(BuildContext context) {
-    final vm = context.read<MenuSlideDrawerViewModel>();
+    final vm = context.read<MenuSlideDrawer>();
     vm.open();
   }
 
   static openSettingDrawer(BuildContext context) {
-    final vm = context.read<SettingSlideDrawerViewModel>();
+    final vm = context.read<SettingSlideDrawer>();
     vm.open();
   }
 

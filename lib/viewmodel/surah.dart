@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
 import 'package:mtqmnuns/state/surah.dart';
+import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 
 
-class SurahDetailViewModel extends ChangeNotifier {
+class SurahDetailViewModel extends StatefulViewModel<SurahDetailState> {
   final AyahRepository _ayahRepo;
 
-  SurahDetailViewModel(this._ayahRepo);
-
-  SurahDetailState state = SurahLoading();
+  SurahDetailViewModel(this._ayahRepo) : super(SurahLoading());
 
   Future<T?> _withSuccess<T>(
     Future<T> Function(List<AyahWithSurahDto> ayahs) action,
@@ -20,15 +19,14 @@ class SurahDetailViewModel extends ChangeNotifier {
       return await action(ayahs);
     } catch (e) {
       debugPrint(e.toString());
-      state = SurahSuccess(ayahs, warning: "Load Failed");
-      notifyListeners();
+      setState(SurahSuccess(ayahs, warning: "Load Failed"));
       return null;
     }
   }
 
-  void _updateSuccess(List<AyahWithSurahDto> ayahs, {String? warning, int? jumpIndex}) {
-    state = SurahSuccess(ayahs, warning: warning, jumpIndex: jumpIndex);
-    notifyListeners();
+  void _updateSuccess(List<AyahWithSurahDto> ayahs,
+      {String? warning, int? jumpIndex}) {
+    setState(SurahSuccess(ayahs, warning: warning, jumpIndex: jumpIndex));
   }
 
   Future<void> loadSurah(
@@ -37,8 +35,7 @@ class SurahDetailViewModel extends ChangeNotifier {
     int endSurahId,
     int endSurahAyah,
   ) async {
-    state = SurahLoading();
-    notifyListeners();
+    setState(SurahLoading());
     try {
       final data = await _ayahRepo.getAyahsInRange(
         startSurahId: startSurahId,
@@ -48,8 +45,7 @@ class SurahDetailViewModel extends ChangeNotifier {
       );
       _updateSuccess(data);
     } catch (e) {
-      state = SurahError(e.toString());
-      notifyListeners();
+      setState(SurahError(e.toString()));
     }
   }
 
@@ -57,8 +53,7 @@ class SurahDetailViewModel extends ChangeNotifier {
     await _withSuccess((ayahs) async {
       final last = ayahs.lastOrNull;
       if (last == null) {
-        state = SurahError("Internal Error(500)");
-        notifyListeners();
+        setState(SurahError("Internal Error(500)"));
         return;
       }
       if (last.surahNumber == 114) return;
@@ -69,25 +64,23 @@ class SurahDetailViewModel extends ChangeNotifier {
 
   Future<void> preppendBySurah() async {
     await _withSuccess((ayahs) async {
-          final first = ayahs.firstOrNull;
-          if (first == null) {
-            state = SurahError("Internal Error(500)");
-            notifyListeners();
-            return 0;
-          }
-          if (first.surahNumber == 1) return 0;
-          final newAyahs =
-              await _ayahRepo.getAyahsBySurahId(first.surahNumber - 1);
-          _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
-        });
+      final first = ayahs.firstOrNull;
+      if (first == null) {
+        setState(SurahError("Internal Error(500)"));
+        return;
+      }
+      if (first.surahNumber == 1) return;
+      final newAyahs =
+          await _ayahRepo.getAyahsBySurahId(first.surahNumber - 1);
+      _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
+    });
   }
 
   Future<void> appendByJuz() async {
     await _withSuccess((ayahs) async {
       final last = ayahs.lastOrNull;
       if (last == null) {
-        state = SurahError("Internal Error(500)");
-        notifyListeners();
+        setState(SurahError("Internal Error(500)"));
         return;
       }
       if (last.juzNumber == 30) return;
@@ -98,25 +91,22 @@ class SurahDetailViewModel extends ChangeNotifier {
 
   Future<void> preppendByJuz() async {
     await _withSuccess((ayahs) async {
-          final first = ayahs.firstOrNull;
-          if (first == null) {
-            state = SurahError("Internal Error(500)");
-            notifyListeners();
-            return 0;
-          }
-          if (first.juzNumber == 1) return 0;
-          final newAyahs =
-              await _ayahRepo.getAyahsByJuz(first.juzNumber - 1);
-          _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
-        });
+      final first = ayahs.firstOrNull;
+      if (first == null) {
+        setState(SurahError("Internal Error(500)"));
+        return;
+      }
+      if (first.juzNumber == 1) return;
+      final newAyahs = await _ayahRepo.getAyahsByJuz(first.juzNumber - 1);
+      _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
+    });
   }
 
   Future<void> appendSurahByCount(int count) async {
     await _withSuccess((ayahs) async {
       final first = ayahs.firstOrNull;
       if (first == null) {
-        state = SurahError("Internal Error(500)");
-        notifyListeners();
+        setState(SurahError("Internal Error(500)"));
         return;
       }
       if (first.surahNumber == 1) return;
@@ -133,8 +123,7 @@ class SurahDetailViewModel extends ChangeNotifier {
     await _withSuccess((ayahs) async {
       final last = ayahs.lastOrNull;
       if (last == null) {
-        state = SurahError("Internal Error(500)");
-        notifyListeners();
+        setState(SurahError("Internal Error(500)"));
         return;
       }
       if (last.surahNumber == 114) return;
@@ -148,14 +137,13 @@ class SurahDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> loadAllAyahs() async {
-    state = SurahLoading();
-    notifyListeners();
+    setState(SurahLoading());
     try {
       final data = await _ayahRepo.getAllAyahWithSurah();
       _updateSuccess(data);
     } catch (e) {
-      state = SurahError(e.toString());
-      notifyListeners();
+      setState(SurahError(e.toString()));
     }
   }
+  
 }

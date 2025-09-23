@@ -4,72 +4,64 @@ import 'package:flutter/foundation.dart';
 import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/state/stt.dart';
+import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 
-class SttViewModel extends ChangeNotifier {
+class SttViewModel extends StatefulViewModel<SttState> {
   final SttService _sttService;
   final SurahRepository _surahRepo;
 
-  SttState _state = SttIdle();
-  SttState get state => _state;
-
   Timer? _delayTimer;
 
-  SttViewModel(this._sttService, this._surahRepo) {
+  SttViewModel(this._sttService, this._surahRepo) : super(SttIdle()) {
     _bindStreams();
   }
 
   void _bindStreams() {
     _sttService.finalResultStream.listen(_onFinalTranscription);
     _sttService.errorStream.listen((message) async {
-      if (message.trim() == 'error_network' || message.trim() == 'error_network_timeout') {
-        debugPrint(message);
-        _state = SttNetworkError();
-        notifyListeners();
+      final trimmed = message.trim();
+      if (trimmed == 'error_network' || trimmed == 'error_network_timeout') {
+        debugPrint(trimmed);
+        setState(SttNetworkError());
         return;
       }
-      if (_state is! SttIdle){
+      if (state is! SttIdle) {
         await startListening();
       }
     });
   }
 
   void changeStateToIdle() {
-    _state = SttIdle();
-    notifyListeners();
+    setState(SttIdle());
   }
 
   void _onFinalTranscription(String text) async {
-    _state = SttProcessing(text);
-    notifyListeners();
+    setState(SttProcessing(text));
 
     try {
       final surah = await _surahRepo.fuzzyFindSurahFromText(text);
       await _sttService.stopListening();
-      if (_state is SttProcessing) _state = SttSuccess(surah);
+      if (state is SttProcessing) setState(SttSuccess(surah));
     } catch (_) {
-      if (_state is SttProcessing) _retryListening();
+      if (state is SttProcessing) _retryListening();
     }
-
-    notifyListeners();
   }
 
   Future<void> startListening() async {
-    if(_state is SttListening) return;
+    if (state is SttListening) return;
     await _sttService.startListening();
-    _state = SttListening(_sttService.transcriptionStream);
-    notifyListeners();
+    setState(SttListening(_sttService.transcriptionStream));
   }
 
   Future<void> stopListening() async {
     await _sttService.stopListening();
     _delayTimer?.cancel();
     _delayTimer = null;
-    _state = SttIdle();
-    notifyListeners();
+    setState(SttIdle());
   }
 
   Future<void> toggleListening() async {
-    if (_state is SttIdle) {
+    if (state is SttIdle) {
       await startListening();
     } else {
       await stopListening();
@@ -78,14 +70,14 @@ class SttViewModel extends ChangeNotifier {
 
   void _retryListening() {
     _delayTimer?.cancel();
-    if (_state is SttIdle) return;
+    if (state is SttIdle) return;
+
     _delayTimer = Timer(const Duration(seconds: 2), () {
-      if (_state is SttIdle) return;
-      _state = SttRetry();
-      notifyListeners();
+      if (state is SttIdle) return;
+      setState(SttRetry());
 
       Timer(const Duration(milliseconds: 500), () async {
-        if (_state is! SttRetry) return;
+        if (state is! SttRetry) return;
         await startListening();
       });
     });

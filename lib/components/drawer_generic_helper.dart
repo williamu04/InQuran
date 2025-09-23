@@ -8,10 +8,10 @@ import 'package:mtqmnuns/models/disclosure_button.dart';
 import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
-import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
-class GenericDrawer<T extends SlideDrawerViewModel> extends StatefulWidget {
+class GenericDrawer<T extends ToggleableUiViewModel> extends StatefulWidget {
   final Duration duration;
   final String title;
   final SlideDirection slideDirection;
@@ -33,7 +33,7 @@ class GenericDrawer<T extends SlideDrawerViewModel> extends StatefulWidget {
 
 enum SlideDirection { left, right }
 
-class _GenericDrawerState<T extends SlideDrawerViewModel> extends State<GenericDrawer<T>>
+class _GenericDrawerState<T extends ToggleableUiViewModel> extends State<GenericDrawer<T>>
     with SingleTickerProviderStateMixin {
   final Set<int> _expandedIndices = {};
 
@@ -158,7 +158,7 @@ class _GenericDrawerState<T extends SlideDrawerViewModel> extends State<GenericD
         final auth = context.read<AuthViewModel>();
 
         if (route.requiresAuth && auth.state is! AuthAuthenticated) {
-          context.read<AuthPopUpViewModel>().open();
+          context.read<UnauthenticatedPopUp>().open();
           return;
         }
 

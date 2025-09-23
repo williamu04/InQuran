@@ -10,6 +10,11 @@ class AuthLoading extends AuthState {
   String toString() => "Auth Loading";
 }
 
+class AuthLoggingOut extends AuthState {
+  @override
+  String toString() => "Auth Logging Out";
+}
+
 class AuthAuthenticated extends AuthState {
   final String jwt;
   AuthAuthenticated(this.jwt);

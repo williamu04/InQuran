@@ -11,13 +11,16 @@ Never dioExceptionHandler(DioException e) {
 
     case DioExceptionType.badResponse:
       final statusCode = e.response?.statusCode;
-      final data = e.response?.data;
-      if (statusCode == 400 || statusCode == 401) {
-        throw ClientError('Invalid parameters: $data');
-      } else if (statusCode != null && statusCode >= 500) {
+      final data = e.response?.data['data'];
+      if (statusCode == 401) {
+        throw AuthenticationError(data['message']);
+      } else if (statusCode == 400) {
+        throw ClientError('Invalid parameters: ${data['message']}');
+      } 
+      else if (statusCode != null && statusCode >= 500) {
         throw InternalServerError('Server error ($statusCode)');
       } else {
-        throw ClientError('Request failed: $data');
+        throw ClientError('Request Gagal: ${data['message']}');
       }
     case DioExceptionType.connectionError:
       throw ServerUnreachableError('Tidak ada koneksi: ${e.error}');

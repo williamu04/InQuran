@@ -7,7 +7,7 @@ import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:mtqmnuns/state/user.dart';
-import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
 
@@ -28,8 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     buttonList = _createButtonList();
-    final authVm = context.read<AuthViewModel>();
-    context.read<UserViewModel>().loadUser(authVm.state, authVm.isLoggedIn());
+    context.read<UserViewModel>().loadUser();
   }
 
   List<DisclosureButtonModel> _createButtonList() {
@@ -66,8 +65,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         action: SystemAction(() => {}),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Keluar",
-        action: SystemAction(()=> {}),
+        text: "Logout",
+        action: SystemAction(() {
+          context.read<LogoutDialoguePopUp>().open();
+        }),
         fontSize: 14,
         showIcon: false,
         color: Color(0xFFEA4335)
@@ -145,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               SizedBox(height: 10)
                             ],
-                          )
+                          ),
                         ],
                       );
                     },

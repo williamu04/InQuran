@@ -28,6 +28,9 @@ class UserRemoteDataSource {
     } on SocketException catch (e) {
       throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
     } on DioException catch (e) {
+      if (e.type == DioExceptionType.badResponse &&  e.response?.statusCode == 401) {
+          throw JwtError("Sesi Habis");
+      }
       dioExceptionHandler(e);
     } on FormatException catch (e) {
       throw DataParsingError('Gagal parsing data user: ${e.message}');

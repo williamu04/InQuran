@@ -4,7 +4,7 @@ import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
-import 'package:mtqmnuns/viewmodel/drawer.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
 class MenuDrawer extends StatelessWidget {
@@ -12,11 +12,11 @@ class MenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GenericDrawer<MenuSlideDrawerViewModel>(
+    return GenericDrawer<MenuSlideDrawer>(
       title: 'InQuran',
       slideDirection: SlideDirection.left,
       createButtonList: _createMenuButtonList,
-      getViewModel: (context) => context.read<MenuSlideDrawerViewModel>(),
+      getViewModel: (context) => context.read<MenuSlideDrawer>(),
     );
   }
 

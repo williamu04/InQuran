@@ -17,7 +17,7 @@ class AuthRemoteDataSource {
         },
       );
 
-  Future<TokenDto> fetchTokenRaw(String refreshToken, String sessionId) async {
+  Future<TokenDto> refreshToken(String refreshToken, String sessionId) async {
     try {
       final response = await client.post(
         '${Env.baseUrl}/auth/refresh-token',
@@ -29,6 +29,9 @@ class AuthRemoteDataSource {
     } on SocketException catch (e) {
       throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
     } on DioException catch (e) {
+      if (e.type == DioExceptionType.badResponse &&  e.response?.statusCode == 401) {
+        throw RefreshTokenInvalidError(e.response?.data['data']['message']);
+      }
       dioExceptionHandler(e);
     }
   }
@@ -71,7 +74,7 @@ Future<TokenDto> loginEmail(String email, String password) async {
   Future<void> logout(String sessionId) async {
     try {
       await client.post(
-        '${Env.baseUrl}/auth/register',
+        '${Env.baseUrl}/auth/logout',
         data: {'sessionId' : sessionId },
         options: _defaultOptions,
       );

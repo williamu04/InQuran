@@ -1,18 +1,14 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mtqmnuns/dto/auth.dart';
 import 'package:mtqmnuns/exception/auth.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/state/auth.dart';
+import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 
-class AuthViewModel extends ChangeNotifier {
+class AuthViewModel extends StatefulViewModel<AuthState> {
   final AuthRepository _authRepository;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  AuthState _state = AuthInitial();
-  AuthState get state => _state;
 
   String? _refreshToken;
   String? _jwtToken;
@@ -22,13 +18,7 @@ class AuthViewModel extends ChangeNotifier {
   final String _jwtStorageKey = 'jwt';
   final String _sessionIdStorageKey = 'session_id';
 
-  AuthViewModel(this._authRepository);
-
-  void _setState(AuthState state) {
-    debugPrint(state.toString());
-    _state = state;
-    notifyListeners();
-  }
+  AuthViewModel(this._authRepository) : super(AuthInitial());
 
   Future<void> _writeRefreshToken(String token) async {
     _refreshToken = token;
@@ -64,7 +54,7 @@ class AuthViewModel extends ChangeNotifier {
     await _writeRefreshToken(newToken.refreshToken);
     await _writeJwtToken(newToken.jwtToken);
     await _writeSessionId(newToken.sessionId);
-    _setState(AuthAuthenticated(newToken.jwtToken));
+    setState(AuthAuthenticated(newToken.jwtToken));
   }
 
   Future<void> _clearTokens() async {
@@ -78,29 +68,20 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    _setState(AuthLoading());
+    setState(AuthLoading());
     _jwtToken = await _storage.read(key: _jwtStorageKey);
     _refreshToken = await _storage.read(key: _refreshStorageKey);
     _sessionId = await _storage.read(key: _sessionIdStorageKey);
 
     if (_jwtToken == null || _jwtToken!.isEmpty || JwtDecoder.isExpired(_jwtToken!)) {
-      if (_refreshToken == null || _sessionId == null) {
-        _setState(AuthUnauthenticated());
-        return;
-      }
-      try {
-        final newToken = await _authRepository.refreshToken(_refreshToken!, _sessionId!);
-        await _writeNewToken(newToken);
-      } catch (e) {
-        handleApiError(e);
-      }
+      refreshToken();
     } else {
-      _setState(AuthAuthenticated(_jwtToken!));
+      setState(AuthAuthenticated(_jwtToken!));
     }
   }
 
   Future<void> loginEmail(String email, String password) async {
-    _setState(AuthLoading());
+    setState(AuthLoading());
     try {
       final newToken = await _authRepository.loginEmail(email, password);
       await _writeNewToken(newToken);
@@ -110,7 +91,7 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> signup(String username, String email, String password) async {
-    _setState(AuthLoading());
+    setState(AuthLoading());
     try {
       final newToken = await _authRepository.registerUser(username, email, password);
       await _writeNewToken(newToken);
@@ -119,24 +100,53 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> logout() async {
-    _setState(AuthLoading());
-    try {
-      if (_sessionId != null) {
-        await _authRepository.logout(_sessionId!);
+  Future<void> refreshToken() async {
+    final refreshToken = _refreshToken;
+    final sessionId = _sessionId;
+    if (refreshToken == null && sessionId == null) {
+      setState(AuthUnauthenticated());
+      return;
+    } else {
+      try {
+        final newToken = await _authRepository.refreshToken(refreshToken!, sessionId!);
+        await _writeNewToken(newToken);
+      } catch (e) {
+        handleApiError(e);
       }
-      await _clearTokens();
-      _setState(AuthUnauthenticated());
-    } catch (e) {
-      handleApiError(e);
+
     }
   }
 
+  Future<void> logout() async {
+    setState(AuthLoggingOut());
+    if (_sessionId != null) {
+      try {
+        await _authRepository.logout(_sessionId!);
+        await _clearTokens();
+      } catch (e) {
+        if (e is NoConnectionError || e is TimeoutError) {
+          // TODO: handling offline queue deleting refresh token
+
+        }
+        handleApiError(e);
+      }
+    }
+    setState(AuthUnauthenticated());
+  }
+
   void handleApiError(Object error) {
-    if (error is AppError) {
-      _setState(AuthError(error.message));
+    if (error is RefreshTokenInvalidError) {
+      setState(AuthUnauthenticated());
+    } else if (error is AppError) {
+      setState(AuthError(error.message));
     } else {
-      _setState(AuthError("UnknownError"));
+      setState(AuthError("UnknownError"));
+    }
+
+    if (_jwtToken != null) {
+      setState(AuthAuthenticated(_jwtToken!));
+    } else {
+      setState(AuthUnauthenticated());
     }
   }
 }
