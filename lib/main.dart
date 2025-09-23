@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/drawer_menu.dart';
 import 'package:mtqmnuns/components/drawer_setting.dart';
 import 'package:mtqmnuns/components/loading_viewmodel.dart';
+import 'package:mtqmnuns/components/mic_button.dart';
+import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/reusable_modal.dart';
+import 'package:mtqmnuns/components/transcription_text.dart';
 import 'package:mtqmnuns/config/dio.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
@@ -12,6 +15,7 @@ import 'package:mtqmnuns/data/remote/auth.dart';
 import 'package:mtqmnuns/data/remote/user.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
+import 'package:mtqmnuns/repositories/stt.dart';
 import 'package:mtqmnuns/repositories/user.dart';
 import 'package:mtqmnuns/routes/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
@@ -70,6 +74,13 @@ void main() async {
         Provider(create: (context) => UserRepository(context.read<UserRemoteDataSource>())),
         Provider.value(value: authRepository),
 
+        Provider(create: (context) => SttRepository(
+            context.read<SurahDao>(), 
+            // context.read<AyahDao>(), 
+          
+          ),
+        ),
+
         // Services
         Provider(create: (_) => SttService()),
         Provider(create: (_) => SurahFilterService()),
@@ -83,7 +94,7 @@ void main() async {
                 context.read<JuzRepository>(), 
               ),
         ),
-        ChangeNotifierProvider(create: (context) => SttViewModel(context.read<SttService>(),context.read<SurahRepository>())),
+        ChangeNotifierProvider(create: (context) => SttViewModel(context, context.read<SttService>(),context.read<SttRepository>())),
         ChangeNotifierProvider(create: (_) => LocationProvider()..loadLocation()),
         ChangeNotifierProvider(create: (context) => SurahDetailViewModel(context.read<AyahRepository>())),
         ChangeNotifierProvider(create:(context) => MushafViewModel(context.read<AyahRepository>())),
@@ -182,10 +193,36 @@ class MainScaffold extends StatelessWidget {
                 _buildPurpleGradientOverlay(),
               ],
             ),
-            bottomNavigationBar:
-                currentRoute.isHasBottomBar
-                    ? BottomNavBar()
-                    : null,
+            bottomNavigationBar: Consumer<GlobalConfig>(
+              builder: (context, vm, _) {
+                if (!currentRoute.isHasBottomBar) {
+                    return SizedBox.shrink();
+                }
+                else {
+                  switch (vm.isVoiceMode) {
+                    case true:
+                      if (currentRoute == AppRoutes.home) {
+                        return SizedBox.shrink();
+                      }
+                      return SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 25),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min, 
+                            children: [
+                              TranscriptionText(idleText: '',),
+                              SizedBox(height: 10),
+                              MicButton(size: 80),
+                            ],
+                          ),
+                        ),
+                      );
+                    case false:
+                      return BottomNavBar();
+                  }
+                }
+              },
+            )
           ),
           MenuDrawer(),
           SettingDrawer(),

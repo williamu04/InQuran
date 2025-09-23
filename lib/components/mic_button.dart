@@ -18,7 +18,6 @@ class MicButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SttViewModel>(
       builder: (context, vm, _) {
-        // Determine whether we are listening based on the state
         final isListening = switch (vm.state) {
           SttListening() => true,
           SttIdle() => false,
@@ -40,8 +39,8 @@ class MicButton extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF672CBC).withOpacity(0.3),
-                  blurRadius: 28,
-                  spreadRadius: 7,
+                  blurRadius: 25,
+                  spreadRadius: 4,
                 ),
               ],
             ),

@@ -1,4 +1,4 @@
-import 'package:mtqmnuns/dto/surah.dart';
+import 'package:flutter/cupertino.dart';
 
 sealed class SttState {}
 
@@ -12,8 +12,8 @@ class SttListening extends SttState {
 }
 
 class SttSuccess extends SttState {
-  final SurahInfoDto surah;
-  SttSuccess(this.surah);
+  final void Function(BuildContext) action;
+  SttSuccess(this.action);
 }
 
 class SttRetry extends SttState {}

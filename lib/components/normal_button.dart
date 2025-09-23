@@ -2,13 +2,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/config/global.dart';
+import 'package:provider/provider.dart';
 
 
 class NormalButton extends StatelessWidget {
-  final GlobalConfig globalConfig;
   final double size;
 
-  const NormalButton({super.key, this.size = 60, required this.globalConfig});
+  const NormalButton({super.key, this.size = 60});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class NormalButton extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            globalConfig.setVoiceMode(false);
+            context.read<GlobalConfig>().setVoiceMode(false);
           },
           child: Container(
             height: size,

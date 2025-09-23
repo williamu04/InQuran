@@ -343,6 +343,8 @@ class VoiceHomeScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final height = size.height;
 
+    const scale = 0.92;
+
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -350,52 +352,52 @@ class VoiceHomeScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            padding: EdgeInsets.symmetric(vertical: 20 * scale, horizontal: 24 * scale),
             child: TopBarUtility.buildPurpleTitleTopbar(context: context, title: "InQuran"),
           ),
-          _title(height),
-          SizedBox(height: height * 0.055),
-          MicButton(size: height * 0.3),
-          SizedBox(height: height * 0.035),
+          _title(height, scale),
+          SizedBox(height: height * 0.055 * scale),
+          MicButton(size: height * 0.3 * scale),
+          SizedBox(height: height * 0.035 * scale),
           Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TranscriptionText(),
-              SizedBox(height: height * 0.008),
-              _helpingText(height),
+              TranscriptionText(idleText: 'Tap To Talk'),
+              SizedBox(height: height * 0.008 * scale),
+              _helpingText(height, scale),
             ],
           ),
-          SizedBox(height: height * 0.03),
-          NormalButton(globalConfig: globalConfig),
+          SizedBox(height: height * 0.03 * scale),
+          NormalButton(),
         ],
       ),
     );
   }
 
-  Widget _helpingText(double height) {
+  Widget _helpingText(double height, double scale) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: height * 0.25),
+      constraints: BoxConstraints(maxWidth: height * 0.25 * scale),
       child: Text(
         "Membantu mereka yang memiliki gangguan penglihatan untuk menekan tombol.",
         textAlign: TextAlign.center,
         style: TextStyle(
           color: const Color(0xFF7C8BA0),
-          fontSize: height * 0.013,
+          fontSize: height * 0.013 * scale,
           fontFamily: "Plus Jakarta",
         ),
       ),
     );
   }
 
-  Widget _title(double height) {
+  Widget _title(double height, double scale) {
     return Column(
       children: [
         Text(
           "Mode",
           style: TextStyle(
             fontFamily: "Plus Jakarta",
-            fontSize: height * 0.035,
+            fontSize: height * 0.035 * scale,
             color: const Color(0xFF672CBC),
           ),
         ),
@@ -403,7 +405,7 @@ class VoiceHomeScreen extends StatelessWidget {
           "Voice",
           style: TextStyle(
             fontFamily: "Plus Jakarta",
-            fontSize: height * 0.035,
+            fontSize: height * 0.035 * scale,
             fontWeight: FontWeight.bold,
             color: const Color(0xFF672CBC),
             height: 1.0,
@@ -413,7 +415,7 @@ class VoiceHomeScreen extends StatelessWidget {
           "Command",
           style: TextStyle(
             fontFamily: "Plus Jakarta",
-            fontSize: height * 0.035,
+            fontSize: height * 0.035 * scale,
             fontWeight: FontWeight.bold,
             color: const Color(0xFF672CBC),
             height: 1.0,

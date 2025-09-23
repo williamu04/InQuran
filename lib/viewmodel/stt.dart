@@ -1,23 +1,26 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:mtqmnuns/repositories/surah.dart';
+import 'package:flutter/material.dart';
+import 'package:mtqmnuns/repositories/stt.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/state/stt.dart';
 import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 
 class SttViewModel extends StatefulViewModel<SttState> {
   final SttService _sttService;
-  final SurahRepository _surahRepo;
+  final SttRepository _sttRepo;
 
   Timer? _delayTimer;
 
-  SttViewModel(this._sttService, this._surahRepo) : super(SttIdle()) {
-    _bindStreams();
+  SttViewModel(BuildContext context, this._sttService, this._sttRepo) : super(SttIdle()) {
+    _bindStreams(context);
   }
 
-  void _bindStreams() {
-    _sttService.finalResultStream.listen(_onFinalTranscription);
+  void _bindStreams(BuildContext context) {
+    _sttService.finalResultStream.listen(
+      (text) => _onFinalTranscription(context, text),
+    );
+
     _sttService.errorStream.listen((message) async {
       final trimmed = message.trim();
       if (trimmed == 'error_network' || trimmed == 'error_network_timeout') {
@@ -35,13 +38,12 @@ class SttViewModel extends StatefulViewModel<SttState> {
     setState(SttIdle());
   }
 
-  void _onFinalTranscription(String text) async {
+  void _onFinalTranscription(BuildContext context, String text) async {
     setState(SttProcessing(text));
-
     try {
-      final surah = await _surahRepo.fuzzyFindSurahFromText(text);
+      final action = await _sttRepo.processTranscription(context, text);
       await _sttService.stopListening();
-      if (state is SttProcessing) setState(SttSuccess(surah));
+      if (state is SttProcessing) setState(SttSuccess(action));
     } catch (_) {
       if (state is SttProcessing) _retryListening();
     }

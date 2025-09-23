@@ -43,7 +43,7 @@ class UserViewModel extends ChangeNotifier {
     try {
       final user = await _userRepo.getMeFromApi(jwt);
       _setState(UserLoaded(user));
-    } on JwtError catch (e) {
+    } on JwtError catch (_) {
       await _retryWithRefreshedToken();
     } catch (e) {
       await handleApiError(e);

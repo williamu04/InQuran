@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-
-import 'package:flutter/foundation.dart';
 import 'package:mtqmnuns/dto/juz.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/repositories/juz.dart';

@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/common/navigation.dart';
 import 'package:mtqmnuns/components/error_popup.dart';
 import 'package:mtqmnuns/state/stt.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
@@ -11,7 +10,10 @@ class StaticText extends TextSource { final String text; StaticText(this.text); 
 class StreamText extends TextSource { final Stream<String> stream; StreamText(this.stream); }
 
 class TranscriptionText extends StatelessWidget {
-  const TranscriptionText({super.key});
+  final String idleText;
+  const TranscriptionText({
+    super.key, required this.idleText
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +23,19 @@ class TranscriptionText extends StatelessWidget {
 
         switch (vm.state) {
           case SttIdle():
-            child = _buildText(StaticText("Tap to Talk"));
+            child = _buildText(StaticText(idleText));
             break;
 
           case SttListening(:var transcriptionStream):
             child = _buildText(StreamText(transcriptionStream));
             break;
 
-          case SttSuccess(:var surah):
+          case SttSuccess(:var action):
+            child = _buildText(StaticText("Command Found")); 
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              navigateToSurah(context, surah);
+              action(context);
+              vm.changeStateToIdle();
             });
-            child = _buildText(StaticText("Surah Found")); 
-            vm.changeStateToIdle();
             break;
 
           case SttRetry():
