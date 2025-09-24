@@ -37,13 +37,12 @@ class SttRepository {
     if (surah != null) {
       return (context) => navigateToSurah(context, surah);
     }
-    // try match doa category
+
     final doaCategory = await fuzzyFindDuaCategoryFromText(input);
     if (doaCategory != null) {
       return (context) => navigateToDuaCategory(context, doaCategory);
     }
 
-    // try qibla
     if (fuzzyMatchCommand(input, [
       'qibla',
       'kiblat',
@@ -54,7 +53,6 @@ class SttRepository {
       return (context) => navigateToQibla(context);
     }
 
-    // try prayer times
     if (fuzzyMatchCommand(input, [
       'waktu sholat',
       'jadwal sholat',

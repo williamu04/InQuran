@@ -74,10 +74,10 @@ class _DuasListScreenState extends State<DuasListScreen> {
               return GridView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // 2 kolom
+                  crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 2, // biar proporsional
+                  childAspectRatio: 2,
                 ),
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
@@ -92,8 +92,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
                   final iconData =
                       index < duaCategoryIcons.length
                           ? duaCategoryIcons[index]
-                          : LucideIcons
-                              .book; // fallback kalau list kurang panjang
+                          : LucideIcons.book;
 
                   return GestureDetector(
                     onTap: () {
@@ -108,16 +107,10 @@ class _DuasListScreenState extends State<DuasListScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // ICON kiri
                           const SizedBox(width: 6),
-                          Icon(
-                            iconData,
-                            color: Colors.white,
-                            size: 36, // biar proporsional 2 baris teks
-                          ),
+                          Icon(iconData, color: Colors.white, size: 36),
                           const SizedBox(width: 12),
 
-                          // TEKS kanan (2 baris)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +125,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  terjemahkanKategori(category.nama),
+                                  category.nama,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     color: Colors.white,
