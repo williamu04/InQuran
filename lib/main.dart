@@ -5,7 +5,7 @@ import 'package:mtqmnuns/components/drawer_menu.dart';
 import 'package:mtqmnuns/components/drawer_setting.dart';
 import 'package:mtqmnuns/components/loading_viewmodel.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
-import 'package:mtqmnuns/components/reusable_modal.dart';
+import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 import 'package:mtqmnuns/config/dio.dart';
 import 'package:mtqmnuns/config/global.dart';
@@ -65,7 +65,7 @@ void main() async {
         Provider.value(value: db.duasDao),
 
         // Remote
-        Provider.value(value: authRemote),
+        Provider.value(value: AuthRemoteDataSource(client: dio)),
         Provider(create: (_) => UserRemoteDataSource(client: dio)),
 
         // Repositories
@@ -78,7 +78,10 @@ void main() async {
           create:
               (context) => UserRepository(context.read<UserRemoteDataSource>()),
         ),
-        Provider.value(value: authRepository),
+        Provider(
+          create:
+              (context) => AuthRepository(context.read<AuthRemoteDataSource>()),
+        ),
 
         Provider(
           create:
@@ -121,7 +124,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => MushafViewModel(context.read<AyahRepository>()),
         ),
-        ChangeNotifierProvider.value(value: authVM),
+        ChangeNotifierProvider(
+          create: (context) => AuthViewModel(context.read<AuthRepository>()),
+        ),
         ChangeNotifierProvider(
           create:
               (context) => UserViewModel(
@@ -133,11 +138,9 @@ void main() async {
         //toggleable ui state
         ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
         ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
-        ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
         ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
         ChangeNotifierProvider(create: (_) => LogoutErrorPopUp()),
-        ChangeNotifierProvider(create: (_) => LoginErrorPopUp()),
-        ChangeNotifierProvider(create: (_) => SignInErrorPopUp()),
+        ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
       ],
       child: const MyApp(),
     ),
@@ -170,6 +173,10 @@ class _MyAppState extends State<MyApp> {
               )
               .toList(),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthViewModel>().init();
+    });
 
     _router = config.buildRouter();
   }
@@ -254,22 +261,23 @@ class MainScaffold extends StatelessWidget {
           ),
           MenuDrawer(),
           SettingDrawer(),
-          ReusableModal<UnauthenticatedPopUp>(
+          PopUpModal(
             title: "Kamu Belum Login",
             subtitle: "Kamu harus login untuk mengakses fitur ini",
+            controller: context.read<UnauthenticatedPopUp>(),
             buttonList: [
               ButtonModalModel(
                 text: "Login",
                 onButtonPressed: () {
-                  context.read<UnauthenticatedPopUp>().close();
                   context.push(AppRoutes.login.path);
                 },
               ),
             ],
           ),
-          ReusableModal<LogoutDialoguePopUp>(
+          PopUpModal(
             title: "Logout",
             subtitle: "Kamu yakin ingin keluar?",
+            controller: context.read<LogoutDialoguePopUp>(),
             buttonList: [
               ButtonModalModel(
                 text: "Logout",
@@ -287,60 +295,18 @@ class MainScaffold extends StatelessWidget {
               ),
             ],
           ),
-          ReusableModal<UnauthenticatedPopUp>(
-            title: "Kamu Belum Login",
-            subtitle: "Kamu harus login untuk mengakses fitur ini",
-            buttonList: [
-              ButtonModalModel(
-                text: "Login",
-                onButtonPressed: () {
-                  context.read<UnauthenticatedPopUp>().close();
-                  context.push(AppRoutes.login.path);
-                },
-              ),
-            ],
-          ),
 
-          ReusableModal<LogoutErrorPopUp>(
+          PopUpModal(
             title: "Logout Gagal",
             subtitle:
                 context.read<LogoutErrorPopUp>().errorMessage ??
                 "Terjadi Kesalahan Tak terduga",
+            controller: context.read<LogoutErrorPopUp>(),
             buttonList: [
               ButtonModalModel(
                 text: "Ok",
                 onButtonPressed: () {
                   context.read<LogoutErrorPopUp>().close();
-                },
-              ),
-            ],
-          ),
-
-          ReusableModal<LoginErrorPopUp>(
-            title: "Login gagal",
-            subtitle:
-                context.read<LoginErrorPopUp>().errorMessage ??
-                "Terjadi Kesalahan Tak terduga",
-            buttonList: [
-              ButtonModalModel(
-                text: "Ok",
-                onButtonPressed: () {
-                  context.read<LoginErrorPopUp>().close();
-                },
-              ),
-            ],
-          ),
-
-          ReusableModal<SignInErrorPopUp>(
-            title: "Pembuatan Akun Gagal",
-            subtitle:
-                context.read<SignInErrorPopUp>().errorMessage ??
-                "Terjadi Kesalahan Tak terduga",
-            buttonList: [
-              ButtonModalModel(
-                text: "Ok",
-                onButtonPressed: () {
-                  context.read<SignInErrorPopUp>().close();
                 },
               ),
             ],

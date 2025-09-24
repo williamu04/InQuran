@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mtqmnuns/dto/auth.dart';
-import 'package:mtqmnuns/exception/auth.dart';
+import 'package:mtqmnuns/exception/http.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
@@ -69,12 +69,18 @@ class AuthViewModel extends StatefulViewModel<AuthState> {
 
   Future<void> init() async {
     setState(AuthLoading());
+    await _storage.write(value:'',key: _refreshStorageKey);
+    await _storage.write(value:'', key: _sessionIdStorageKey);
     _jwtToken = await _storage.read(key: _jwtStorageKey);
     _refreshToken = await _storage.read(key: _refreshStorageKey);
     _sessionId = await _storage.read(key: _sessionIdStorageKey);
 
     if (_jwtToken == null || _jwtToken!.isEmpty || JwtDecoder.isExpired(_jwtToken!)) {
-      refreshToken();
+      try {
+        await refreshToken();
+      } on RefreshTokenInvalidError catch (_) {
+        setState(AuthSessionExpired());
+      }
     } else {
       setState(AuthAuthenticated(_jwtToken!));
     }
@@ -101,6 +107,7 @@ class AuthViewModel extends StatefulViewModel<AuthState> {
   }
 
   Future<void> refreshToken() async {
+    await _deleteJwtToken();
     final refreshToken = _refreshToken;
     final sessionId = _sessionId;
     if (refreshToken == null && sessionId == null) {
@@ -110,6 +117,9 @@ class AuthViewModel extends StatefulViewModel<AuthState> {
       try {
         final newToken = await _authRepository.refreshToken(refreshToken!, sessionId!);
         await _writeNewToken(newToken);
+      } on RefreshTokenInvalidError catch (_) {
+        // _clearTokens();
+        rethrow;
       } catch (e) {
         handleApiError(e);
       }
@@ -124,27 +134,21 @@ class AuthViewModel extends StatefulViewModel<AuthState> {
         await _authRepository.logout(_sessionId!);
         await _clearTokens();
       } catch (e) {
-        if (e is NoConnectionError || e is TimeoutError) {
           // TODO: handling offline queue deleting refresh token
-
-        }
-        handleApiError(e);
       }
     }
     setState(AuthUnauthenticated());
   }
 
   void handleApiError(Object error) {
-    if (error is RefreshTokenInvalidError) {
-      setState(AuthUnauthenticated());
-    } else if (error is AppError) {
+    if (error is HttpError) {
       setState(AuthError(error.message));
     } else {
       setState(AuthError("UnknownError"));
     }
 
-    if (_jwtToken != null) {
-      setState(AuthAuthenticated(_jwtToken!));
+    if (isLoggedIn()) {
+      setState(AuthAuthenticatedOffline());
     } else {
       setState(AuthUnauthenticated());
     }

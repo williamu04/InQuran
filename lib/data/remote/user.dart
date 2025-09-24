@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:mtqmnuns/common/exception.dart';
 import 'package:mtqmnuns/config/env.dart';
 import 'package:mtqmnuns/dto/user.dart';
-import 'package:mtqmnuns/exception/auth.dart';
+import 'package:mtqmnuns/exception/http.dart';
 
 class UserRemoteDataSource {
   final Dio client;

@@ -15,6 +15,11 @@ class AuthLoggingOut extends AuthState {
   String toString() => "Auth Logging Out";
 }
 
+class AuthAuthenticatedOffline extends AuthState {
+  @override
+  String toString() => "Auth Offline";
+}
+
 class AuthAuthenticated extends AuthState {
   final String jwt;
   AuthAuthenticated(this.jwt);
@@ -25,6 +30,11 @@ class AuthAuthenticated extends AuthState {
 class AuthUnauthenticated extends AuthState {
   @override
   String toString() => "Auth Unauthenticated";
+}
+
+class AuthSessionExpired extends AuthState {
+  @override
+  String toString() => "Auth Session Expired";
 }
 
 class AuthError extends AuthState {
