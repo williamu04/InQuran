@@ -33,7 +33,8 @@ class GenericDrawer<T extends ToggleableUiController> extends StatefulWidget {
 
 enum SlideDirection { left, right }
 
-class _GenericDrawerState<T extends ToggleableUiController> extends State<GenericDrawer<T>>
+class _GenericDrawerState<T extends ToggleableUiController>
+    extends State<GenericDrawer<T>>
     with SingleTickerProviderStateMixin {
   final Set<int> _expandedIndices = {};
 
@@ -53,7 +54,9 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
   void _onGlobalConfigChanged() {
     if (!mounted) return;
     setState(() {
-      buttonList = List.of(widget.createButtonList(context.read<GlobalConfig>()));
+      buttonList = List.of(
+        widget.createButtonList(context.read<GlobalConfig>()),
+      );
     });
   }
 
@@ -72,7 +75,12 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
         children: [
           // Header
           roundedCard(
-            padding: const EdgeInsets.only(top: 70, bottom: 25, left: 40, right: 20),
+            padding: const EdgeInsets.only(
+              top: 70,
+              bottom: 25,
+              left: 40,
+              right: 20,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -106,7 +114,10 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
               itemBuilder: (context, index) {
                 final button = buttonList[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 14,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -115,8 +126,12 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
                         isExpanded: _expandedIndices.contains(index),
                         onTap: () => _handleButtonTap(button, index),
                       ),
-                      if (_expandedIndices.contains(index) && button.action is ExpandNestedDrawerAction)
-                        _buildNestedDrawer((button.action as ExpandNestedDrawerAction).nestedButtons)
+                      if (_expandedIndices.contains(index) &&
+                          button.action is ExpandNestedDrawerAction)
+                        _buildNestedDrawer(
+                          (button.action as ExpandNestedDrawerAction)
+                              .nestedButtons,
+                        )
                       else
                         const SizedBox.shrink(),
                     ],
@@ -135,19 +150,20 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
       padding: const EdgeInsets.only(left: 10, right: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: buttons.asMap().entries.map((entry) {
-          final nestedIndex = entry.key;
-          final button = entry.value;
+        children:
+            buttons.asMap().entries.map((entry) {
+              final nestedIndex = entry.key;
+              final button = entry.value;
 
-          return Padding(
-            padding: const EdgeInsets.only(top:14),
-            child: DisclosureButton(
-              model: button,
-              isExpanded: _expandedIndices.contains(nestedIndex),
-              onTap: () => _handleButtonTap(button, nestedIndex),
-            )
-          ,); 
-        }).toList(),
+              return Padding(
+                padding: const EdgeInsets.only(top: 14),
+                child: DisclosureButton(
+                  model: button,
+                  isExpanded: _expandedIndices.contains(nestedIndex),
+                  onTap: () => _handleButtonTap(button, nestedIndex),
+                ),
+              );
+            }).toList(),
       ),
     );
   }
@@ -186,10 +202,11 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final slideOffset = widget.slideDirection == SlideDirection.left 
-        ? const Offset(-1, 0) 
-        : const Offset(1, 0);
-    
+    final slideOffset =
+        widget.slideDirection == SlideDirection.left
+            ? const Offset(-1, 0)
+            : const Offset(1, 0);
+
     final slide = Tween<Offset>(
       begin: slideOffset,
       end: Offset.zero,
@@ -198,11 +215,15 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
     return Consumer<T>(
       builder: (context, viewModel, child) {
         final isOpen = viewModel.isOpen;
-        
-        if (isOpen && _controller.status != AnimationStatus.forward && _controller.status != AnimationStatus.completed) {
+
+        if (isOpen &&
+            _controller.status != AnimationStatus.forward &&
+            _controller.status != AnimationStatus.completed) {
           buttonList = widget.createButtonList(context.read<GlobalConfig>());
           _controller.forward();
-        } else if (!isOpen && _controller.status != AnimationStatus.reverse && _controller.status != AnimationStatus.dismissed) {
+        } else if (!isOpen &&
+            _controller.status != AnimationStatus.reverse &&
+            _controller.status != AnimationStatus.dismissed) {
           _controller.reverse().then((_) {
             if (!mounted) return;
             setState(() {
@@ -220,17 +241,23 @@ class _GenericDrawerState<T extends ToggleableUiController> extends State<Generi
               builder: (context, _) {
                 return _controller.value > 0
                     ? GestureDetector(
-                        onTap: () => _closeDrawer(),
-                        child: Container(
-                          color: Colors.black.withOpacity(0.5 * _controller.value),
+                      onTap: () => _closeDrawer(),
+                      child: Container(
+                        // color: Colors.black.withOpacity(0.5 * _controller.value),
+                        color: Colors.black.withValues(
+                          alpha: 0.5 * _controller.value,
                         ),
-                      )
+                      ),
+                    )
                     : const SizedBox.shrink();
               },
             ),
             SlideTransition(
               position: slide,
-              child: SizedBox(width: width, child: _buildDrawerContent(context)),
+              child: SizedBox(
+                width: width,
+                child: _buildDrawerContent(context),
+              ),
             ),
           ],
         );

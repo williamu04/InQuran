@@ -20,6 +20,7 @@ import 'package:mtqmnuns/routes/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
 import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
 import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
+import 'package:mtqmnuns/data/local/dao/duas_dao.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/providers/location.dart';
 import 'package:mtqmnuns/repositories/juz.dart';
@@ -46,6 +47,11 @@ void main() async {
 
   final db = AppDatabase();
 
+  final authRemote = AuthRemoteDataSource(client: dio);
+  final authRepository = AuthRepository(authRemote);
+  final authVM = AuthViewModel(authRepository);
+  await authVM.init();
+
   runApp(
     MultiProvider(
       providers: [
@@ -56,23 +62,35 @@ void main() async {
         Provider.value(value: db.surahDao),
         Provider.value(value: db.juzDao),
         Provider.value(value: db.ayahDao),
+        Provider.value(value: db.duasDao),
 
         // Remote
         Provider.value(value: AuthRemoteDataSource(client: dio)),
         Provider(create: (_) => UserRemoteDataSource(client: dio)),
 
         // Repositories
-        Provider(create: (context) => SurahRepository(context.read<SurahDao>()),),
+        Provider(
+          create: (context) => SurahRepository(context.read<SurahDao>()),
+        ),
         Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
         Provider(create: (context) => AyahRepository(context.read<AyahDao>())),
-        Provider(create: (context) => UserRepository(context.read<UserRemoteDataSource>())),
-        Provider(create: (context) => AuthRepository(context.read<AuthRemoteDataSource>())),
+        Provider(
+          create:
+              (context) => UserRepository(context.read<UserRemoteDataSource>()),
+        ),
+        Provider(
+          create:
+              (context) => AuthRepository(context.read<AuthRemoteDataSource>()),
+        ),
 
-        Provider(create: (context) => SttRepository(
-            context.read<SurahDao>(), 
-            // context.read<AyahDao>(), 
-          
-          ),
+        Provider(
+          create:
+              (context) => SttRepository(
+                context.read<SurahDao>(),
+                context.read<DuasDao>(),
+
+                // context.read<AyahDao>(),
+              ),
         ),
 
         // Services
@@ -85,15 +103,37 @@ void main() async {
               (context) => SurahListViewModel(
                 context.read<SurahRepository>(),
                 context.read<SurahFilterService>(),
-                context.read<JuzRepository>(), 
+                context.read<JuzRepository>(),
               ),
         ),
-        ChangeNotifierProvider(create: (context) => SttViewModel(context, context.read<SttService>(),context.read<SttRepository>())),
-        ChangeNotifierProvider(create: (_) => LocationProvider()..loadLocation()),
-        ChangeNotifierProvider(create: (context) => SurahDetailViewModel(context.read<AyahRepository>())),
-        ChangeNotifierProvider(create:(context) => MushafViewModel(context.read<AyahRepository>())),
-        ChangeNotifierProvider(create:(context) => AuthViewModel(context.read<AuthRepository>())),
-        ChangeNotifierProvider(create: (context) => UserViewModel(context.read<UserRepository>(), context.read<AuthViewModel>())),
+        ChangeNotifierProvider(
+          create:
+              (context) => SttViewModel(
+                context,
+                context.read<SttService>(),
+                context.read<SttRepository>(),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocationProvider()..loadLocation(),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) => SurahDetailViewModel(context.read<AyahRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => MushafViewModel(context.read<AyahRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthViewModel(context.read<AuthRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) => UserViewModel(
+                context.read<UserRepository>(),
+                context.read<AuthViewModel>(),
+              ),
+        ),
 
         //toggleable ui state
         ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
@@ -145,7 +185,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp.router(routerConfig: _router, theme: _buildAppTheme());
   }
 
-
   ThemeData _buildAppTheme() {
     return ThemeData(
       splashFactory: NoSplash.splashFactory,
@@ -192,9 +231,8 @@ class MainScaffold extends StatelessWidget {
             bottomNavigationBar: Consumer<GlobalConfig>(
               builder: (context, vm, _) {
                 if (!currentRoute.isHasBottomBar) {
-                    return SizedBox.shrink();
-                }
-                else {
+                  return SizedBox.shrink();
+                } else {
                   switch (vm.isVoiceMode) {
                     case true:
                       if (currentRoute == AppRoutes.home) {
@@ -204,9 +242,9 @@ class MainScaffold extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 25),
                           child: Column(
-                            mainAxisSize: MainAxisSize.min, 
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              TranscriptionText(idleText: '',),
+                              TranscriptionText(idleText: ''),
                               SizedBox(height: 10),
                               MicButton(size: 80),
                             ],
@@ -218,7 +256,7 @@ class MainScaffold extends StatelessWidget {
                   }
                 }
               },
-            )
+            ),
           ),
           MenuDrawer(),
           SettingDrawer(),
@@ -228,11 +266,11 @@ class MainScaffold extends StatelessWidget {
             controller: context.read<UnauthenticatedPopUp>(),
             buttonList: [
               ButtonModalModel(
-                text: "Login", 
+                text: "Login",
                 onButtonPressed: () {
                   context.push(AppRoutes.login.path);
                 },
-              )
+              ),
             ],
           ),
           PopUpModal(
@@ -241,38 +279,32 @@ class MainScaffold extends StatelessWidget {
             controller: context.read<LogoutDialoguePopUp>(),
             buttonList: [
               ButtonModalModel(
-                text: "Logout", 
+                text: "Logout",
                 onButtonPressed: () {
                   context.read<AuthViewModel>().logout();
-                }
+                },
               ),
               ButtonModalModel(
-                text: "Batal", 
+                text: "Batal",
                 textColor: Colors.red,
                 buttonColor: Colors.white,
                 onButtonPressed: () {
                   context.read<LogoutDialoguePopUp>().close();
-                }
-              )
+                },
+              ),
             ],
-
           ),
-
-
           LoadingModal<AuthViewModel>(
             text: "Logging out...",
             showForState: AuthLoggingOut,
           ),
-
         ],
       ),
     );
   }
 
   Widget _buildMainContent() {
-    return Positioned.fill(
-      child:  child,
-    );
+    return Positioned.fill(child: child);
   }
 
   Widget _buildWhiteGradientOverlay() {
@@ -288,9 +320,9 @@ class MainScaffold extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.white.withOpacity(0),
-                Colors.white.withOpacity(0.5),
-                Colors.white.withOpacity(1),
+                Colors.white.withValues(alpha: 0),
+                Colors.white.withValues(alpha: 0.5),
+                Colors.white.withValues(alpha: 1),
               ],
               stops: [0.45, 0.6, 0.7],
             ),
@@ -314,8 +346,8 @@ class MainScaffold extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                Colors.purple.withOpacity(0.1),
-                Colors.purple.withOpacity(0.15),
+                Colors.purple.withValues(alpha: 0.1),
+                Colors.purple.withValues(alpha: 0.15),
               ],
               stops: [0.2, 0.7, 0.9],
             ),
@@ -325,4 +357,3 @@ class MainScaffold extends StatelessWidget {
     );
   }
 }
-

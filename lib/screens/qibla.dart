@@ -183,7 +183,7 @@ class QiblaCompass extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xff672CBC).withOpacity(0.6),
+                color: const Color(0xff672CBC).withValues(alpha: 0.6),
                 blurRadius: 40,
                 spreadRadius: 10,
               ),

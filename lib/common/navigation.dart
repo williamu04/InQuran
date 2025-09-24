@@ -46,3 +46,11 @@ void navigateToDuaCategory(BuildContext context, DoaCategoryData category) {
     ).toString(),
   );
 }
+
+void navigateToQibla(BuildContext context) {
+  context.push(AppRoutes.qibla.path);
+}
+
+void navigateToPrayer(BuildContext context) {
+  context.push(AppRoutes.prayer.path);
+}
