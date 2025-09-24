@@ -41,5 +41,4 @@ abstract class ErrorPopUpController extends ToggleableUiController {
 class SettingSlideDrawer extends ToggleableUiController {}
 class MenuSlideDrawer extends ToggleableUiController {}
 class LogoutDialoguePopUp extends ToggleableUiController {}
-class LogoutErrorPopUp extends ErrorPopUpController {}
 class UnauthenticatedPopUp extends ToggleableUiController {}

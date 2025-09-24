@@ -99,7 +99,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
         ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
         ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
-        ChangeNotifierProvider(create: (_) => LogoutErrorPopUp()),
         ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
       ],
       child: const MyApp(),
@@ -257,20 +256,6 @@ class MainScaffold extends StatelessWidget {
               )
             ],
 
-          ),
-
-          PopUpModal(
-            title: "Logout Gagal",
-            subtitle: context.read<LogoutErrorPopUp>().errorMessage ?? "Terjadi Kesalahan Tak terduga",
-            controller: context.read<LogoutErrorPopUp>(),
-            buttonList: [
-              ButtonModalModel(
-                text: "Ok", 
-                onButtonPressed: () {
-                  context.read<LogoutErrorPopUp>().close();
-                },
-              )
-            ],
           ),
 
 

@@ -69,8 +69,6 @@ class AuthViewModel extends StatefulViewModel<AuthState> {
 
   Future<void> init() async {
     setState(AuthLoading());
-    await _storage.write(value:'',key: _refreshStorageKey);
-    await _storage.write(value:'', key: _sessionIdStorageKey);
     _jwtToken = await _storage.read(key: _jwtStorageKey);
     _refreshToken = await _storage.read(key: _refreshStorageKey);
     _sessionId = await _storage.read(key: _sessionIdStorageKey);
