@@ -1,6 +1,6 @@
 
   import 'package:dio/dio.dart';
-import 'package:mtqmnuns/exception/auth.dart';
+import 'package:mtqmnuns/exception/http.dart';
 
 Never dioExceptionHandler(DioException e) {
   switch (e.type) {

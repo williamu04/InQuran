@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ToggleableUiViewModel extends ChangeNotifier {
+class ToggleableUiController extends ChangeNotifier {
 
   bool _isOpen = false;
   bool get isOpen => _isOpen;
@@ -21,7 +21,7 @@ class ToggleableUiViewModel extends ChangeNotifier {
   }
 }
 
-abstract class ErrorPopUpViewModel extends ToggleableUiViewModel {
+abstract class ErrorPopUpController extends ToggleableUiController {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
@@ -38,12 +38,8 @@ abstract class ErrorPopUpViewModel extends ToggleableUiViewModel {
   }
 }
 
-class SettingSlideDrawer extends ToggleableUiViewModel {}
-class MenuSlideDrawer extends ToggleableUiViewModel {}
-class UnauthenticatedPopUp extends ToggleableUiViewModel {}
-class LogoutDialoguePopUp extends ToggleableUiViewModel {}
-class LogoutErrorPopUp extends ErrorPopUpViewModel {
-
-}
-class LoginErrorPopUp extends ErrorPopUpViewModel {}
-class SignInErrorPopUp extends ErrorPopUpViewModel {}
+class SettingSlideDrawer extends ToggleableUiController {}
+class MenuSlideDrawer extends ToggleableUiController {}
+class LogoutDialoguePopUp extends ToggleableUiController {}
+class LogoutErrorPopUp extends ErrorPopUpController {}
+class UnauthenticatedPopUp extends ToggleableUiController {}

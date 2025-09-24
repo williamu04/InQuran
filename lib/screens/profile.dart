@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/disclosure_button.dart';
+import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
+import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:mtqmnuns/state/user.dart';
+import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +24,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late List<DisclosureButtonModel> buttonList;
+  final ToggleableUiController sessionExpiredPopUpController = ToggleableUiController();
+  final ToggleableUiController unauthenticatedPopUpController = ToggleableUiController();
 
   final Set<int> _expandedIndices = {};
   final double fontSize = 14;
@@ -28,7 +34,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     buttonList = _createButtonList();
-    context.read<UserViewModel>().loadUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserViewModel>().loadUser();
+    });
   }
 
   List<DisclosureButtonModel> _createButtonList() {
@@ -78,19 +86,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserViewModel>(
-      builder: (context, vm, _) {
-        switch (vm.state) {
-          case UserLoadLoading():
-            return const Center(child: CircularProgressIndicator());
-          case UserLoadError(:final message):
-            return Center(child: Text("error: $message"));
-          case UserLoaded(:final user):
-            return _buildProfilePage(user);
-          case UserLoadUnauthenticated():
-            return Center(child: Text("Unauthorized: silahkan login untuk mengakses fitur ini"));
-        }
-      }
+    return Stack(
+      children: [
+        Consumer<UserViewModel>(
+          builder: (context, uservm, _) {
+            switch (uservm.state) {
+              case UserLoadLoading():
+                return const Center(child: CircularProgressIndicator());
+              case UserLoadError(:final message):
+                return Center(child: Text("error: $message"));
+              case UserLoaded(:final user):
+                return _buildProfilePage(user);
+              case UserLoadUnauthenticated():
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  sessionExpiredPopUpController.close();
+                  unauthenticatedPopUpController.open();
+                });
+                return Center();
+              case UserLoadSessionExpired():
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  sessionExpiredPopUpController.open();
+                });
+                return Center(child: Text("Session Expired"));
+            }
+          }
+        ),
+        PopUpModal(
+          title: "Kamu Belum Login",
+          subtitle: "Kamu harus login untuk mengakses fitur ini",
+          closeOnlyOnButtonPress: true,
+          controller: unauthenticatedPopUpController,
+          buttonList: [
+            ButtonModalModel(
+              text: "Login", 
+              onButtonPressed: () {
+                context.replace(AppRoutes.login.path);
+                context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+              },
+            ),
+            ButtonModalModel(
+              text: "Kembali", 
+              textColor: Colors.red,
+              buttonColor: Colors.white,
+              onButtonPressed: () {
+                context.replace(AppRoutes.home.path);
+                context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+              },
+            )
+          ],
+        ),
+        PopUpModal(
+          title: "Sesion Expired",
+          subtitle: "Apakah Kamu Ingin Login Kembali?",
+          closeOnlyOnButtonPress: true,
+          controller: sessionExpiredPopUpController,
+          onClosed: () {
+            context.read<AuthViewModel>().setState(AuthUnauthenticated());
+            context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+          },
+          buttonList: [
+            ButtonModalModel(
+              text: "Login", 
+              onButtonPressed: () {
+                context.push(AppRoutes.login.path);
+              }
+            ),
+            ButtonModalModel(
+              text: "Batal", 
+              textColor: Colors.red,
+              buttonColor: Colors.white,
+              onButtonPressed: () {}
+            )
+          ],
+        )
+      ],
     );
   }
 

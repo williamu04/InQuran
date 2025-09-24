@@ -23,7 +23,7 @@ extension GuardedNavigation on BuildContext {
     final auth = read<AuthViewModel>();
     final route = AppRoutes.getRouteByPath(location);
 
-    if (route.requiresAuth && auth.state is! AuthAuthenticated) {
+    if (route.requiresAuth && (auth.state is! AuthAuthenticated && auth.state is! AuthAuthenticatedOffline)) {
       read<UnauthenticatedPopUp>().open();
       return;
     }

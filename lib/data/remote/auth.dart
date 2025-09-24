@@ -3,7 +3,7 @@ import 'package:mtqmnuns/common/exception.dart';
 import 'package:mtqmnuns/config/env.dart';
 import 'package:mtqmnuns/dto/auth.dart';
 import 'package:dio/dio.dart';
-import 'package:mtqmnuns/exception/auth.dart';
+import 'package:mtqmnuns/exception/http.dart';
 
 class AuthRemoteDataSource {
   final Dio client;
@@ -30,7 +30,7 @@ class AuthRemoteDataSource {
       throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
     } on DioException catch (e) {
       if (e.type == DioExceptionType.badResponse &&  e.response?.statusCode == 401) {
-        throw RefreshTokenInvalidError(e.response?.data['data']['message']);
+        throw RefreshTokenInvalidError('Invalid atau sesi expired');
       }
       dioExceptionHandler(e);
     }

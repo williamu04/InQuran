@@ -11,7 +11,7 @@ import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
-class GenericDrawer<T extends ToggleableUiViewModel> extends StatefulWidget {
+class GenericDrawer<T extends ToggleableUiController> extends StatefulWidget {
   final Duration duration;
   final String title;
   final SlideDirection slideDirection;
@@ -33,7 +33,7 @@ class GenericDrawer<T extends ToggleableUiViewModel> extends StatefulWidget {
 
 enum SlideDirection { left, right }
 
-class _GenericDrawerState<T extends ToggleableUiViewModel> extends State<GenericDrawer<T>>
+class _GenericDrawerState<T extends ToggleableUiController> extends State<GenericDrawer<T>>
     with SingleTickerProviderStateMixin {
   final Set<int> _expandedIndices = {};
 
