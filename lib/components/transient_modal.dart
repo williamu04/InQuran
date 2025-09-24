@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class TransientMessageModal extends StatefulWidget {
   final String text;
-  final Duration duration; 
-  final Duration fadeDuration; 
+  final Duration duration;
+  final Duration fadeDuration;
 
   const TransientMessageModal({
     super.key,
@@ -25,11 +25,12 @@ class TransientMessageModal extends StatefulWidget {
     final overlay = Overlay.of(context);
 
     final overlayEntry = OverlayEntry(
-      builder: (_) => TransientMessageModal(
-        text: text,
-        duration: duration,
-        fadeDuration: fadeDuration,
-      ),
+      builder:
+          (_) => TransientMessageModal(
+            text: text,
+            duration: duration,
+            fadeDuration: fadeDuration,
+          ),
     );
 
     overlay.insert(overlayEntry);
@@ -63,25 +64,27 @@ class _TransientMessageModalState extends State<TransientMessageModal>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(child: IgnorePointer(child: Container(color: Colors.transparent))),
+        Positioned.fill(
+          child: IgnorePointer(child: Container(color: Colors.transparent)),
+        ),
         Center(
           child: AnimatedOpacity(
             opacity: _opacity,
             duration: widget.fadeDuration,
             child: Container(
-              constraints: const BoxConstraints(
-                maxWidth: 250,
-                minWidth: 160,
-              ),
+              constraints: const BoxConstraints(maxWidth: 250, minWidth: 160),
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9), 
+                color: Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black.withOpacity(0.3), width: 0.5),
+                border: Border.all(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  width: 0.5,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),

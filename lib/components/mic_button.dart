@@ -9,10 +9,7 @@ import 'package:provider/provider.dart';
 class MicButton extends StatelessWidget {
   final double size;
 
-  const MicButton({
-    super.key,
-    required this.size,
-  });
+  const MicButton({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +35,7 @@ class MicButton extends StatelessWidget {
               border: Border.all(color: Colors.grey.shade300, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF672CBC).withOpacity(0.3),
+                  color: const Color(0xFF672CBC).withValues(alpha: 0.3),
                   blurRadius: 25,
                   spreadRadius: 4,
                 ),
@@ -65,7 +62,7 @@ class MicButton extends StatelessWidget {
     if (status.isPermanentlyDenied) openAppSettings();
 
     if (status.isGranted) {
-      vm.toggleListening(); 
+      vm.toggleListening();
     } else {
       showError();
     }

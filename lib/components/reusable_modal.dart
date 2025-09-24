@@ -20,7 +20,7 @@ class ButtonModalModel {
 class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
   final String title;
   final String subtitle;
-  final bool closeOnlyOnButtonPress; 
+  final bool closeOnlyOnButtonPress;
   final Widget? customContentSubtitle;
   final List<ButtonModalModel> buttonList;
 
@@ -29,7 +29,7 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.buttonList,
-    this.closeOnlyOnButtonPress = false, 
+    this.closeOnlyOnButtonPress = false,
     this.customContentSubtitle,
   });
 
@@ -42,12 +42,12 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
         final bool backdropClickable = !closeOnlyOnButtonPress;
 
         return GestureDetector(
-          onTap: backdropClickable ? () => viewModel.close() : null, 
+          onTap: backdropClickable ? () => viewModel.close() : null,
           child: Container(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             child: Center(
               child: GestureDetector(
-                onTap: () {}, 
+                onTap: () {},
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     maxWidth: 400,
@@ -81,7 +81,10 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
                             ),
                             if (!closeOnlyOnButtonPress)
                               IconButton(
-                                icon: const Icon(LucideIcons.x, color: Colors.black),
+                                icon: const Icon(
+                                  LucideIcons.x,
+                                  color: Colors.black,
+                                ),
                                 onPressed: () => viewModel.close(),
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
@@ -89,7 +92,7 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        
+
                         Padding(
                           padding: const EdgeInsets.only(left: 8, right: 14),
                           child: Text(
@@ -102,16 +105,19 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 30),
-                        
+
                         if (customContentSubtitle != null) ...[
                           customContentSubtitle!,
                           const SizedBox(height: 20),
                         ],
                         Column(
-                          children: buttonList.map((button) => modalButton(context, button)).toList(),
-                        )
+                          children:
+                              buttonList
+                                  .map((button) => modalButton(context, button))
+                                  .toList(),
+                        ),
                       ],
                     ),
                   ),
@@ -123,6 +129,7 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
       },
     );
   }
+
   Widget modalButton(BuildContext context, ButtonModalModel model) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5),
@@ -131,9 +138,9 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
         onPressed: () {
           model.onButtonPressed();
           context.read<T>().close();
-        }, 
+        },
         style: ElevatedButton.styleFrom(
-          backgroundColor: model.buttonColor ,
+          backgroundColor: model.buttonColor,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -141,10 +148,7 @@ class ReusableModal<T extends ToggleableUiViewModel> extends StatelessWidget {
         ),
         child: Text(
           model.text,
-          style: TextStyle(
-            color: model.textColor,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: model.textColor, fontWeight: FontWeight.bold),
         ),
       ),
     );
