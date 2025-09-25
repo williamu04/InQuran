@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/common/app_color.dart';
+import 'package:mtqmnuns/common/validation.dart';
 import 'package:mtqmnuns/components/google_auth.dart';
 import 'package:mtqmnuns/components/logo.dart';
+import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/text_field.dart';
+import 'package:mtqmnuns/components/transient_modal.dart';
 import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -19,6 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final ErrorPopUpController errorController = ErrorPopUpController();
 
   bool _isTermsAgreed = false;
   bool _isLoading = false;
@@ -45,9 +51,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _updateFormValidity() {
     setState(() {
-      final isUsernameValid = _validateUsername(_nameController.text) == null;
-      final isEmailValid = _validateEmail(_emailController.text) == null;
-      final isPasswordValid = _validatePassword(_passwordController.text) == null;
+      final isUsernameValid = Validation.validateUsername(_nameController.text) == null;
+      final isEmailValid = Validation.validateEmail(_emailController.text) == null;
+      final isPasswordValid = Validation.validatePassword(_passwordController.text) == null;
       
       _isFormValid = isUsernameValid && 
                     isEmailValid && 
@@ -64,21 +70,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 80),
-              buildLogo(),
-              const SizedBox(height: 30),
-              _buildTitle(),
-              const SizedBox(height: 30),
-              _buildSignUpForm(),
-              const SizedBox(height: 60),
-              _buildAppBranding(),
-              const SizedBox(height: 60),
-            ],
-          ),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 80),
+                  buildLogo(),
+                  const SizedBox(height: 30),
+                  _buildTitle(),
+                  const SizedBox(height: 30),
+                  _buildSignUpForm(context),
+                  const SizedBox(height: 60),
+                  _buildAppBranding(),
+                  const SizedBox(height: 60),
+                ],
+              ),
+            ),
+            AnimatedBuilder(
+              animation: errorController,
+              builder: (context, _) {
+                return PopUpModal(
+                  title: "Pembuatan Akun Gagal",
+                  subtitle: errorController.errorMessage ?? "Terjadi Kesalahan Tak terduga",
+                  controller: errorController,
+                  buttonList: [
+                    ButtonModalModel(
+                      text: "Ok", 
+                      onButtonPressed: () {},
+                    )
+                  ],
+                );
+              },
+            )
+          ],
         ),
       ),
     );
@@ -120,7 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildSignUpForm() {
+  Widget _buildSignUpForm(BuildContext context) {
     return Column(
       children: [
         GoogleSignInButton(
@@ -135,7 +161,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SizedBox(height: 20),
         _buildTermsCheckbox(),
         const SizedBox(height: 40),
-        _buildCreateAccountButton(),
+        _buildCreateAccountButton(context),
         const SizedBox(height: 24),
         _buildLoginLink(),
       ],
@@ -169,21 +195,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
           controller: _nameController,
           hintText: 'Username',
           keyboardType: TextInputType.name,
-          validator: _validateUsername,
+          validator: Validation.validateUsername,
         ),
         const SizedBox(height: 16), 
         CustomTextField(
           controller: _emailController,
           hintText: 'Email',
           keyboardType: TextInputType.emailAddress,
-          validator: _validateEmail,
+          validator: Validation.validateEmail,
         ),
         const SizedBox(height: 16), 
         CustomTextField(
           controller: _passwordController,
           hintText: 'Password',
           isPassword: true,
-          validator: _validatePassword,
+          validator: Validation.validatePassword,
         ),
       ],
     );
@@ -250,12 +276,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildCreateAccountButton() {
+  Widget _buildCreateAccountButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: (_isLoading || !_isFormValid) ? null : _handleCreateAccount,
+        onPressed: (_isLoading || !_isFormValid) ? null : () => _handleCreateAccount(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: _isFormValid ? AppColors.primary : Colors.grey.shade400,
           disabledBackgroundColor: Colors.grey.shade400,
@@ -324,92 +350,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _handleGoogleSignUp() async {
     setState(() => _isLoading = true);
-
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-      _showSuccessMessage('Akun berhasil dibuat dengan Google!');
-    } catch (e) {
-      _showErrorMessage('Gagal mendaftar dengan Google: ${e.toString()}');
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    setState(() => _isLoading = false);
   }
 
-  Future<void> _handleCreateAccount() async {
-    setState(() => _isLoading = true);
-    final username = _nameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    try {
-      await context.read<AuthViewModel>().signup(username, email, password);
-    } catch (e) {
-      _showErrorMessage('Gagal membuat akun: ${e.toString()}');
-    } finally {
-      setState(() => _isLoading = false);
+Future<void> _handleCreateAccount(BuildContext context) async {
+  setState(() => _isLoading = true);
+  
+  final username = _nameController.text.trim();
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
+  
+  final result = await context.read<AuthViewModel>().signup(username, email, password);
+  
+    switch (result) {
+      case Success():
+        if (context.mounted) {
+          context.replace(AppRoutes.completeSignUp.path);
+          context.read<TransientMessageService>().showMessage(
+            context,
+            "Sign Up Berhasil"
+          );
+        }
+        
+      case Failure(:final reason):
+        if (context.mounted) {
+          errorController.open(reason);
+        }
     }
-  }
-
-  void _showSuccessMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
-  void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
-  String? _validateUsername(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Username wajib diisi';
-    }
-    if (value.length < 2) {
-      return 'Username minimal 2 karakter';
-    }
-    if (value.length > 50) {
-      return 'Username tidak boleh lebih dari 50 karakter';
-    }
-    return null;
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email wajib diisi';
-    }
-
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-
-    if (!emailRegex.hasMatch(value)) {
-      return 'Email harus menggunakan format email yang valid';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password wajib diisi';
-    }
-    if (value.length < 8) {
-      return 'Password minimal 8 karakter';
-    }
-    if (value.length > 100) {
-      return 'Password tidak boleh lebih dari 100 karakter';
-    }
-
-    final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$');
-
-    if (!passwordRegex.hasMatch(value)) {
-      return 'Password harus mengandung minimal satu huruf dan satu angka';
-    }
-    return null;
+    
+    setState(() => _isLoading = false);
   }
 }

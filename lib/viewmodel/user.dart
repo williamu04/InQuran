@@ -1,7 +1,7 @@
 import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/exception/http.dart';
 import 'package:mtqmnuns/repositories/user.dart';
-import 'package:mtqmnuns/state/auth.dart';
+import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
@@ -12,68 +12,58 @@ class UserViewModel extends StatefulViewModel<UserLoadState> {
 
   UserViewModel(this._userRepo, this.authVm) : super(UserLoadLoading());
 
-  void loadUser() async {
+  Future<void> loadUser() async {
     setState(UserLoadLoading());
-    if (authVm.state is AuthAuthenticatedOffline) {
-      await authVm.init();
-    }
-    switch (authVm.state) {
-      case AuthAuthenticated(:var jwt):
-        await _fetchUserFromApi(jwt);
-        break;
-
-      case AuthUnauthenticated():
-      case AuthError():
-      case AuthInitial():
-      case AuthLoading():
-      case AuthLoggingOut():
-        setState(UserLoadUnauthenticated());
-        break;
-
-      case AuthAuthenticatedOffline():
-        await _fetchUserFromCache();
-        break;
-
-      case AuthSessionExpired():
-        setState(UserLoadSessionExpired());
-        break;
-      }
+    if (!authVm.isLoggedIn()) {
+      setState(UserLoadUnauthenticated());
+      return;
+    } 
+    await _fetchUserFromApi();
   }
 
-  Future<void> _fetchUserFromApi(String jwt) async {
+  Future<void> _fetchUserFromApi() async {
     try {
+      final jwt = authVm.jwtToken;
+      if (jwt == null) {
+        await _retryWithRefreshedToken();
+        return;
+      }
       final user = await _userRepo.getMeFromApi(jwt);
       setState(UserLoaded(user));
     } on JwtError catch (_) {
       await _retryWithRefreshedToken();
+      return;
     } catch (e) {
-      await handleApiError(e);
+      await _errorFallback();
     }
   }
 
   Future<void> _retryWithRefreshedToken() async {
-    try {
-      await authVm.refreshToken();
-    } on RefreshTokenInvalidError catch (_) {
-      setState(UserLoadSessionExpired());
-      return;
-    }
-    if (authVm.state is AuthAuthenticated) {
-      final jwt = (authVm.state as AuthAuthenticated).jwt;
-      try {
-        final user = await _userRepo.getMeFromApi(jwt);
-        setState(UserLoaded(user));
-      } catch (e) {
-        await handleApiError(e);
+      final res = await authVm.refreshToken();
+      switch (res) {
+        case Success():
+          final jwt = authVm.jwtToken;
+          if (jwt == null){
+            await _errorFallback();
+            return;
+          }
+          try {
+            final user = await _userRepo.getMeFromApi(jwt);
+            setState(UserLoaded(user));
+          } catch (_) {
+            await _errorFallback();
+          }
+        case Failure():
+          setState(UserLoadSessionExpired());
+          return;
       }
-    }
   }
 
-  Future<void> handleApiError(Object error) async {
-    if (error is HttpError) {
-      setState(UserLoadError(error.message));
+  Future<void> _errorFallback() async {
+    if (authVm.isLoggedIn()) {
+      await _fetchUserFromCache();
     } else {
-      setState(UserLoadError("UnknownError"));
+      setState(UserLoadUnauthenticated());
     }
   }
 

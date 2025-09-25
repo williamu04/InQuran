@@ -21,13 +21,15 @@ class ToggleableUiController extends ChangeNotifier {
   }
 }
 
-abstract class ErrorPopUpController extends ToggleableUiController {
+class ErrorPopUpController extends ToggleableUiController {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
   @override
   void open([String? error]) {
+    debugPrint("HELLO FROM CONTROLLER $error");
     _errorMessage = error;
+    notifyListeners();
     super.open(); 
   }
 
@@ -41,4 +43,5 @@ abstract class ErrorPopUpController extends ToggleableUiController {
 class SettingSlideDrawer extends ToggleableUiController {}
 class MenuSlideDrawer extends ToggleableUiController {}
 class LogoutDialoguePopUp extends ToggleableUiController {}
+class LogoutLoading extends ToggleableUiController {}
 class UnauthenticatedPopUp extends ToggleableUiController {}

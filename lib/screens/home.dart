@@ -6,9 +6,7 @@ import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/screens/home_main.dart';
 import 'package:mtqmnuns/screens/home_voice.dart';
-import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/user.dart';
-import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
           subtitle: "Apakah Kamu Ingin Login Kembali?",
           controller: sessionExpiredPopUpController,
           onClosed: () {
-            context.read<AuthViewModel>().setState(AuthUnauthenticated());
             context.read<UserViewModel>().setState(UserLoadUnauthenticated());
           },
           buttonList: [

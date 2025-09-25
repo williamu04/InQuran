@@ -1,24 +1,46 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mtqmnuns/dto/auth.dart';
 import 'package:mtqmnuns/exception/http.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
-import 'package:mtqmnuns/state/auth.dart';
-import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
+import 'package:mtqmnuns/state/success_or_fail.dart';
 
-class AuthViewModel extends StatefulViewModel<AuthState> {
+class AuthViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage;
+
+  final String _refreshStorageKey;
+  final String _jwtStorageKey;
+  final String _sessionIdStorageKey;
 
   String? _refreshToken;
   String? _jwtToken;
   String? _sessionId;
 
-  final String _refreshStorageKey = 'refresh_token';
-  final String _jwtStorageKey = 'jwt';
-  final String _sessionIdStorageKey = 'session_id';
+  String? get jwtToken => _jwtToken;
 
-  AuthViewModel(this._authRepository) : super(AuthInitial());
+
+  AuthViewModel._(this._authRepository, this._storage, this._refreshStorageKey, this._jwtStorageKey, this._sessionIdStorageKey);
+
+  static Future<AuthViewModel> create(AuthRepository authRepository, FlutterSecureStorage storage) async {
+    String refreshKey = 'refreshToken';
+    String jwtKey = 'jwtToken';
+    String sessionKey = 'sessionId';
+    final viewModel = AuthViewModel._(
+      authRepository,
+      storage,
+      refreshKey,
+      jwtKey,
+      sessionKey,
+    );
+    viewModel._jwtToken = await storage.read(key: jwtKey);
+    viewModel._refreshToken = await storage.read(key: refreshKey);
+    viewModel._sessionId = await storage.read(key: sessionKey);
+
+    return viewModel;
+  }
+
 
   Future<void> _writeRefreshToken(String token) async {
     _refreshToken = token;
@@ -54,7 +76,6 @@ class AuthViewModel extends StatefulViewModel<AuthState> {
     await _writeRefreshToken(newToken.refreshToken);
     await _writeJwtToken(newToken.jwtToken);
     await _writeSessionId(newToken.sessionId);
-    setState(AuthAuthenticated(newToken.jwtToken));
   }
 
   Future<void> _clearTokens() async {
@@ -63,92 +84,79 @@ class AuthViewModel extends StatefulViewModel<AuthState> {
     await _deleteSessionId();
   }
 
+  Success _successWithNotifyListener() {
+    notifyListeners();
+    return Success();
+  }
+
+  Failure _failureWithNotifyListener(String message) {
+    notifyListeners();
+    return Failure(message);
+  }
+
   bool isLoggedIn() {
-    return _refreshToken != null && _sessionId != null;
+    if (_jwtToken != null && _jwtToken!.isNotEmpty && !JwtDecoder.isExpired(_jwtToken!)) {
+      return true; 
+    } 
+    return _refreshToken != null || _sessionId != null;
   }
 
-  Future<void> init() async {
-    setState(AuthLoading());
-    _jwtToken = await _storage.read(key: _jwtStorageKey);
-    _refreshToken = await _storage.read(key: _refreshStorageKey);
-    _sessionId = await _storage.read(key: _sessionIdStorageKey);
 
-    if (_jwtToken == null || _jwtToken!.isEmpty || JwtDecoder.isExpired(_jwtToken!)) {
-      try {
-        await refreshToken();
-      } on RefreshTokenInvalidError catch (_) {
-        setState(AuthSessionExpired());
-      }
-    } else {
-      setState(AuthAuthenticated(_jwtToken!));
-    }
-  }
-
-  Future<void> loginEmail(String email, String password) async {
-    setState(AuthLoading());
+  Future<SuccessOrFail> loginEmail(String email, String password) async {
     try {
       final newToken = await _authRepository.loginEmail(email, password);
       await _writeNewToken(newToken);
+      return _successWithNotifyListener();
+    } on HttpError catch (e) {
+      return _failureWithNotifyListener(e.message);
     } catch (e) {
-      handleApiError(e);
+      return _failureWithNotifyListener("Terjadi Kesalahan Tak Terduga ${e.toString()}");
     }
   }
 
-  Future<void> signup(String username, String email, String password) async {
-    setState(AuthLoading());
+  Future<SuccessOrFail> signup(String username, String email, String password) async {
     try {
       final newToken = await _authRepository.registerUser(username, email, password);
       await _writeNewToken(newToken);
+      return _successWithNotifyListener();
+    } on HttpError catch (e) {
+      return _failureWithNotifyListener(e.message);
     } catch (e) {
-      handleApiError(e);
+      return _failureWithNotifyListener("Terjadi Kesalahan Tak Terduga ${e.toString()}");
     }
   }
 
-  Future<void> refreshToken() async {
+  Future<SuccessOrFail> refreshToken() async {
     await _deleteJwtToken();
     final refreshToken = _refreshToken;
     final sessionId = _sessionId;
     if (refreshToken == null && sessionId == null) {
-      setState(AuthUnauthenticated());
-      return;
-    } else {
-      try {
-        final newToken = await _authRepository.refreshToken(refreshToken!, sessionId!);
-        await _writeNewToken(newToken);
-      } on RefreshTokenInvalidError catch (_) {
-        // _clearTokens();
-        rethrow;
-      } catch (e) {
-        handleApiError(e);
-      }
-
+      return _failureWithNotifyListener("Unauthenticated");
     }
+
+    try {
+      final newToken = await _authRepository.refreshToken(refreshToken!, sessionId!);
+      await _writeNewToken(newToken);
+      return _successWithNotifyListener();
+    } on RefreshTokenInvalidError catch (_) {
+      _clearTokens();
+      return _failureWithNotifyListener("Session Invalid atau Expired");
+    } on HttpError catch (e) {
+      return _failureWithNotifyListener(e.message);
+    } catch (e) {
+      return _failureWithNotifyListener("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+    }
+    
   }
 
   Future<void> logout() async {
-    setState(AuthLoggingOut());
     if (_sessionId != null) {
       try {
-        await _authRepository.logout(_sessionId!);
         await _clearTokens();
+        await _authRepository.logout(_sessionId!);
       } catch (e) {
           // TODO: handling offline queue deleting refresh token
       }
-    }
-    setState(AuthUnauthenticated());
-  }
-
-  void handleApiError(Object error) {
-    if (error is HttpError) {
-      setState(AuthError(error.message));
-    } else {
-      setState(AuthError("UnknownError"));
-    }
-
-    if (isLoggedIn()) {
-      setState(AuthAuthenticatedOffline());
-    } else {
-      setState(AuthUnauthenticated());
     }
   }
 }

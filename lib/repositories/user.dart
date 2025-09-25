@@ -12,4 +12,12 @@ class UserRepository {
   }
 
   Future getMeFromCache() async {}
+
+  Future updateFullName() async {
+
+  }
+
+  Future updatePhoto() async {
+
+  }
 }

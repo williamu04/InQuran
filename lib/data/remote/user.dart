@@ -38,4 +38,9 @@ class UserRemoteDataSource {
       throw DataParsingError('Terjadi kesalahan parsing data user: $e');
     }
   }
+
+  Future<void> updateFullName(String accessToken) async {
+  }
+  Future<void> updatePhoto(String accessToken) async {
+  }
 } 

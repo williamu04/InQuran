@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
+import 'package:mtqmnuns/screens/complete_signup.dart';
 import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/explore.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
@@ -23,6 +24,13 @@ class AppRoutes {
     path: '/signup',
     pageBuilder: (context, state) => NoTransitionPage(child: SignUpScreen()),
     isHasBottomBar: false,
+  );
+
+  static final completeSignUp = AppRoute(
+    path: '/signup/complete',
+    pageBuilder: (context, state) => NoTransitionPage(child: CompleteUserSignUp()),
+    isHasBottomBar: false,
+    requiresAuth: true
   );
 
   static final intro = AppRoute(
@@ -144,6 +152,7 @@ class AppRoutes {
     calendar,
     etc,
     signUp,
+    completeSignUp,
     login,
     surah,
     splashScreen,

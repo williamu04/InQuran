@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +10,7 @@ extension GuardedNavigation on BuildContext {
     final auth = read<AuthViewModel>();
     final route = AppRoutes.getRouteByPath(location);
 
-    if (route.requiresAuth && auth.state is! AuthAuthenticated) {
+    if (route.requiresAuth && !auth.isLoggedIn()) {
       read<UnauthenticatedPopUp>().open();
       return;
     }
@@ -23,7 +22,7 @@ extension GuardedNavigation on BuildContext {
     final auth = read<AuthViewModel>();
     final route = AppRoutes.getRouteByPath(location);
 
-    if (route.requiresAuth && (auth.state is! AuthAuthenticated && auth.state is! AuthAuthenticatedOffline)) {
+    if (route.requiresAuth && !auth.isLoggedIn()) {
       read<UnauthenticatedPopUp>().open();
       return;
     }

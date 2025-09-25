@@ -1,48 +1,49 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-class TransientMessageModal extends StatefulWidget {
-  final String text;
-  final Duration duration;
-  final Duration fadeDuration;
+class TransientMessageService extends ChangeNotifier {
+  OverlayEntry? _currentOverlay;
 
-  const TransientMessageModal({
-    super.key,
-    required this.text,
-    this.duration = const Duration(seconds: 2),
-    this.fadeDuration = const Duration(milliseconds: 400),
-  });
+  void showMessage(BuildContext context, String text,
+      {Duration duration = const Duration(seconds: 2),
+      Duration fadeDuration = const Duration(milliseconds: 400)}) {
+    // Remove previous overlay if exists
+    _currentOverlay?.remove();
 
-  @override
-  State<TransientMessageModal> createState() => _TransientMessageModalState();
-
-  static void show(
-    BuildContext context, {
-    required String text,
-    Duration duration = const Duration(seconds: 2),
-    Duration fadeDuration = const Duration(milliseconds: 400),
-  }) {
     final overlay = Overlay.of(context);
-
     final overlayEntry = OverlayEntry(
-      builder:
-          (_) => TransientMessageModal(
-            text: text,
-            duration: duration,
-            fadeDuration: fadeDuration,
-          ),
+      builder: (_) => _TransientMessageWidget(
+        text: text,
+        duration: duration,
+        fadeDuration: fadeDuration,
+        onDismissed: () => _currentOverlay = null,
+      ),
     );
 
+    _currentOverlay = overlayEntry;
     overlay.insert(overlayEntry);
-    final total = fadeDuration + duration + fadeDuration;
-
-    Future.delayed(total, () {
-      overlayEntry.remove();
-    });
   }
 }
 
-class _TransientMessageModalState extends State<TransientMessageModal>
+
+class _TransientMessageWidget extends StatefulWidget {
+  final String text;
+  final Duration duration;
+  final Duration fadeDuration;
+  final VoidCallback onDismissed;
+
+  const _TransientMessageWidget({
+    required this.text,
+    required this.duration,
+    required this.fadeDuration,
+    required this.onDismissed,
+  });
+
+  @override
+  State<_TransientMessageWidget> createState() => _TransientMessageWidgetState();
+}
+
+class _TransientMessageWidgetState extends State<_TransientMessageWidget>
     with SingleTickerProviderStateMixin {
   double _opacity = 0.0;
 
@@ -50,12 +51,17 @@ class _TransientMessageModalState extends State<TransientMessageModal>
   void initState() {
     super.initState();
 
-    // Fade in
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => _opacity = 1.0);
 
       Future.delayed(widget.duration + widget.fadeDuration, () {
-        if (mounted) setState(() => _opacity = 0.0);
+        if (mounted) {
+          setState(() => _opacity = 0.0);
+
+          Future.delayed(widget.fadeDuration, () {
+            widget.onDismissed();
+          });
+        }
       });
     });
   }
@@ -64,9 +70,7 @@ class _TransientMessageModalState extends State<TransientMessageModal>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(
-          child: IgnorePointer(child: Container(color: Colors.transparent)),
-        ),
+        Positioned.fill(child: IgnorePointer(child: Container(color: Colors.transparent))),
         Center(
           child: AnimatedOpacity(
             opacity: _opacity,
@@ -76,15 +80,12 @@ class _TransientMessageModalState extends State<TransientMessageModal>
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  width: 0.5,
-                ),
+                border: Border.all(color: Colors.black.withOpacity(0.3), width: 0.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
+                    color: Colors.black.withOpacity(0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),

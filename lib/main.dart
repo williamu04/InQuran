@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/drawer_menu.dart';
@@ -7,6 +8,7 @@ import 'package:mtqmnuns/components/loading_viewmodel.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
+import 'package:mtqmnuns/components/transient_modal.dart';
 import 'package:mtqmnuns/config/dio.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
@@ -28,7 +30,7 @@ import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
-import 'package:mtqmnuns/state/auth.dart';
+import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/mushaf.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
@@ -36,6 +38,7 @@ import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
+import 'package:mtqmnuns/viewmodel/user_edit.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -47,16 +50,20 @@ void main() async {
 
   final db = AppDatabase();
 
+  final FlutterSecureStorage storage = FlutterSecureStorage();
+
   final authRemote = AuthRemoteDataSource(client: dio);
   final authRepository = AuthRepository(authRemote);
-  final authVM = AuthViewModel(authRepository);
-  await authVM.init();
+  final authViewModel = await AuthViewModel.create(authRepository, storage);
 
   runApp(
     MultiProvider(
       providers: [
-        // Global config
+        // Intialized
         ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
+        Provider.value(value: authRemote),
+        Provider.value(value: authRepository),
+        ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
 
         // DAOs
         Provider.value(value: db.surahDao),
@@ -65,7 +72,6 @@ void main() async {
         Provider.value(value: db.duasDao),
 
         // Remote
-        Provider.value(value: AuthRemoteDataSource(client: dio)),
         Provider(create: (_) => UserRemoteDataSource(client: dio)),
 
         // Repositories
@@ -77,10 +83,6 @@ void main() async {
         Provider(
           create:
               (context) => UserRepository(context.read<UserRemoteDataSource>()),
-        ),
-        Provider(
-          create:
-              (context) => AuthRepository(context.read<AuthRemoteDataSource>()),
         ),
 
         Provider(
@@ -125,14 +127,14 @@ void main() async {
           create: (context) => MushafViewModel(context.read<AyahRepository>()),
         ),
         ChangeNotifierProvider(
-          create: (context) => AuthViewModel(context.read<AuthRepository>()),
-        ),
-        ChangeNotifierProvider(
           create:
               (context) => UserViewModel(
                 context.read<UserRepository>(),
                 context.read<AuthViewModel>(),
               ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserEditViewModel(),
         ),
 
         //toggleable ui state
@@ -140,6 +142,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
         ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
         ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
+        ChangeNotifierProvider(create: (_) => LogoutLoading()),
+
+        ChangeNotifierProvider(create: (_) => TransientMessageService()),
       ],
       child: const MyApp(),
     ),
@@ -172,10 +177,6 @@ class _MyAppState extends State<MyApp> {
               )
               .toList(),
     );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AuthViewModel>().init();
-    });
 
     _router = config.buildRouter();
   }
@@ -281,22 +282,28 @@ class MainScaffold extends StatelessWidget {
               ButtonModalModel(
                 text: "Logout",
                 onButtonPressed: () {
+                  context.read<LogoutLoading>().open();
                   context.read<AuthViewModel>().logout();
+                  context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+                  context.read<LogoutLoading>().close();
+                  context.read<TransientMessageService>().showMessage(
+                    context,
+                    "Logout Berhasil"
+                  );
+                
                 },
               ),
               ButtonModalModel(
                 text: "Batal",
                 textColor: Colors.red,
                 buttonColor: Colors.white,
-                onButtonPressed: () {
-                  context.read<LogoutDialoguePopUp>().close();
-                },
+                onButtonPressed: () {},
               ),
             ],
           ),
-          LoadingModal<AuthViewModel>(
+          LoadingModal(
             text: "Logging out...",
-            showForState: AuthLoggingOut,
+            controller: context.read<LogoutLoading>(),
           ),
         ],
       ),

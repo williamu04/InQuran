@@ -7,10 +7,8 @@ import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:mtqmnuns/state/user.dart';
-import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
@@ -93,8 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             switch (uservm.state) {
               case UserLoadLoading():
                 return const Center(child: CircularProgressIndicator());
-              case UserLoadError(:final message):
-                return Center(child: Text("error: $message"));
               case UserLoaded(:final user):
                 return _buildProfilePage(user);
               case UserLoadUnauthenticated():
@@ -141,7 +137,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           closeOnlyOnButtonPress: true,
           controller: sessionExpiredPopUpController,
           onClosed: () {
-            context.read<AuthViewModel>().setState(AuthUnauthenticated());
             context.read<UserViewModel>().setState(UserLoadUnauthenticated());
           },
           buttonList: [

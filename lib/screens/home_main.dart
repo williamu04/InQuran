@@ -148,7 +148,7 @@ class MainHomeScreen extends StatelessWidget {
                               switch (state) {
                                 case UserLoadLoading():
                                   return usernameWidget("Loading..");
-                                case UserLoadUnauthenticated() || UserLoadError():
+                                case UserLoadUnauthenticated():
                                   return usernameWidget("Sebelas Maret");
                                 case UserLoaded(:final user):
                                   return usernameWidget(user.fullName ?? user.username);

@@ -1,5 +1,5 @@
 
-  import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:mtqmnuns/exception/http.dart';
 
 Never dioExceptionHandler(DioException e) {
@@ -7,25 +7,25 @@ Never dioExceptionHandler(DioException e) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:
     case DioExceptionType.receiveTimeout:
-      throw TimeoutError('Request timed out: ${e.message}');
+      throw TimeoutError('Servis tidak aktif atau tidak dapat dijangkau tolong hubungi: mtqmnuns@gmail.com');
 
     case DioExceptionType.badResponse:
       final statusCode = e.response?.statusCode;
-      final data = e.response?.data['data'];
+      final data = e.response?.data;
       if (statusCode == 401) {
         throw AuthenticationError(data['message']);
       } else if (statusCode == 400) {
-        throw ClientError('Invalid parameters: ${data['message']}');
+        throw ClientError('${data['message']}');
       } 
       else if (statusCode != null && statusCode >= 500) {
-        throw InternalServerError('Server error ($statusCode)');
+        throw InternalServerError('terdapat kesalahan tak terduga pada server. tolong hubungi mtqmnuns@gmail.com');
       } else {
-        throw ClientError('Request Gagal: ${data['message']}');
+        throw InternalServerError('terdapat kesalahan tak terduga pada server. tolong hubungi mtqmnuns@gmail.com');
       }
     case DioExceptionType.connectionError:
-      throw ServerUnreachableError('Tidak ada koneksi: ${e.error}');
+      throw ServerUnreachableError('Tidak ada koneksi Internet');
 
     default:
-      throw ServerUnreachableError('Server tidak dapat dijangkau: ${e.error}');
+      throw ServerUnreachableError('Server tidak dapat dijangkau, hubungi: mtqmnuns@gmail.com');
   }
 }

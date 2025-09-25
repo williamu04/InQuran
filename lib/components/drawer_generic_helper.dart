@@ -5,7 +5,6 @@ import 'package:mtqmnuns/components/disclosure_button.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
-import 'package:mtqmnuns/state/auth.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
@@ -15,7 +14,7 @@ class GenericDrawer<T extends ToggleableUiController> extends StatefulWidget {
   final Duration duration;
   final String title;
   final SlideDirection slideDirection;
-  final List<DisclosureButtonModel> Function(GlobalConfig) createButtonList;
+  final List<DisclosureButtonModel> Function(BuildContext context) createButtonList;
   final T Function(BuildContext) getViewModel;
 
   const GenericDrawer({
@@ -47,15 +46,16 @@ class _GenericDrawerState<T extends ToggleableUiController>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
     _listScrollController = ScrollController();
-    buttonList = widget.createButtonList(context.read<GlobalConfig>());
+    buttonList = widget.createButtonList(context);
     context.read<GlobalConfig>().addListener(_onGlobalConfigChanged);
+    context.read<AuthViewModel>().addListener(_onGlobalConfigChanged);
   }
 
   void _onGlobalConfigChanged() {
     if (!mounted) return;
     setState(() {
       buttonList = List.of(
-        widget.createButtonList(context.read<GlobalConfig>()),
+        widget.createButtonList(context),
       );
     });
   }
@@ -173,7 +173,7 @@ class _GenericDrawerState<T extends ToggleableUiController>
       case NavigateAction(:var route):
         final auth = context.read<AuthViewModel>();
 
-        if (route.requiresAuth && auth.state is! AuthAuthenticated) {
+        if (route.requiresAuth && !auth.isLoggedIn()) {
           context.read<UnauthenticatedPopUp>().open();
           return;
         }
@@ -219,7 +219,7 @@ class _GenericDrawerState<T extends ToggleableUiController>
         if (isOpen &&
             _controller.status != AnimationStatus.forward &&
             _controller.status != AnimationStatus.completed) {
-          buttonList = widget.createButtonList(context.read<GlobalConfig>());
+          buttonList = widget.createButtonList(context);
           _controller.forward();
         } else if (!isOpen &&
             _controller.status != AnimationStatus.reverse &&

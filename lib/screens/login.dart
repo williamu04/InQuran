@@ -3,9 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/common/app_color.dart';
 import 'package:mtqmnuns/components/google_auth.dart';
 import 'package:mtqmnuns/components/logo.dart';
+import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/text_field.dart';
+import 'package:mtqmnuns/components/transient_modal.dart';
 import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
 
@@ -19,6 +23,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController(text: '');
   final TextEditingController _passwordController = TextEditingController(text: '');
+
+  final ErrorPopUpController errorController = ErrorPopUpController();
 
   bool _isLoading = false;
   bool _isFormValid = false;
@@ -50,22 +56,42 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 80),
-              buildLogo(),
-              const SizedBox(height: 30),
-              _buildTitle(),
-              const SizedBox(height: 30),
-              _buildLoginForm(),
-              const SizedBox(height: 60),
-              _buildAppBranding(),
-              const SizedBox(height: 60),
-            ],
-          ),
-        ),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 80),
+                    buildLogo(),
+                    const SizedBox(height: 30),
+                    _buildTitle(),
+                    const SizedBox(height: 30),
+                    _buildLoginForm(context),
+                    const SizedBox(height: 60),
+                    _buildAppBranding(),
+                    const SizedBox(height: 60),
+                  ],
+                ),
+              ),
+              AnimatedBuilder(
+                animation: errorController,
+                builder: (context, _) {
+                  return PopUpModal(
+                    title: "Login gagal",
+                    subtitle: errorController.errorMessage ?? "Terjadi Kesalahan Tak terduga",
+                    controller: errorController,
+                    buttonList: [
+                      ButtonModalModel(
+                        text: "Ok",
+                        onButtonPressed: () {},
+                      ),
+                    ],
+                  );
+                },
+              )
+          ],
+        ) 
       ),
     );
   }
@@ -105,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginForm() {
+  Widget _buildLoginForm(BuildContext context) {
     return Column(
       children: [
         GoogleSignInButton(isLoading: _isLoading, onPressed: _handleGoogleLogin, text: 'Masuk dengan '),
@@ -116,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 20),
         _buildForgetPasswordLink(),
         const SizedBox(height: 40),
-        _buildLoginButton(),
+        _buildLoginButton(context),
         const SizedBox(height: 24),
         _buildSignUpLink(),
       ],
@@ -178,12 +204,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginButton() {
+  Widget _buildLoginButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: (_isLoading || !_isFormValid) ? null : _handleLogin,
+        onPressed: (_isLoading || !_isFormValid) ? null : () => _handleLogin(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: _isFormValid ? AppColors.primary : AppColors.divider,
           disabledBackgroundColor: Colors.grey.shade400,
@@ -244,49 +270,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleGoogleLogin() async {
     setState(() => _isLoading = true);
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-      _showSuccessMessage('Logged in successfully with Google!');
-    } catch (e) {
-      _showErrorMessage('Failed to login with Google: ${e.toString()}');
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    await Future.delayed(const Duration(seconds: 2));
+    errorController.open("Unimplemented");
+    setState(() => _isLoading = false);
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleLogin(BuildContext context) async {
     setState(() => _isLoading = true);
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    try {
-      await context.read<AuthViewModel>().loginEmail(email, password);
-    } catch (e) {
-      _showErrorMessage('login Gagal: ${e.toString()}');
-    } finally {
-      setState(() => _isLoading = false);
+    final res = await context.read<AuthViewModel>().loginEmail(email, password);
+    switch (res) {
+      case Success():
+      if (context.mounted) {
+        context.replace(AppRoutes.home.path);
+        context.read<TransientMessageService>().showMessage(
+          context,
+          "Login berhasil"
+        );
+      }
+
+      case Failure(:final reason):
+        errorController.open(reason);
     }
+    setState(() => _isLoading = false);
   }
 
   void _handleForgetPassword() {
-    _showInfoMessage('Password reset functionality will be implemented here.');
-  }
-
-  void _showSuccessMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.green),
-    );
-  }
-
-  void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
-  }
-
-  void _showInfoMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.blue),
-    );
+    errorController.open('Password reset functionality will be implemented here.');
   }
 }

@@ -20,8 +20,9 @@ class SettingDrawer extends StatelessWidget {
   }
 
   List<DisclosureButtonModel> _createSettingButtonList(
-    GlobalConfig globalConfig,
+    BuildContext context,
   ) {
+    GlobalConfig globalConfig = context.read<GlobalConfig>();
     return [
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Bahasa",
