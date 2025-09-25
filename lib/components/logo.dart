@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-  import 'package:flutter/material.dart';
-
-Widget buildLogo() {
-    return Container(
+Widget buildLogo({bool decorative = true}) {
+  return ExcludeSemantics(
+    excluding: decorative,
+    child: Container(
       height: 120,
       width: 160,
       decoration: BoxDecoration(
@@ -18,6 +20,8 @@ Widget buildLogo() {
       child: Image.asset(
         'assets/img/logoSplashScreen.png',
         fit: BoxFit.contain,
+        semanticLabel: decorative ? null : 'Logo aplikasi InQuran',
       ),
-    );
-  }
+    ),
+  );
+}

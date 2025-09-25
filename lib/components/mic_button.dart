@@ -9,10 +9,7 @@ import 'package:provider/provider.dart';
 class MicButton extends StatelessWidget {
   final double size;
 
-  const MicButton({
-    super.key,
-    required this.size,
-  });
+  const MicButton({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -28,28 +25,38 @@ class MicButton extends StatelessWidget {
           SttNetworkError() => false,
         };
 
-        return GestureDetector(
-          onTap: () => handleMicPressed(context, vm),
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade300, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF672CBC).withOpacity(0.3),
-                  blurRadius: 28,
-                  spreadRadius: 7,
+        return Semantics(
+          button: true,
+          toggled: isListening,
+          label: isListening ? 'Mikrofon menyala' : 'Mikrofon mati',
+          hint:
+              'Ketuk dua kali untuk ${isListening ? 'mematikan' : 'menyalakan'} pendengar',
+          child: Tooltip(
+            message: isListening ? 'Matikan pendengar' : 'Nyalakan pendengar',
+            child: GestureDetector(
+              onTap: () => handleMicPressed(context, vm),
+              child: Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade300, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF672CBC).withOpacity(0.3),
+                      blurRadius: 28,
+                      spreadRadius: 7,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Center(
-              child: Icon(
-                isListening ? LucideIcons.audioLines : LucideIcons.power,
-                color: const Color(0xFF672CBC),
-                size: size * 0.675,
+                child: Center(
+                  child: Icon(
+                    isListening ? LucideIcons.audioLines : LucideIcons.power,
+                    color: const Color(0xFF672CBC),
+                    size: size * 0.675,
+                  ),
+                ),
               ),
             ),
           ),
@@ -66,7 +73,7 @@ class MicButton extends StatelessWidget {
     if (status.isPermanentlyDenied) openAppSettings();
 
     if (status.isGranted) {
-      vm.toggleListening(); 
+      vm.toggleListening();
     } else {
       showError();
     }

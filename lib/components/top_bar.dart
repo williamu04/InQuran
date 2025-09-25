@@ -27,12 +27,15 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                middle ?? const SizedBox.shrink(),
+                if (middle != null)
+                  Semantics(header: true, child: middle!)
+                else
+                  const SizedBox.shrink(),
               ],
             ),
           ),
 
-          rightIcon ?? SizedBox.shrink()
+          rightIcon ?? SizedBox.shrink(),
         ],
       ),
     );

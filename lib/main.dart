@@ -16,6 +16,7 @@ import 'package:mtqmnuns/repositories/juz.dart';
 import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
+import 'package:mtqmnuns/services/accessibility.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
 import 'package:mtqmnuns/viewmodel/drawer.dart';
 import 'package:mtqmnuns/viewmodel/mushaf.dart';
@@ -52,6 +53,7 @@ void main() async {
 
         // Services
         Provider(create: (_) => SttService()),
+        Provider(create: (_) => AccessibilityService()),
         Provider(create: (_) => SurahFilterService()),
 
         // ViewModels
@@ -75,13 +77,10 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create:
-              (context) =>
-                  SurahDetailViewModel(context.read<AyahRepository>()),
+              (context) => SurahDetailViewModel(context.read<AyahRepository>()),
         ),
         ChangeNotifierProvider(
-          create:
-              (context) =>
-                  MushafViewModel(context.read<AyahRepository>()),
+          create: (context) => MushafViewModel(context.read<AyahRepository>()),
         ),
         ChangeNotifierProvider(create: (_) => SettingSlideDrawerViewModel()),
         ChangeNotifierProvider(create: (_) => MenuSlideDrawerViewModel()),
@@ -159,7 +158,34 @@ class MainScaffold extends StatelessWidget {
     return SafeArea(
       child: Stack(
         children: [
-          Scaffold(
+          _buildAnnouncedScaffold(context, currentRoute),
+          MenuDrawer(),
+          SettingDrawer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnnouncedScaffold(BuildContext context, AppRoute currentRoute) {
+    final bool isSurahDetail = currentRoute.path == AppRoutes.surah.path;
+    return Semantics(
+      container: true,
+      label: isSurahDetail ? null : currentRoute.semanticsLabel,
+      explicitChildNodes: true,
+      child: Builder(
+        builder: (ctx) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            try {
+              if (!isSurahDetail) {
+                final service = Provider.of<AccessibilityService>(
+                  ctx,
+                  listen: false,
+                );
+                await service.announce(ctx, currentRoute.semanticsLabel);
+              }
+            } catch (_) {}
+          });
+          return Scaffold(
             resizeToAvoidBottomInset: false,
             extendBody: true,
             body: Stack(
@@ -170,21 +196,15 @@ class MainScaffold extends StatelessWidget {
               ],
             ),
             bottomNavigationBar:
-                currentRoute.isHasBottomBar
-                    ? BottomNavBar()
-                    : null,
-          ),
-          MenuDrawer(),
-          SettingDrawer(),
-        ],
+                currentRoute.isHasBottomBar ? BottomNavBar() : null,
+          );
+        },
       ),
     );
   }
 
   Widget _buildMainContent() {
-    return Positioned.fill(
-      child:  child,
-    );
+    return Positioned.fill(child: child);
   }
 
   Widget _buildWhiteGradientOverlay() {
@@ -237,4 +257,3 @@ class MainScaffold extends StatelessWidget {
     );
   }
 }
-

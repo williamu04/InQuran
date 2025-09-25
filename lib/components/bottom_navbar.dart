@@ -60,19 +60,31 @@ class BottomNavBar extends StatelessWidget {
                         final nav = entry.value;
                         final isSelected = index == currentIndex;
 
-                        return IconButton(
-                          icon: Icon(
-                            nav.icon,
-                            color:
-                                isSelected
-                                    ? const Color(0xFF3B1D77)
-                                    : Colors.grey,
+                        return Semantics(
+                          selected: isSelected,
+                          button: true,
+                          label: nav.route.semanticsLabel,
+                          hint:
+                              isSelected
+                                  ? 'Sedang aktif'
+                                  : 'Ketuk dua kali untuk membuka',
+                          child: Tooltip(
+                            message: nav.route.semanticsLabel,
+                            child: IconButton(
+                              icon: Icon(
+                                nav.icon,
+                                color:
+                                    isSelected
+                                        ? const Color(0xFF3B1D77)
+                                        : Colors.grey,
+                              ),
+                              onPressed: () {
+                                if (!isSelected) {
+                                  context.push(nav.route.path);
+                                }
+                              },
+                            ),
                           ),
-                          onPressed: () {
-                            if (!isSelected) {
-                              context.push(nav.route.path);
-                            }
-                          },
                         );
                       }).toList(),
                 ),

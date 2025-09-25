@@ -23,54 +23,63 @@ class AppRoutes {
     path: '/signup',
     pageBuilder: (context, state) => NoTransitionPage(child: SignUpScreen()),
     isHasBottomBar: false,
+    semanticsLabel: 'Halaman Daftar',
   );
 
   static final intro = AppRoute(
     path: '/intro',
     pageBuilder: (context, state) => NoTransitionPage(child: IntroScreen()),
     isHasBottomBar: false,
+    semanticsLabel: 'Halaman Perkenalan',
   );
 
   static final login = AppRoute(
     path: '/login',
     pageBuilder: (context, state) => NoTransitionPage(child: LoginScreen()),
     isHasBottomBar: false,
+    semanticsLabel: 'Halaman Masuk',
   );
 
   static final splashScreen = AppRoute(
     path: '/splash',
     pageBuilder: (context, state) => NoTransitionPage(child: SplashScreen()),
     isHasBottomBar: false,
+    semanticsLabel: 'Memuat aplikasi',
   );
 
   static final home = AppRoute(
     path: '/',
     isHasBottomBar: true,
     pageBuilder: (context, state) => NoTransitionPage(child: HomeScreen()),
+    semanticsLabel: 'Halaman Beranda',
   );
 
   static final surahList = AppRoute(
     path: '/surah/list',
     pageBuilder: (context, state) => NoTransitionPage(child: SurahListScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'Halaman Daftar Surat',
   );
 
   static final search = AppRoute(
     path: '/search',
     pageBuilder: (context, state) => NoTransitionPage(child: SearchScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'Pencarian',
   );
 
   static final duasList = AppRoute(
     path: '/duas/list',
     pageBuilder: (context, state) => NoTransitionPage(child: DuasListScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'HalamanDaftar Doa',
   );
 
   static final profile = AppRoute(
     path: '/profile',
     pageBuilder: (context, state) => NoTransitionPage(child: ProfileScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'HalamanProfil',
   );
 
   static final prayer = AppRoute(
@@ -78,36 +87,42 @@ class AppRoutes {
     pageBuilder:
         (context, state) => NoTransitionPage(child: PrayerTimeScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'HalamanWaktu Sholat',
   );
 
   static final qibla = AppRoute(
     path: '/qibla',
     pageBuilder: (context, state) => NoTransitionPage(child: QiblaScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'Halaman Arah Kiblat',
   );
 
   static final favorites = AppRoute(
     path: '/favorite',
     pageBuilder: (context, state) => NoTransitionPage(child: FavoriteScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'Halaman Favorit',
   );
 
   static final calendar = AppRoute(
     path: '/calendar',
     pageBuilder: (context, state) => NoTransitionPage(child: CalendarScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'HalamanKalender Hijriah',
   );
 
   static final explore = AppRoute(
     path: '/explore',
     pageBuilder: (context, state) => NoTransitionPage(child: ExploreScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'Jelajahi',
   );
 
   static final etc = AppRoute(
     path: '/etc',
     pageBuilder: (context, state) => NoTransitionPage(child: EtcScreen()),
     isHasBottomBar: true,
+    semanticsLabel: 'Lainnya',
   );
 
   static final surah = AppRoute(
@@ -118,6 +133,7 @@ class AppRoutes {
       );
     },
     isHasBottomBar: true,
+    semanticsLabel: 'Halaman Detail Surat',
   );
 
   static final duas = AppRoute(
@@ -128,6 +144,7 @@ class AppRoutes {
       );
     },
     isHasBottomBar: true,
+    semanticsLabel: 'HalamanDetail Doa',
   );
 
   static final List<AppRoute> all = [
