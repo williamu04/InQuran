@@ -1,62 +1,62 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:mtqmnuns/common/jwt_extension.dart';
 import 'package:mtqmnuns/dto/user.dart';
-import 'package:mtqmnuns/exception/http.dart';
+import 'package:mtqmnuns/exception/auth.dart';
 import 'package:mtqmnuns/repositories/user.dart';
 import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
+import 'package:path/path.dart' as p;
 
 class UserViewModel extends StatefulViewModel<UserLoadState> {
   final UserRepository _userRepo;
   final AuthViewModel authVm;
-
+  
   UserViewModel(this._userRepo, this.authVm) : super(UserLoadLoading());
 
   Future<void> loadUser() async {
-    setState(UserLoadLoading());
-    if (!authVm.isLoggedIn()) {
-      setState(UserLoadUnauthenticated());
-      return;
-    } 
-    await _fetchUserFromApi();
-  }
-
-  Future<void> _fetchUserFromApi() async {
+      setState(UserLoadLoading());
     try {
-      final jwt = authVm.jwtToken;
-      if (jwt == null) {
-        await _retryWithRefreshedToken();
-        return;
-      }
-      final user = await _userRepo.getMeFromApi(jwt);
+      final user = await executeWithJwtRetry(
+        authVm,
+        (token) => _userRepo.getMeFromApi(token),
+      );
       setState(UserLoaded(user));
-    } on JwtError catch (_) {
-      await _retryWithRefreshedToken();
-      return;
+    } on UnauthenticatedException {
+      setState(UserLoadUnauthenticated());
+    } on TokenRefreshException {
+      setState(UserLoadSessionExpired());
     } catch (e) {
       await _errorFallback();
     }
   }
 
-  Future<void> _retryWithRefreshedToken() async {
-      final res = await authVm.refreshToken();
-      switch (res) {
-        case Success():
-          final jwt = authVm.jwtToken;
-          if (jwt == null){
-            await _errorFallback();
-            return;
-          }
-          try {
-            final user = await _userRepo.getMeFromApi(jwt);
-            setState(UserLoaded(user));
-          } catch (_) {
-            await _errorFallback();
-          }
-        case Failure():
-          setState(UserLoadSessionExpired());
-          return;
-      }
+  Future<SuccessOrFail> updateFullName({required String fullName}) async {
+    return executeApiOperation(
+      authVm,
+      (token) => _userRepo.updateFullName(token, fullName),
+    );
+  }
+
+  Future<SuccessOrFail> updatePhoto({required File imageFile}) async {
+    final ext = p.extension(imageFile.path).toLowerCase();
+    debugPrint('Extension: $ext');
+    return executeApiOperation(
+      authVm,
+      (token) => _userRepo.updatePhoto(token, imageFile),
+      onUnauthenticated: () => setState(UserLoadUnauthenticated()),
+    );
+  }
+
+  Future<SuccessOrFail> update({required UserDto updatedProfileData}) async {
+    return executeApiOperation(
+      authVm,
+      (token) => _userRepo.updateUser(token, updatedProfileData),
+      onUnauthenticated: () => setState(UserLoadUnauthenticated()),
+    );
   }
 
   Future<void> _errorFallback() async {
@@ -68,9 +68,17 @@ class UserViewModel extends StatefulViewModel<UserLoadState> {
   }
 
   Future<void> _fetchUserFromCache() async {
-    setState(UserLoaded(UserDto(id: 1, username: '', email: '', createdAt: DateTime(2024), updatedAt: DateTime(2024))));
+    setState(UserLoadedOffline(UserDto(
+      id: 1, 
+      username: '', 
+      email: '', 
+      createdAt: DateTime(2024), 
+      updatedAt: DateTime(2024)
+    )));
     // final user = await _userRepo.getMeFromCache();
-    // _setState(UserLoaded(user));
+    // setState(UserLoaded(user));
   }
 
 }
+
+  

@@ -84,16 +84,6 @@ class AuthViewModel extends ChangeNotifier {
     await _deleteSessionId();
   }
 
-  Success _successWithNotifyListener() {
-    notifyListeners();
-    return Success();
-  }
-
-  Failure _failureWithNotifyListener(String message) {
-    notifyListeners();
-    return Failure(message);
-  }
-
   bool isLoggedIn() {
     if (_jwtToken != null && _jwtToken!.isNotEmpty && !JwtDecoder.isExpired(_jwtToken!)) {
       return true; 
@@ -106,11 +96,13 @@ class AuthViewModel extends ChangeNotifier {
     try {
       final newToken = await _authRepository.loginEmail(email, password);
       await _writeNewToken(newToken);
-      return _successWithNotifyListener();
+      return Success<String>('OK');
     } on HttpError catch (e) {
-      return _failureWithNotifyListener(e.message);
+      return Failure(e.message);
     } catch (e) {
-      return _failureWithNotifyListener("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+      return Failure("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+    } finally {
+      notifyListeners();
     }
   }
 
@@ -118,33 +110,37 @@ class AuthViewModel extends ChangeNotifier {
     try {
       final newToken = await _authRepository.registerUser(username, email, password);
       await _writeNewToken(newToken);
-      return _successWithNotifyListener();
+      return Success<String>('OK');
     } on HttpError catch (e) {
-      return _failureWithNotifyListener(e.message);
+      return Failure(e.message);
     } catch (e) {
-      return _failureWithNotifyListener("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+      return Failure("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+    } finally {
+      notifyListeners();
     }
   }
 
-  Future<SuccessOrFail> refreshToken() async {
+  Future<SuccessOrFail<TokenDto>> refreshToken() async {
     await _deleteJwtToken();
     final refreshToken = _refreshToken;
     final sessionId = _sessionId;
     if (refreshToken == null && sessionId == null) {
-      return _failureWithNotifyListener("Unauthenticated");
+      return Failure<TokenDto>("Unauthenticated");
     }
 
     try {
       final newToken = await _authRepository.refreshToken(refreshToken!, sessionId!);
       await _writeNewToken(newToken);
-      return _successWithNotifyListener();
+      return Success<TokenDto>(newToken);
     } on RefreshTokenInvalidError catch (_) {
       _clearTokens();
-      return _failureWithNotifyListener("Session Invalid atau Expired");
+      return Failure<TokenDto>("Session Invalid atau Expired");
     } on HttpError catch (e) {
-      return _failureWithNotifyListener(e.message);
+      return Failure(e.message);
     } catch (e) {
-      return _failureWithNotifyListener("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+      return Failure<TokenDto>("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+    } finally {
+      notifyListeners();
     }
     
   }

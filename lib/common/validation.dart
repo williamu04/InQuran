@@ -65,7 +65,7 @@ class Validation {
 
     final nameRegExp = RegExp(r"^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$");
     if (!nameRegExp.hasMatch(trimmedValue)) {
-      return 'Nama lengkap hanya boleh berisi huruf, spasi, tanda hubung, atau apostrof';
+      return 'Nama lengkap hanya boleh berisi huruf, angka, underscore (_), spasi, tanda hubung (-), dan apostrof (\')';
     }
 
     return null; 

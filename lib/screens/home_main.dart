@@ -152,8 +152,6 @@ class MainHomeScreen extends StatelessWidget {
                                   return usernameWidget("Sebelas Maret");
                                 case UserLoaded(:final user):
                                   return usernameWidget(user.fullName ?? user.username);
-                                case UserLoadSessionExpired():
-                                  return usernameWidget("Sebelas Maret");
                               }
                             },
                           ),

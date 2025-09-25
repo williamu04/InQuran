@@ -23,8 +23,9 @@ class UserDto {
       username: json['username'] as String,
       fullName: json['fullName'] as String?,
       email: json['email'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      photoUrl: json['photoUrl'],
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
 }

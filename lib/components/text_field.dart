@@ -23,21 +23,23 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  // Remove canRequestFocus: false and just use normal FocusNode
+  final FocusNode _focusNode = FocusNode();
   String? _errorText;
   bool _hasInteracted = false;
-  
   bool _isPasswordVisible = false;
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(_validateInput);
-    _isPasswordVisible = widget.isPassword ? false : true;  
+    _isPasswordVisible = widget.isPassword ? false : true;
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_validateInput);
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -76,9 +78,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ),
           child: TextFormField(
+            focusNode: _focusNode,
             controller: widget.controller,
             keyboardType: widget.keyboardType,
             obscureText: widget.isPassword && !_isPasswordVisible,
+            autofocus: false,
+            enableInteractiveSelection: true,
+            onTapOutside: (event) {
+              _focusNode.unfocus();
+            },
             style: const TextStyle(
               color: Color(0xFF374151),
               fontSize: 16,

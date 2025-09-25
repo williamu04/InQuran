@@ -94,16 +94,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               case UserLoaded(:final user):
                 return _buildProfilePage(user);
               case UserLoadUnauthenticated():
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  sessionExpiredPopUpController.close();
-                  unauthenticatedPopUpController.open();
-                });
+                if (uservm.state is UserLoadSessionExpired) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    sessionExpiredPopUpController.open();
+                  });
+                } else {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    unauthenticatedPopUpController.open();
+                  });
+                }
                 return Center();
-              case UserLoadSessionExpired():
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  sessionExpiredPopUpController.open();
-                });
-                return Center(child: Text("Session Expired"));
             }
           }
         ),
@@ -184,7 +184,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              // image: DecorationImage(...),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: user.photoUrl != null && user.photoUrl!.isNotEmpty
+                                  ? Image.network(
+                                      user.photoUrl!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Icon(
+                                          Icons.person,
+                                          size: pohotoHeight * 0.5,
+                                          color: Colors.grey,
+                                        );
+                                      },
+                                    )
+                                  : Icon(
+                                      Icons.person,
+                                      size: pohotoHeight * 0.5,
+                                      color: Colors.grey,
+                                    ),
                             ),
                           ),
                           Column(

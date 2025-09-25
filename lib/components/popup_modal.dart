@@ -162,3 +162,39 @@ class PopUpModal extends StatelessWidget {
     );
   }
 }
+
+class ErrorPopUpModal extends StatelessWidget {
+  final String title;
+  final String defaultSubtitle;
+  final bool closeOnlyOnButtonPress;
+  final Widget? customContentSubtitle;
+  final List<ButtonModalModel> buttonList;
+  final ErrorPopUpController controller; 
+  final VoidCallback? onClosed; 
+
+  const ErrorPopUpModal({
+    super.key,
+    required this.title,
+    required this.defaultSubtitle,
+    required this.buttonList,
+    required this.controller,
+    this.closeOnlyOnButtonPress = false,
+    this.customContentSubtitle,
+    this.onClosed,  
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        return PopUpModal(
+          title: title,
+          subtitle: controller.errorMessage ?? defaultSubtitle,
+          controller: controller,
+          buttonList: buttonList
+        );
+      },
+    );
+  }
+}
