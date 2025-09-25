@@ -63,7 +63,7 @@ class Validation {
       return 'Nama lengkap maksimal 100 karakter';
     }
 
-    final nameRegExp = RegExp(r"^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$");
+    final nameRegExp = RegExp(r"^[a-zA-ZÀ-ÖØ-öø-ÿ0-9_\s'-]+$");
     if (!nameRegExp.hasMatch(trimmedValue)) {
       return 'Nama lengkap hanya boleh berisi huruf, angka, underscore (_), spasi, tanda hubung (-), dan apostrof (\')';
     }
