@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/app_color.dart';
 import 'package:mtqmnuns/common/validation.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/text_field.dart';
-import 'package:mtqmnuns/components/transient_modal.dart';
-import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/state/user_edit.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
-import 'package:mtqmnuns/viewmodel/user_edit.dart';
-import 'package:provider/provider.dart';
 
 class CompleteUserSignUp extends StatefulWidget {
   const CompleteUserSignUp({super.key});
