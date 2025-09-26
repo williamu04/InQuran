@@ -8,7 +8,13 @@ class SurahInfoDto {
   final int totalAyah;
   final String place;
 
-  SurahInfoDto(this.name, this.nameLatin, this.totalAyah, this.place, this.number);
+  SurahInfoDto(
+    this.name,
+    this.nameLatin,
+    this.totalAyah,
+    this.place,
+    this.number,
+  );
 
   factory SurahInfoDto.fromEntity(SurahData entity) {
     return SurahInfoDto(
@@ -16,7 +22,7 @@ class SurahInfoDto {
       entity.nameLatin,
       entity.totalAyah,
       entity.place,
-      entity.id, 
+      entity.id,
     );
   }
 }
@@ -28,19 +34,28 @@ class AyahWithTranslation {
 
   AyahWithTranslation(this.number, this.arabText, this.translationText);
   factory AyahWithTranslation.fromEntity(AyahData entity) {
-    return AyahWithTranslation(entity.ayahNumber, entity.ayahText, entity.indoText);
-
+    return AyahWithTranslation(
+      entity.ayahNumber,
+      entity.ayahText,
+      entity.indoText,
+    );
   }
 }
 
 class SurahWithAyahDto {
   final int number;
-  final String arabname; 
+  final String arabname;
   final String nameLatin;
   final String nameIndo;
   final List<AyahWithTranslation> ayahs;
 
-  SurahWithAyahDto(this.number,this.arabname, this.nameLatin, this.nameIndo, this.ayahs,);
+  SurahWithAyahDto(
+    this.number,
+    this.arabname,
+    this.nameLatin,
+    this.nameIndo,
+    this.ayahs,
+  );
 }
 
 class AyahWithSurahDto {
@@ -53,6 +68,9 @@ class AyahWithSurahDto {
   final String arabText;
   final String translationText;
   final int totalAyah;
+
+  String get audioLink =>
+      ('https://api.alquran.cloud/v1/ayah/${surahNumber}:$number/ar.alafasy');
 
   const AyahWithSurahDto(
     this.number,
@@ -76,7 +94,7 @@ class AyahWithSurahDto {
       entity.surah.nameIndo,
       entity.ayah.ayahText,
       entity.ayah.indoText,
-      entity.surah.totalAyah
+      entity.surah.totalAyah,
     );
   }
 }
@@ -86,5 +104,10 @@ class SurahParameter {
   final int startSurahAyah;
   final int endSurahId;
   final int endSurahAyah;
-  SurahParameter(this.startSurahId, this.startSurahAyah, this.endSurahId, this.endSurahAyah);
+  SurahParameter(
+    this.startSurahId,
+    this.startSurahAyah,
+    this.endSurahId,
+    this.endSurahAyah,
+  );
 }

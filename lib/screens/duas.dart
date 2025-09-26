@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
@@ -128,21 +129,21 @@ class DuasScreen extends StatelessWidget {
                                     IconButton(
                                       onPressed: () {},
                                       icon: const Icon(
-                                        Icons.play_arrow,
+                                        LucideIcons.play,
                                         color: Color(0xFF3B1D77),
                                       ),
                                     ),
                                     IconButton(
                                       onPressed: () {},
                                       icon: const Icon(
-                                        Icons.share,
+                                        LucideIcons.share2,
                                         color: Color(0xFF3B1D77),
                                       ),
                                     ),
                                     IconButton(
                                       onPressed: () {},
                                       icon: const Icon(
-                                        Icons.bookmark_border,
+                                        LucideIcons.heart,
                                         color: Color(0xFF3B1D77),
                                       ),
                                     ),

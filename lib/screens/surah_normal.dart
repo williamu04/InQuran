@@ -236,7 +236,26 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     ),
                   ),
                   const Spacer(),
-                  _buildActionButton(icon: LucideIcons.play, onPressed: () {}),
+                  Consumer<SurahDetailViewModel>(
+                    builder: (context, vm, child) {
+                      final currentState = vm.state;
+                      if (currentState is! SurahSuccess)
+                        return const SizedBox();
+
+                      final isCurrentAyahPlaying =
+                          currentState.playingIndex == ayah.number - 1 &&
+                          currentState.isPlaying;
+                      return _buildActionButton(
+                        icon:
+                            isCurrentAyahPlaying
+                                ? LucideIcons.pause
+                                : LucideIcons.play,
+                        onPressed: () {
+                          vm.togglePlayback(ayah.number - 1);
+                        },
+                      );
+                    },
+                  ),
                   _buildActionButton(
                     icon: LucideIcons.share2,
                     onPressed: () {
@@ -246,10 +265,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                       SharePlus.instance.share(ShareParams(text: text));
                     },
                   ),
-                  _buildActionButton(
-                    icon: LucideIcons.bookmark,
-                    onPressed: () {},
-                  ),
+                  _buildActionButton(icon: LucideIcons.heart, onPressed: () {}),
                 ],
               ),
             ),

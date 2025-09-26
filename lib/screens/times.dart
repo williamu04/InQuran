@@ -159,7 +159,7 @@ class PrayerHeader extends StatelessWidget {
     } else if (target == today.add(const Duration(days: 1))) {
       return "Besok";
     } else {
-      return DateFormat('EEEE').format(date);
+      return DateFormat('EEEE', 'id').format(date);
     }
   }
 
@@ -291,27 +291,27 @@ class PrayerList extends StatelessWidget {
     return ListView(
       children: [
         PrayerCard(
-          title: "Fajr",
+          title: "Subuh",
           time: prayerTime.fajr,
           icon: LucideIcons.cloudSun,
         ),
         PrayerCard(
-          title: "Dzuhr",
+          title: "Zuhur",
           time: prayerTime.dhuhr,
           icon: LucideIcons.sun,
         ),
         PrayerCard(
-          title: "Asr",
+          title: "Asar",
           time: prayerTime.asr,
           icon: LucideIcons.sunset,
         ),
         PrayerCard(
-          title: "Maghrib",
+          title: "Magrib",
           time: prayerTime.maghrib,
           icon: LucideIcons.cloudMoon,
         ),
         PrayerCard(
-          title: "Isha",
+          title: "Isya",
           time: prayerTime.isha,
           icon: LucideIcons.moonStar,
         ),
