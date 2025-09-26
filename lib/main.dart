@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/drawer_menu.dart';
@@ -54,48 +55,52 @@ void main() async {
   final authRepository = AuthRepository(authRemote);
   final authViewModel = await AuthViewModel.create(authRepository, storage);
 
-  runApp(
-    MultiProvider(
-      providers: [
-        // Intialized
-        ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
-        Provider.value(value: authRemote),
-        Provider.value(value: authRepository),
-        ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
+  initializeDateFormatting('id_ID', null).then(
+    (_) => runApp(
+      MultiProvider(
+        providers: [
+          // Intialized
+          ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
+          Provider.value(value: authRemote),
+          Provider.value(value: authRepository),
+          ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
 
-        // DAOs
-        Provider.value(value: db.surahDao),
-        Provider.value(value: db.juzDao),
-        Provider.value(value: db.ayahDao),
-        Provider.value(value: db.duasDao),
+          // DAOs
+          Provider.value(value: db.surahDao),
+          Provider.value(value: db.juzDao),
+          Provider.value(value: db.ayahDao),
+          Provider.value(value: db.duasDao),
 
-        // Remote
-        Provider(create: (_) => UserRemoteDataSource(client: dio)),
+          // Remote
+          Provider(create: (_) => UserRemoteDataSource(client: dio)),
 
-        // Repositories
-        Provider(
-          create: (context) => SurahRepository(context.read<SurahDao>()),
-        ),
-        Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
-        Provider(create: (context) => AyahRepository(context.read<AyahDao>())),
-        Provider(
-          create:
-              (context) => UserRepository(context.read<UserRemoteDataSource>()),
-        ),
+          // Repositories
+          Provider(
+            create: (context) => SurahRepository(context.read<SurahDao>()),
+          ),
+          Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
+          Provider(
+            create: (context) => AyahRepository(context.read<AyahDao>()),
+          ),
+          Provider(
+            create:
+                (context) =>
+                    UserRepository(context.read<UserRemoteDataSource>()),
+          ),
 
-        Provider(
-          create:
-              (context) => SttRepository(
-                context.read<SurahDao>(),
-                context.read<DuasDao>(),
+          Provider(
+            create:
+                (context) => SttRepository(
+                  context.read<SurahDao>(),
+                  context.read<DuasDao>(),
 
-                // context.read<AyahDao>(),
-              ),
-        ),
+                  // context.read<AyahDao>(),
+                ),
+          ),
 
-        // Services
-        Provider(create: (_) => SttService()),
-        Provider(create: (_) => SurahFilterService()),
+          // Services
+          Provider(create: (_) => SttService()),
+          Provider(create: (_) => SurahFilterService()),
 
         // ViewModels
         ChangeNotifierProvider(
@@ -128,19 +133,52 @@ void main() async {
                 context.read<AuthViewModel>(),
               ),
         ),
+          // ViewModels
+          ChangeNotifierProvider(
+            create:
+                (context) => SurahListViewModel(
+                  context.read<SurahRepository>(),
+                  context.read<SurahFilterService>(),
+                  context.read<JuzRepository>(),
+                ),
+          ),
+          ChangeNotifierProvider(
+            create:
+                (context) => SttViewModel(
+                  context,
+                  context.read<SttService>(),
+                  context.read<SttRepository>(),
+                ),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => LocationProvider()..loadLocation(),
+          ),
+          ChangeNotifierProvider(
+            create:
+                (context) =>
+                    SurahViewModel(context.read<AyahRepository>()),
+          ),
+          ChangeNotifierProvider(
+            create:
+                (context) => UserViewModel(
+                  context.read<UserRepository>(),
+                  context.read<AuthViewModel>(),
+                ),
+          ),
 
-        //toggleable ui state
-        ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
-        ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
-        ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
-        ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
-        ChangeNotifierProvider(create: (_) => LogoutLoading()),
-        ChangeNotifierProvider(create: (_) => PermissionErrorPopUp()),
-        ChangeNotifierProvider(create: (_) => OpenSettingErrorPopUp()),
+          //toggleable ui state
+          ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
+          ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
+          ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
+          ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
+          ChangeNotifierProvider(create: (_) => LogoutLoading()),
+          ChangeNotifierProvider(create: (_) => PermissionErrorPopUp()),
+          ChangeNotifierProvider(create: (_) => OpenSettingErrorPopUp()),
 
-        ChangeNotifierProvider(create: (_) => TransientMessageService()),
-      ],
-      child: const MyApp(),
+          ChangeNotifierProvider(create: (_) => TransientMessageService()),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -212,7 +250,7 @@ class MainScaffold extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child:  SafeArea(
+      child: SafeArea(
         child: Stack(
           children: [
             Scaffold(
@@ -280,13 +318,14 @@ class MainScaffold extends StatelessWidget {
                   onButtonPressed: () {
                     context.read<LogoutLoading>().open();
                     context.read<AuthViewModel>().logout();
-                    context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+                    context.read<UserViewModel>().setState(
+                      UserLoadUnauthenticated(),
+                    );
                     context.read<LogoutLoading>().close();
                     context.read<TransientMessageService>().showMessage(
                       context,
-                      "Logout Berhasil"
+                      "Logout Berhasil",
                     );
-                  
                   },
                 ),
                 ButtonModalModel(
@@ -303,9 +342,8 @@ class MainScaffold extends StatelessWidget {
             ),
           ],
         ),
-      )
+      ),
     );
-    
   }
 
   Widget _buildMainContent() {

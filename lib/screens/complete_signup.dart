@@ -18,7 +18,6 @@ import 'package:permission_handler/permission_handler.dart' as app_settings;
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class CompleteUserSignUp extends StatefulWidget {
   const CompleteUserSignUp({super.key});
   @override
@@ -30,14 +29,14 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
   final ErrorPopUpController errorController = ErrorPopUpController();
   final ErrorPopUpController permissionController = ErrorPopUpController();
   final ErrorPopUpController appSettingErrorController = ErrorPopUpController();
-  final ErrorPopUpController imageSizeTooBigErrorController = ErrorPopUpController();
+  final ErrorPopUpController imageSizeTooBigErrorController =
+      ErrorPopUpController();
   final ImagePicker _picker = ImagePicker();
 
-  
   bool _isLoading = false;
   bool _isFormValid = true;
   File? _selectedImage;
-  
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -46,20 +45,21 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
     super.initState();
     _fullNameController.addListener(_updateFormValidity);
   }
-  
+
   @override
   void dispose() {
     _fullNameController.removeListener(_updateFormValidity);
     _fullNameController.dispose();
     super.dispose();
   }
-  
+
   void _updateFormValidity() {
     setState(() {
-      _isFormValid = Validation.validateFullName(_fullNameController.text) == null;
+      _isFormValid =
+          Validation.validateFullName(_fullNameController.text) == null;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,38 +70,55 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
             Column(
               children: [
                 roundedCard(
-                  padding: EdgeInsetsGeometry.symmetric(vertical: 20, horizontal: 20),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
                         width: 50,
                         child: IconButton(
-                            icon: Icon(
-                              LucideIcons.house,
-                              color: !_isLoading ? Colors.white : AppColors.textSecondary
-                              ),
-                            onPressed: !_isLoading ? () => context.replace(AppRoutes.home.path) : null, 
-                            iconSize: 26,
-                          )
+                          icon: Icon(
+                            LucideIcons.house,
+                            color:
+                                !_isLoading
+                                    ? Colors.white
+                                    : AppColors.textSecondary,
+                          ),
+                          onPressed:
+                              !_isLoading
+                                  ? () => context.replace(AppRoutes.home.path)
+                                  : null,
+                          iconSize: 26,
+                        ),
                       ),
                       Text(
                         'Lengkapi Profil',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
-                      if(_isLoading) CircularProgressIndicator(color: Colors.white,)
-                      else 
+                      if (_isLoading)
+                        CircularProgressIndicator(color: Colors.white)
+                      else
                         SizedBox(
                           width: 50,
                           child: IconButton(
-                              icon: Icon(
-                                LucideIcons.check,
-                                color: _isFormValid && !_isLoading ? Colors.white : AppColors.textSecondary
-                              ),
-                              onPressed: _isFormValid && !_isLoading ? () => _handleSave(context) : null, 
-                            )
-                        )
+                            icon: Icon(
+                              LucideIcons.check,
+                              color:
+                                  _isFormValid && !_isLoading
+                                      ? Colors.white
+                                      : AppColors.textSecondary,
+                            ),
+                            onPressed:
+                                _isFormValid && !_isLoading
+                                    ? () => _handleSave(context)
+                                    : null,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -129,10 +146,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
               defaultSubtitle: "Terjadi Kesalahan Tak terduga",
               controller: errorController,
               buttonList: [
-                ButtonModalModel(
-                  text: "Ok",
-                  onButtonPressed: () {},
-                )
+                ButtonModalModel(text: "Ok", onButtonPressed: () {}),
               ],
             ),
             ErrorPopUpModal(
@@ -140,10 +154,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
               defaultSubtitle: "Terjadi Kesalahan Tak terduga",
               controller: appSettingErrorController,
               buttonList: [
-                ButtonModalModel(
-                  text: "Ok",
-                  onButtonPressed: () {},
-                )
+                ButtonModalModel(text: "Ok", onButtonPressed: () {}),
               ],
             ),
             ErrorPopUpModal(
@@ -151,10 +162,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
               defaultSubtitle: "Terjadi Kesalahan Tak terduga",
               controller: imageSizeTooBigErrorController,
               buttonList: [
-                ButtonModalModel(
-                  text: "Ok",
-                  onButtonPressed: () {},
-                )
+                ButtonModalModel(text: "Ok", onButtonPressed: () {}),
               ],
             ),
             ErrorPopUpModal(
@@ -167,9 +175,10 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
                   onButtonPressed: () {
                     try {
                       app_settings.openAppSettings();
-                    } 
-                    catch (e) {
-                      appSettingErrorController.open("terdapat Kesalahan saat membuka setting : ${e.toString()}");
+                    } catch (e) {
+                      appSettingErrorController.open(
+                        "terdapat Kesalahan saat membuka setting : ${e.toString()}",
+                      );
                     }
                   },
                 ),
@@ -188,7 +197,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
       ),
     );
   }
-  
+
   Widget _buildProfileSection() {
     return Column(
       children: [
@@ -202,25 +211,23 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey.shade200,
-                  border: Border.all(
-                    color: Colors.grey.shade300,
-                    width: 2,
-                  ),
+                  border: Border.all(color: Colors.grey.shade300, width: 2),
                 ),
-                child: _selectedImage != null
-                    ? ClipOval(
-                        child: Image.file(
-                          _selectedImage!,
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
+                child:
+                    _selectedImage != null
+                        ? ClipOval(
+                          child: Image.file(
+                            _selectedImage!,
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                        : const Icon(
+                          Icons.person,
+                          size: 60,
+                          color: Colors.grey,
                         ),
-                      )
-                    : const Icon(
-                        Icons.person,
-                        size: 60,
-                        color: Colors.grey,
-                      ),
               ),
               Positioned(
                 bottom: 0,
@@ -231,10 +238,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.primary,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2,
-                    ),
+                    border: Border.all(color: Colors.white, width: 2),
                   ),
                   child: Icon(
                     _selectedImage != null ? Icons.edit : Icons.camera_alt,
@@ -249,7 +253,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
       ],
     );
   }
-  
+
   Widget _buildTitle() {
     return const Column(
       children: [
@@ -275,7 +279,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
       ],
     );
   }
-  
+
   Widget _buildFormField() {
     return CustomTextField(
       controller: _fullNameController,
@@ -284,50 +288,54 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
       validator: Validation.validateFullName,
     );
   }
-  
+
   Future<void> _handleSave(BuildContext context) async {
     setState(() => _isLoading = true);
-    
+
     final fullName = _fullNameController.text.trim();
     final hasFullName = fullName.isNotEmpty;
     final hasImage = _selectedImage != null;
-    
+
     if (!hasFullName && !hasImage) {
       setState(() => _isLoading = false);
       if (context.mounted) {
         context.replace(AppRoutes.home.path);
         context.read<TransientMessageService>().showMessage(
           context,
-          "Tidak ada perubahan profil"
+          "Tidak ada perubahan profil",
         );
       }
       return;
     }
-    
+
     SuccessOrFail result = Success("OK");
-    
+
     try {
       if (hasImage) {
-        result = await context.read<UserViewModel>().updatePhoto(imageFile: _selectedImage!);
+        result = await context.read<UserViewModel>().updatePhoto(
+          imageFile: _selectedImage!,
+        );
         if (result is Failure) {
           _showError(result.reason);
           return;
         }
       }
-      
+
       if (hasFullName) {
         if (context.mounted) {
-          result = await context.read<UserViewModel>().updateFullName(fullName: fullName);
+          result = await context.read<UserViewModel>().updateFullName(
+            fullName: fullName,
+          );
         }
         if (result is Failure) {
           _showError(result.reason);
           return;
         }
       }
-      
+
       if (context.mounted) {
         context.replace(AppRoutes.home.path);
-        
+
         String message = "";
         if (hasFullName && hasImage) {
           message = "Profil dan foto berhasil diperbarui";
@@ -336,17 +344,16 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
         } else if (hasImage) {
           message = "Foto profil berhasil diperbarui";
         }
-        
+
         context.read<TransientMessageService>().showMessage(context, message);
       }
-      
     } catch (e) {
       _showError("Terjadi kesalahan: ${e.toString()}");
     } finally {
       setState(() => _isLoading = false);
     }
   }
-  
+
   void _showError(String reason) {
     errorController.open(reason);
     setState(() => _isLoading = false);
@@ -396,7 +403,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
   Future<void> _requestPermissionAndPickImage(ImageSource source) async {
     Permission permission;
     String permissionName;
-    
+
     if (source == ImageSource.camera) {
       permission = Permission.camera;
       permissionName = "kamera";
@@ -418,9 +425,9 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
       }
       permissionName = "galeri";
     }
-    
+
     final status = await permission.request();
-    
+
     switch (status) {
       case PermissionStatus.granted:
         _pickImage(source);
@@ -435,7 +442,6 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
     }
   }
 
-
   void _showPermissionPermanentlyDeniedDialog(String permissionName) {
     permissionController.open(
       'Izin $permissionName telah ditolak secara permanen. Silakan aktifkan izin melalui pengaturan aplikasi.',
@@ -448,15 +454,17 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
       bool isImageValid = true;
       if (image != null) {
         final int sizeInBytes = await image.length();
-        const int maxSizeInBytes = 5 * 1024 * 1024; 
+        const int maxSizeInBytes = 5 * 1024 * 1024;
         isImageValid = sizeInBytes <= maxSizeInBytes;
       }
 
       if (!isImageValid) {
-        imageSizeTooBigErrorController.open("File Gambar terlalu besar, gambar harus kurang dari 5MB");
+        imageSizeTooBigErrorController.open(
+          "File Gambar terlalu besar, gambar harus kurang dari 5MB",
+        );
         return;
       }
-      
+
       if (image != null) {
         setState(() {
           _selectedImage = File(image.path);

@@ -8,7 +8,13 @@ class SurahInfoDto {
   final int totalAyah;
   final String place;
 
-  SurahInfoDto(this.name, this.nameLatin, this.totalAyah, this.place, this.number);
+  SurahInfoDto(
+    this.name,
+    this.nameLatin,
+    this.totalAyah,
+    this.place,
+    this.number,
+  );
 
   factory SurahInfoDto.fromEntity(SurahData entity) {
     return SurahInfoDto(
@@ -16,7 +22,7 @@ class SurahInfoDto {
       entity.nameLatin,
       entity.totalAyah,
       entity.place,
-      entity.id, 
+      entity.id,
     );
   }
 }
@@ -28,23 +34,33 @@ class AyahWithTranslation {
 
   AyahWithTranslation(this.number, this.arabText, this.translationText);
   factory AyahWithTranslation.fromEntity(AyahData entity) {
-    return AyahWithTranslation(entity.ayahNumber, entity.ayahText, entity.indoText);
-
+    return AyahWithTranslation(
+      entity.ayahNumber,
+      entity.ayahText,
+      entity.indoText,
+    );
   }
 }
 
 class SurahWithAyahDto {
   final int number;
-  final String arabname; 
+  final String arabname;
   final String nameLatin;
   final String nameIndo;
   final List<AyahWithTranslation> ayahs;
 
-  SurahWithAyahDto(this.number,this.arabname, this.nameLatin, this.nameIndo, this.ayahs,);
+  SurahWithAyahDto(
+    this.number,
+    this.arabname,
+    this.nameLatin,
+    this.nameIndo,
+    this.ayahs,
+  );
 }
 
 class AyahWithSurahDto {
   final int number;
+  final String audioLink;
   final int juzNumber;
   final int surahNumber;
   final String surahName;
@@ -57,6 +73,7 @@ class AyahWithSurahDto {
 
   const AyahWithSurahDto(
     this.number,
+    this.audioLink,
     this.juzNumber,
     this.surahNumber,
     this.surahName,
@@ -71,6 +88,7 @@ class AyahWithSurahDto {
   factory AyahWithSurahDto.fromEntity(AyahWithSurah entity) {
     return AyahWithSurahDto(
       entity.ayah.ayahNumber,
+      entity.ayah.audioLink,
       entity.ayah.juz,
       entity.surah.id,
       entity.surah.name,
@@ -89,5 +107,10 @@ class SurahParameter {
   final int startSurahAyah;
   final int endSurahId;
   final int endSurahAyah;
-  SurahParameter(this.startSurahId, this.startSurahAyah, this.endSurahId, this.endSurahAyah);
+  SurahParameter(
+    this.startSurahId,
+    this.startSurahAyah,
+    this.endSurahId,
+    this.endSurahAyah,
+  );
 }

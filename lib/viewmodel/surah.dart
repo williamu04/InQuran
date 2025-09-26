@@ -1,17 +1,117 @@
 import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
+import 'package:mtqmnuns/services/audio_player.dart';
 import 'package:mtqmnuns/state/surah.dart';
 import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 
 
 class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   final AyahRepository _ayahRepo;
+  final AudioPlayerService _audioPlayer = AudioPlayerService();
 
-  SurahViewModel(this._ayahRepo) : super(SurahLoading());
+  SurahViewModel(this._ayahRepo) : super(SurahLoading()) {
+      _audioPlayer.addPlayerCompleteListener(() {
+      onAudioComplete();
+    });
 
-  void _updateSuccess(List<AyahWithSurahDto> ayahs,
-      {String? warning, int? jumpIndex}) {
-    setState(SurahSuccess(ayahs, warning: warning, jumpIndex: jumpIndex));
+    _audioPlayer.addPlayerStateListener((isPlaying) {
+      if (state is SurahSuccess) {
+        final current = state as SurahSuccess;
+        _updateSuccess(
+          current.ayahs,
+          playingIndex: current.playingIndex,
+          isPlaying: isPlaying,
+        );
+      }
+    });
+  }
+
+  void _updateSuccess(
+    List<AyahWithSurahDto> ayahs, {
+    String? warning,
+    int? jumpIndex,
+    int? playingIndex,
+    bool? isPlaying,
+  }) {
+    if (state is SurahSuccess) {
+      final currentState = state as SurahSuccess;
+      setState(
+        currentState.copyWith(
+          ayahs: ayahs,
+          warning: warning,
+          jumpIndex: jumpIndex,
+          playingIndex: playingIndex,
+          isPlaying: isPlaying ?? currentState.isPlaying,
+        ),
+      );
+    } else {
+      setState(
+        SurahSuccess(
+          ayahs,
+          warning: warning,
+          jumpIndex: jumpIndex,
+          playingIndex: playingIndex,
+          isPlaying: isPlaying ?? false,
+        ),
+      );
+    }
+  }
+
+  Future<void> togglePlayback(int index) async {
+    if (state is! SurahSuccess) return;
+    final currentState = state as SurahSuccess;
+
+    if (currentState.playingIndex == index) {
+      if (currentState.isPlaying) {
+        await _audioPlayer.pause();
+        _updateSuccess(
+          currentState.ayahs,
+          playingIndex: index,
+          isPlaying: false,
+        );
+      } else {
+        await _audioPlayer.resume();
+        _updateSuccess(
+          currentState.ayahs,
+          playingIndex: index,
+          isPlaying: true,
+        );
+      }
+    } else {
+      // Ganti ke ayat baru
+      final ayah = currentState.ayahs[index];
+      await _audioPlayer.play(ayah.audioLink);
+      _updateSuccess(currentState.ayahs, playingIndex: index, isPlaying: true);
+    }
+    // tidak perlu notifyListeners() karena setState sudah handle
+  }
+
+  /// Callback saat audio selesai
+  bool _isHandlingComplete = false;
+
+  void onAudioComplete() {
+    if (_isHandlingComplete) return;
+    _isHandlingComplete = true;
+    if (state is! SurahSuccess) return;
+    final currentState = state as SurahSuccess;
+    final currentIndex = currentState.playingIndex;
+
+    if (currentIndex == null || currentIndex >= currentState.ayahs.length - 1) {
+      // Stop playback kalau sudah ayat terakhir
+      _updateSuccess(currentState.ayahs, playingIndex: null, isPlaying: false);
+    } else {
+      // Lanjut ke ayat berikutnya
+      final nextIndex = currentIndex + 1;
+      final nextAyah = currentState.ayahs[nextIndex];
+
+      _audioPlayer.play(nextAyah.audioLink);
+      _updateSuccess(
+        currentState.ayahs,
+        playingIndex: nextIndex,
+        isPlaying: true,
+      );
+    }
+    _isHandlingComplete = false;
   }
 
   Future<void> loadSurah(
@@ -233,4 +333,5 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
       setState(SurahError(e.toString()));
     }
   }
+
 }
