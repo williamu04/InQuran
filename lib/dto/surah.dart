@@ -60,6 +60,7 @@ class SurahWithAyahDto {
 
 class AyahWithSurahDto {
   final int number;
+  final String audioLink;
   final int juzNumber;
   final int surahNumber;
   final String surahName;
@@ -69,11 +70,9 @@ class AyahWithSurahDto {
   final String translationText;
   final int totalAyah;
 
-  String get audioLink =>
-      ('https://api.alquran.cloud/v1/ayah/${surahNumber}:$number/ar.alafasy');
-
   const AyahWithSurahDto(
     this.number,
+    this.audioLink,
     this.juzNumber,
     this.surahNumber,
     this.surahName,
@@ -87,6 +86,7 @@ class AyahWithSurahDto {
   factory AyahWithSurahDto.fromEntity(AyahWithSurah entity) {
     return AyahWithSurahDto(
       entity.ayah.ayahNumber,
+      entity.ayah.audioLink,
       entity.ayah.juz,
       entity.surah.id,
       entity.surah.name,

@@ -1,16 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioPlayerService {
-  final AudioPlayer _player;
-
-  AudioPlayerService._() : _player = AudioPlayer();
-
-  static final AudioPlayerService _instance = AudioPlayerService._();
-
-  factory AudioPlayerService() {
-    return _instance;
-  }
+  final AudioPlayer _player = AudioPlayer();
 
   Future<void> play(String url) async {
     try {
@@ -40,15 +34,29 @@ class AudioPlayerService {
 
   Stream<PlayerState> get playerStateStream => _player.playerStateStream;
 
-  Future<void> dispose() async {
-    await _player.dispose();
-  }
+  StreamSubscription<PlayerState>? _completeSub;
 
   Future<void> addPlayerCompleteListener(void Function() onComplete) async {
-    _player.playerStateStream.listen((state) {
+    await _completeSub?.cancel(); // pastikan tidak double
+
+    _completeSub = _player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         onComplete();
       }
+    });
+  }
+
+  Future<void> dispose() async {
+    await _completeSub?.cancel();
+    await _player.dispose();
+  }
+
+  /// Listener untuk perubahan status play/pause
+  Future<void> addPlayerStateListener(
+    void Function(bool isPlaying) onStateChanged,
+  ) async {
+    _player.playerStateStream.listen((state) {
+      onStateChanged(state.playing);
     });
   }
 }

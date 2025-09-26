@@ -10,8 +10,21 @@ class SurahDetailViewModel extends StatefulViewModel<SurahDetailState> {
   final AudioPlayerService _audioPlayer = AudioPlayerService();
 
   SurahDetailViewModel(this._ayahRepo) : super(SurahLoading()) {
+    // Listener ketika audio selesai
     _audioPlayer.addPlayerCompleteListener(() {
       onAudioComplete();
+    });
+
+    // Listener untuk sinkronisasi status play/pause
+    _audioPlayer.addPlayerStateListener((isPlaying) {
+      if (state is SurahSuccess) {
+        final current = state as SurahSuccess;
+        _updateSuccess(
+          current.ayahs,
+          playingIndex: current.playingIndex,
+          isPlaying: isPlaying,
+        );
+      }
     });
   }
 
@@ -60,48 +73,63 @@ class SurahDetailViewModel extends StatefulViewModel<SurahDetailState> {
     }
   }
 
+  /// Play / Pause / Resume ayat tertentu
   Future<void> togglePlayback(int index) async {
     if (state is! SurahSuccess) return;
     final currentState = state as SurahSuccess;
 
     if (currentState.playingIndex == index) {
-      // Toggle play/pause for the same ayah
+      // Toggle play/pause untuk ayat yang sama
       if (currentState.isPlaying) {
         await _audioPlayer.pause();
+        _updateSuccess(
+          currentState.ayahs,
+          playingIndex: index,
+          isPlaying: false,
+        );
       } else {
         await _audioPlayer.resume();
+        _updateSuccess(
+          currentState.ayahs,
+          playingIndex: index,
+          isPlaying: true,
+        );
       }
-      _updateSuccess(
-        currentState.ayahs,
-        playingIndex: index,
-        isPlaying: !currentState.isPlaying,
-      );
     } else {
-      // Start playing a new ayah
+      // Ganti ke ayat baru
       final ayah = currentState.ayahs[index];
-      await _audioPlayer.play(
-        ayah.audioLink,
-      ); // Access the audio link correctly
+      await _audioPlayer.play(ayah.audioLink);
       _updateSuccess(currentState.ayahs, playingIndex: index, isPlaying: true);
     }
+    // tidak perlu notifyListeners() karena setState sudah handle
   }
 
+  /// Callback saat audio selesai
+  bool _isHandlingComplete = false;
+
   void onAudioComplete() {
+    if (_isHandlingComplete) return;
+    _isHandlingComplete = true;
     if (state is! SurahSuccess) return;
     final currentState = state as SurahSuccess;
     final currentIndex = currentState.playingIndex;
 
     if (currentIndex == null || currentIndex >= currentState.ayahs.length - 1) {
-      // Stop playback if we're at the end
+      // Stop playback kalau sudah ayat terakhir
       _updateSuccess(currentState.ayahs, playingIndex: null, isPlaying: false);
     } else {
-      // Move to next ayah
+      // Lanjut ke ayat berikutnya
+      final nextIndex = currentIndex + 1;
+      final nextAyah = currentState.ayahs[nextIndex];
+
+      _audioPlayer.play(nextAyah.audioLink);
       _updateSuccess(
         currentState.ayahs,
-        playingIndex: currentIndex + 1,
+        playingIndex: nextIndex,
         isPlaying: true,
       );
     }
+    _isHandlingComplete = false;
   }
 
   Future<void> loadSurah(
