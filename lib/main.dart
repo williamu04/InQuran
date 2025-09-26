@@ -32,7 +32,6 @@ import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
 import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
-import 'package:mtqmnuns/viewmodel/mushaf.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
@@ -120,10 +119,7 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create:
-              (context) => SurahDetailViewModel(context.read<AyahRepository>()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => MushafViewModel(context.read<AyahRepository>()),
+              (context) => SurahViewModel(context.read<AyahRepository>()),
         ),
         ChangeNotifierProvider(
           create:

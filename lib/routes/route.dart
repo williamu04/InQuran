@@ -127,7 +127,7 @@ class AppRoutes {
         child: SurahScreen(queryParam: state.uri.queryParameters),
       );
     },
-    isHasBottomBar: true,
+    isHasBottomBar: false,
   );
 
   static final duas = AppRoute(

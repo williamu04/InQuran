@@ -53,6 +53,7 @@ class AyahWithSurahDto {
   final String arabText;
   final String translationText;
   final int totalAyah;
+  final int page;
 
   const AyahWithSurahDto(
     this.number,
@@ -64,6 +65,7 @@ class AyahWithSurahDto {
     this.arabText,
     this.translationText,
     this.totalAyah,
+    this.page
   );
 
   factory AyahWithSurahDto.fromEntity(AyahWithSurah entity) {
@@ -76,7 +78,8 @@ class AyahWithSurahDto {
       entity.surah.nameIndo,
       entity.ayah.ayahText,
       entity.ayah.indoText,
-      entity.surah.totalAyah
+      entity.surah.totalAyah,
+      entity.ayah.page
     );
   }
 }

@@ -19,8 +19,8 @@ class SurahScreen extends StatefulWidget {
 }
 
 class _SurahScreenState extends State<SurahScreen> {
-  String title = '';
-  LoadType? loadType;
+  String title = 'Membaca Al-Quran';
+  LoadType loadType = LoadType.surah;
   bool isLoading = true; 
 
   @override
@@ -39,24 +39,24 @@ class _SurahScreenState extends State<SurahScreen> {
         loadType = LoadType.surah;
       }
 
-      if (startSurahId == null || startSurahAyah == null || endSurahId == null || endSurahAyah == null || loadType == null) {
+      if (startSurahId == null || startSurahAyah == null || endSurahId == null || endSurahAyah == null) {
         throw ArgumentError('Invalid or missing query parameters for SurahScreen');
       }
 
       if (!mounted) return;
       final quranMode = context.read<GlobalConfig>().quranMode;
       if (quranMode == QuranMode.normal || quranMode == QuranMode.memorize) {
-        context.read<SurahDetailViewModel>().loadSurah(
+        context.read<SurahViewModel>().loadSurah(
           startSurahId,
           startSurahAyah,
           endSurahId,
           endSurahAyah,
         );
+      } else {
+        context.read<SurahViewModel>().loadAyahsInPageOf(startSurahId, startSurahAyah);
       }
 
-
       setState(() {
-        title = "Membaca Al-Qur'an";
         isLoading = false; 
       });
     });
@@ -81,17 +81,32 @@ class _SurahScreenState extends State<SurahScreen> {
         Expanded(
           child: Consumer<GlobalConfig>(
             builder: (context, config, _) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                switch (config.quranMode) {
+                  case QuranMode.mushaf:
+                    title = "Membaca Al-Qur'an";
+                    break;
+                  case QuranMode.normal:
+                    title = "Mushaf Mode";
+                    break;
+                  case QuranMode.memorize:
+                    title = "Memorize Mode";
+                    break;
+                }
+              });
+
               if (config.quranMode == QuranMode.mushaf) {
-                return const MushafSurahScreen();
-              } else if(config.quranMode == QuranMode.normal){
-                return NormalSurahScreen(loadType: loadType!);
+                return MushafSurahScreen();
+              } else if (config.quranMode == QuranMode.normal) {
+                return NormalSurahScreen(loadType: loadType);
               } else {
-                return NormalSurahScreen(loadType: loadType!, memorize: true,);
+                return NormalSurahScreen(loadType: loadType, memorize: true);
               }
             },
           ),
         ),
-      ],
-    );
-  }
-}
+            ],
+          );
+        }
+      }

@@ -53,22 +53,22 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
     super.dispose();
   }
 
-  Future<void> _loadTop(SurahDetailViewModel vm) async {
+  Future<void> _loadTop(SurahViewModel vm) async {
     if (_isTopLoading) return;
 
     setState(() => _isTopLoading = true);
     _bounceController.forward();
 
     await switch (widget.loadType) {
-      LoadType.surah => vm.preppendBySurah(),
-      LoadType.juz => vm.preppendByJuz(),
+      LoadType.surah => vm.prependBySurah(),
+      LoadType.juz => vm.prependByJuz(),
     };
 
     await Future.delayed(const Duration(milliseconds: 300));
     if (mounted) _resetPullAnimation();
   }
 
-  Future<void> _loadBottom(SurahDetailViewModel vm) async {
+  Future<void> _loadBottom(SurahViewModel vm) async {
     if (_isBottomLoading) return;
     setState(() => _isBottomLoading = true);
 
@@ -95,7 +95,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
 
   bool _handleOverscroll(
     OverscrollNotification overscroll,
-    SurahDetailViewModel vm,
+    SurahViewModel vm,
   ) {
     if (_isTopLoading || _isBottomLoading) return false;
 
@@ -127,7 +127,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SurahDetailViewModel>(
+    return Consumer<SurahViewModel>(
       builder: (context, vm, child) {
         final state = vm.state;
 

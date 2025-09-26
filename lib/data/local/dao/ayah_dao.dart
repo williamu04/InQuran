@@ -179,5 +179,74 @@ class AyahDao extends DatabaseAccessor<AppDatabase> with _$AyahDaoMixin {
     
     return results.reversed.toList();
   }
+
+  Future<List<AyahWithSurah>> getAyahsByPage(int pageNumber) async {
+    final query = select(surah).join([
+      innerJoin(ayah, ayah.surahId.equalsExp(surah.id)),
+    ])
+      ..where(ayah.page.equals(pageNumber))
+      ..orderBy([
+        OrderingTerm(expression: surah.id),
+        OrderingTerm(expression: ayah.ayahNumber),
+      ]);
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      return AyahWithSurah(
+        surah: row.readTable(surah),
+        ayah: row.readTable(ayah),
+      );
+    }).toList();
+  }
+
+  Future<List<AyahWithSurah>> getPageBySurahAndAyah(int surahId, int ayahNumber) async {
+    final pageRow = await (selectOnly(ayah)
+          ..addColumns([ayah.page])
+          ..where(ayah.surahId.equals(surahId) & ayah.ayahNumber.equals(ayahNumber)))
+        .getSingleOrNull();
+
+    if (pageRow == null) {
+      return [];
+    }
+
+    final page = pageRow.read(ayah.page);
+
+    if (page == null) {
+      return [];
+    }
+
+    final query = select(surah).join([
+      innerJoin(ayah, ayah.surahId.equalsExp(surah.id)),
+    ])
+      ..where(ayah.page.equals(page))
+      ..orderBy([
+        OrderingTerm(expression: surah.id),
+        OrderingTerm(expression: ayah.ayahNumber),
+      ]);
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      return AyahWithSurah(
+        surah: row.readTable(surah),
+        ayah: row.readTable(ayah),
+      );
+    }).toList();
+  }
+
+
+  Future<List<AyahWithSurah>> getFirstPageByJuz(int juzNumber) async {
+    final firstPageRow = await (selectOnly(ayah)
+          ..addColumns([ayah.page.min()])
+          ..where(ayah.juz.equals(juzNumber)))
+        .getSingle();
+
+    final firstPage = firstPageRow.read(ayah.page.min());
+    if (firstPage == null) return [];
+
+    return getAyahsByPage(firstPage);
+  }
+
 }
 

@@ -10,6 +10,7 @@ class Ayah extends Table {
   IntColumn get juz => integer()();
   IntColumn get ayahNumber => integer()();
   TextColumn get audioLink => text()();
+  IntColumn get page => integer()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

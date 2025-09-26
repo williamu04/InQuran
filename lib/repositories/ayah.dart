@@ -72,13 +72,7 @@ class AyahRepository {
     }
 
     await _validateAyahExists(startSurahId, startAyahNumber, "Start ayah not found");
-
-    final entities = await _ayahDao.getNextAyahsFromPosition(
-      startSurahId, 
-      startAyahNumber, 
-      count
-    );
-    
+    final entities = await _ayahDao.getNextAyahsFromPosition(startSurahId, startAyahNumber, count);
     return entities.map((entity) => AyahWithSurahDto.fromEntity(entity)).toList();
   }
 
@@ -92,15 +86,35 @@ class AyahRepository {
     }
 
     await _validateAyahExists(endSurahId, endAyahNumber, "End ayah not found");
-
-    final entities = await _ayahDao.getPreviousAyahsBeforePosition(
-      endSurahId, 
-      endAyahNumber, 
-      count
-    );
-    
+    final entities = await _ayahDao.getPreviousAyahsBeforePosition(endSurahId, endAyahNumber, count);
     return entities.map((entity) => AyahWithSurahDto.fromEntity(entity)).toList();
   }
 
+  Future<List<AyahWithSurahDto>> getAyahsByPage(int pageNumber) async {
+    if (pageNumber < 1 || pageNumber > 604) {
+      throw Exception("Invalid page number (400)");
+    }
+
+    final entities = await _ayahDao.getAyahsByPage(pageNumber);
+    return entities.map((entity) => AyahWithSurahDto.fromEntity(entity)).toList();
+  }
+
+  Future<List<AyahWithSurahDto>> getAyahsInPageOf(int surahId, int ayahNumber) async {
+    if (surahId < 1 || surahId > 114) {
+      throw Exception("Invalid surah id (400)");
+    }
+    await _validateAyahExists(surahId, ayahNumber, "Start ayah not found");
+    final entities = await _ayahDao.getPageBySurahAndAyah(surahId, ayahNumber);
+    return entities.map((entity) => AyahWithSurahDto.fromEntity(entity)).toList();
+  }
+
+  Future<List<AyahWithSurahDto>> getAyahsByFirstJuzPage(int juzNumber) async {
+    if (juzNumber < 1 || juzNumber > 30) {
+      throw Exception("Invalid juz number (400)");
+    }
+
+    final entities = await _ayahDao.getFirstPageByJuz(juzNumber);
+    return entities.map((entity) => AyahWithSurahDto.fromEntity(entity)).toList();
+  }
 
 }
