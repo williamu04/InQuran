@@ -24,7 +24,7 @@ class _SurahListScreenState extends State<SurahListScreen> {
         children: [
           TopBarUtility.buildPurpleTitleTopbar(
             context: context,
-            title: "Baca Al-Qur\'an",
+            title: "Baca Al-Qur'an",
           ),
           Expanded(
             child: Container(

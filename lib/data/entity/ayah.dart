@@ -11,6 +11,7 @@ class Ayah extends Table {
   IntColumn get ayahNumber => integer()();
   TextColumn get audioLink => text()();
   IntColumn get page => integer()();
+  BoolColumn get favorite => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

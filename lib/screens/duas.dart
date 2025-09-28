@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
@@ -25,6 +26,11 @@ class DuasScreen extends StatelessWidget {
           children: [
             // 🔹 Topbar
             TopBarUtility.buildPurpleTitleTopbar(
+              leftIcon: TopBarIconModel(
+                icon: LucideIcons.arrowLeft,
+                onPressed: () => context.pop(),
+                color: Colors.grey,
+              ),
               context: context,
               title: "Koleksi Doa-Doa",
             ),

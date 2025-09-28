@@ -27,7 +27,7 @@ class HomeMenuItem {
 
 class MainHomeScreen extends StatelessWidget {
   const MainHomeScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     HomeMenuItem topItem = HomeMenuItem(
@@ -58,7 +58,7 @@ class MainHomeScreen extends StatelessWidget {
       ),
       HomeMenuItem(
         title: "Favorit",
-        icon: LucideIcons.bookMarked,
+        icon: LucideIcons.bookHeart,
         buttonColor: const Color(0xFF672CBC),
         action: () => context.authPush(AppRoutes.favorites.path),
       ),
@@ -132,7 +132,7 @@ class MainHomeScreen extends StatelessWidget {
                           Consumer<UserViewModel>(
                             builder: (context, vm, child) {
                               final state = vm.state;
-                              Text usernameWidget(String username){
+                              Text usernameWidget(String username) {
                                 return Text(
                                   username,
                                   style: TextStyle(
@@ -143,15 +143,17 @@ class MainHomeScreen extends StatelessWidget {
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 );
+                              }
 
-                              } 
                               switch (state) {
                                 case UserLoadLoading():
                                   return usernameWidget("Loading..");
                                 case UserLoadUnauthenticated():
                                   return usernameWidget("Sebelas Maret");
                                 case UserLoaded(:final user):
-                                  return usernameWidget(user.fullName ?? user.username);
+                                  return usernameWidget(
+                                    user.fullName ?? user.username,
+                                  );
                               }
                             },
                           ),

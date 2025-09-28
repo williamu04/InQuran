@@ -108,7 +108,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
 
                 double angle = diff * (pi / 180);
 
-                double radius = 100;
+                double radius = 120;
                 double x = radius * sin(angle);
                 double y = -radius * cos(angle);
 
@@ -172,8 +172,8 @@ class QiblaCompass extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Container(
-          width: 250,
-          height: 250,
+          width: 300,
+          height: 300,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
@@ -190,7 +190,7 @@ class QiblaCompass extends StatelessWidget {
             ],
           ),
         ),
-        Icon(LucideIcons.navigation2, size: 100, color: Colors.white),
+        Image.asset("assets/img/arrow.png", height: 160, fit: BoxFit.contain),
         Transform.translate(
           offset: Offset(x, y),
           child: const Icon(
@@ -215,7 +215,7 @@ class QiblaCaption extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24.0, left: 40, right: 40),
       child: Text(
         isFacingQibla
-            ? "Anda sudah menghadap ke arah kiblat"
+            ? "Anda menghadap ke arah kiblat"
             : "Putar ponsel Anda hingga panah menghadap target untuk menghadap ke arah kiblat",
         textAlign: TextAlign.center,
         style: const TextStyle(

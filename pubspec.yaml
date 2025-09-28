@@ -99,6 +99,8 @@ flutter:
     - assets/img/basmala.png
     - assets/img/logoSplashScreen.png
     - assets/img/google-logo.png
+    - assets/img/heart.png
+    - assets/img/arrow.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

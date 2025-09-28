@@ -553,6 +553,21 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _favoriteMeta = const VerificationMeta(
+    'favorite',
+  );
+  @override
+  late final GeneratedColumn<bool> favorite = GeneratedColumn<bool>(
+    'favorite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("favorite" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -564,6 +579,7 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
     ayahNumber,
     audioLink,
     page,
+    favorite,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -644,6 +660,12 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
     } else if (isInserting) {
       context.missing(_pageMeta);
     }
+    if (data.containsKey('favorite')) {
+      context.handle(
+        _favoriteMeta,
+        favorite.isAcceptableOrUnknown(data['favorite']!, _favoriteMeta),
+      );
+    }
     return context;
   }
 
@@ -698,6 +720,11 @@ class $AyahTable extends Ayah with TableInfo<$AyahTable, AyahData> {
             DriftSqlType.int,
             data['${effectivePrefix}page'],
           )!,
+      favorite:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}favorite'],
+          )!,
     );
   }
 
@@ -717,6 +744,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
   final int ayahNumber;
   final String audioLink;
   final int page;
+  final bool favorite;
   const AyahData({
     required this.id,
     required this.surahId,
@@ -727,6 +755,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
     required this.ayahNumber,
     required this.audioLink,
     required this.page,
+    required this.favorite,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -740,6 +769,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
     map['ayahNumber'] = Variable<int>(ayahNumber);
     map['audioLink'] = Variable<String>(audioLink);
     map['page'] = Variable<int>(page);
+    map['favorite'] = Variable<bool>(favorite);
     return map;
   }
 
@@ -754,6 +784,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
       ayahNumber: Value(ayahNumber),
       audioLink: Value(audioLink),
       page: Value(page),
+      favorite: Value(favorite),
     );
   }
 
@@ -772,6 +803,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
       ayahNumber: serializer.fromJson<int>(json['ayahNumber']),
       audioLink: serializer.fromJson<String>(json['audioLink']),
       page: serializer.fromJson<int>(json['page']),
+      favorite: serializer.fromJson<bool>(json['favorite']),
     );
   }
   @override
@@ -787,6 +819,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
       'ayahNumber': serializer.toJson<int>(ayahNumber),
       'audioLink': serializer.toJson<String>(audioLink),
       'page': serializer.toJson<int>(page),
+      'favorite': serializer.toJson<bool>(favorite),
     };
   }
 
@@ -800,6 +833,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
     int? ayahNumber,
     String? audioLink,
     int? page,
+    bool? favorite,
   }) => AyahData(
     id: id ?? this.id,
     surahId: surahId ?? this.surahId,
@@ -810,6 +844,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
     ayahNumber: ayahNumber ?? this.ayahNumber,
     audioLink: audioLink ?? this.audioLink,
     page: page ?? this.page,
+    favorite: favorite ?? this.favorite,
   );
   AyahData copyWithCompanion(AyahCompanion data) {
     return AyahData(
@@ -823,6 +858,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
           data.ayahNumber.present ? data.ayahNumber.value : this.ayahNumber,
       audioLink: data.audioLink.present ? data.audioLink.value : this.audioLink,
       page: data.page.present ? data.page.value : this.page,
+      favorite: data.favorite.present ? data.favorite.value : this.favorite,
     );
   }
 
@@ -837,7 +873,8 @@ class AyahData extends DataClass implements Insertable<AyahData> {
           ..write('juz: $juz, ')
           ..write('ayahNumber: $ayahNumber, ')
           ..write('audioLink: $audioLink, ')
-          ..write('page: $page')
+          ..write('page: $page, ')
+          ..write('favorite: $favorite')
           ..write(')'))
         .toString();
   }
@@ -853,6 +890,7 @@ class AyahData extends DataClass implements Insertable<AyahData> {
     ayahNumber,
     audioLink,
     page,
+    favorite,
   );
   @override
   bool operator ==(Object other) =>
@@ -866,7 +904,8 @@ class AyahData extends DataClass implements Insertable<AyahData> {
           other.juz == this.juz &&
           other.ayahNumber == this.ayahNumber &&
           other.audioLink == this.audioLink &&
-          other.page == this.page);
+          other.page == this.page &&
+          other.favorite == this.favorite);
 }
 
 class AyahCompanion extends UpdateCompanion<AyahData> {
@@ -879,6 +918,7 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
   final Value<int> ayahNumber;
   final Value<String> audioLink;
   final Value<int> page;
+  final Value<bool> favorite;
   const AyahCompanion({
     this.id = const Value.absent(),
     this.surahId = const Value.absent(),
@@ -889,6 +929,7 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
     this.ayahNumber = const Value.absent(),
     this.audioLink = const Value.absent(),
     this.page = const Value.absent(),
+    this.favorite = const Value.absent(),
   });
   AyahCompanion.insert({
     this.id = const Value.absent(),
@@ -900,6 +941,7 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
     required int ayahNumber,
     required String audioLink,
     required int page,
+    this.favorite = const Value.absent(),
   }) : surahId = Value(surahId),
        ayahText = Value(ayahText),
        indoText = Value(indoText),
@@ -918,6 +960,7 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
     Expression<int>? ayahNumber,
     Expression<String>? audioLink,
     Expression<int>? page,
+    Expression<bool>? favorite,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -929,6 +972,7 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
       if (ayahNumber != null) 'ayahNumber': ayahNumber,
       if (audioLink != null) 'audioLink': audioLink,
       if (page != null) 'page': page,
+      if (favorite != null) 'favorite': favorite,
     });
   }
 
@@ -942,6 +986,7 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
     Value<int>? ayahNumber,
     Value<String>? audioLink,
     Value<int>? page,
+    Value<bool>? favorite,
   }) {
     return AyahCompanion(
       id: id ?? this.id,
@@ -953,6 +998,7 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
       ayahNumber: ayahNumber ?? this.ayahNumber,
       audioLink: audioLink ?? this.audioLink,
       page: page ?? this.page,
+      favorite: favorite ?? this.favorite,
     );
   }
 
@@ -986,6 +1032,9 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
     if (page.present) {
       map['page'] = Variable<int>(page.value);
     }
+    if (favorite.present) {
+      map['favorite'] = Variable<bool>(favorite.value);
+    }
     return map;
   }
 
@@ -1000,7 +1049,8 @@ class AyahCompanion extends UpdateCompanion<AyahData> {
           ..write('juz: $juz, ')
           ..write('ayahNumber: $ayahNumber, ')
           ..write('audioLink: $audioLink, ')
-          ..write('page: $page')
+          ..write('page: $page, ')
+          ..write('favorite: $favorite')
           ..write(')'))
         .toString();
   }
@@ -1813,6 +1863,7 @@ typedef $$AyahTableCreateCompanionBuilder =
       required int ayahNumber,
       required String audioLink,
       required int page,
+      Value<bool> favorite,
     });
 typedef $$AyahTableUpdateCompanionBuilder =
     AyahCompanion Function({
@@ -1825,6 +1876,7 @@ typedef $$AyahTableUpdateCompanionBuilder =
       Value<int> ayahNumber,
       Value<String> audioLink,
       Value<int> page,
+      Value<bool> favorite,
     });
 
 final class $$AyahTableReferences
@@ -1913,6 +1965,11 @@ class $$AyahTableFilterComposer extends Composer<_$AppDatabase, $AyahTable> {
 
   ColumnFilters<int> get page => $composableBuilder(
     column: $table.page,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get favorite => $composableBuilder(
+    column: $table.favorite,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2013,6 +2070,11 @@ class $$AyahTableOrderingComposer extends Composer<_$AppDatabase, $AyahTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get favorite => $composableBuilder(
+    column: $table.favorite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$SurahTableOrderingComposer get surahId {
     final $$SurahTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2071,6 +2133,9 @@ class $$AyahTableAnnotationComposer
 
   GeneratedColumn<int> get page =>
       $composableBuilder(column: $table.page, builder: (column) => column);
+
+  GeneratedColumn<bool> get favorite =>
+      $composableBuilder(column: $table.favorite, builder: (column) => column);
 
   $$SurahTableAnnotationComposer get surahId {
     final $$SurahTableAnnotationComposer composer = $composerBuilder(
@@ -2158,6 +2223,7 @@ class $$AyahTableTableManager
                 Value<int> ayahNumber = const Value.absent(),
                 Value<String> audioLink = const Value.absent(),
                 Value<int> page = const Value.absent(),
+                Value<bool> favorite = const Value.absent(),
               }) => AyahCompanion(
                 id: id,
                 surahId: surahId,
@@ -2168,6 +2234,7 @@ class $$AyahTableTableManager
                 ayahNumber: ayahNumber,
                 audioLink: audioLink,
                 page: page,
+                favorite: favorite,
               ),
           createCompanionCallback:
               ({
@@ -2180,6 +2247,7 @@ class $$AyahTableTableManager
                 required int ayahNumber,
                 required String audioLink,
                 required int page,
+                Value<bool> favorite = const Value.absent(),
               }) => AyahCompanion.insert(
                 id: id,
                 surahId: surahId,
@@ -2190,6 +2258,7 @@ class $$AyahTableTableManager
                 ayahNumber: ayahNumber,
                 audioLink: audioLink,
                 page: page,
+                favorite: favorite,
               ),
           withReferenceMapper:
               (p0) =>

@@ -4,13 +4,12 @@ import 'package:mtqmnuns/services/audio_player.dart';
 import 'package:mtqmnuns/state/surah.dart';
 import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 
-
 class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   final AyahRepository _ayahRepo;
   final AudioPlayerService _audioPlayer = AudioPlayerService();
 
   SurahViewModel(this._ayahRepo) : super(SurahLoading()) {
-      _audioPlayer.addPlayerCompleteListener(() {
+    _audioPlayer.addPlayerCompleteListener(() {
       onAudioComplete();
     });
 
@@ -146,14 +145,16 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     try {
       if (last.number < last.totalAyah) {
         final newAyahs = await _ayahRepo.getAyahsInRange(
-          startSurahId: last.surahNumber, 
+          startSurahId: last.surahNumber,
           startAyahNumber: last.number + 1,
-          endSurahId: last.surahNumber, 
-          endAyahNumber: last.totalAyah
+          endSurahId: last.surahNumber,
+          endAyahNumber: last.totalAyah,
         );
         _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
       } else {
-        final newAyahs = await _ayahRepo.getAyahsBySurahId(last.surahNumber + 1);
+        final newAyahs = await _ayahRepo.getAyahsBySurahId(
+          last.surahNumber + 1,
+        );
         _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
       }
     } catch (e) {
@@ -174,15 +175,16 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     try {
       if (first.number > 1) {
         final newAyahs = await _ayahRepo.getAyahsInRange(
-          startSurahId: first.surahNumber, 
+          startSurahId: first.surahNumber,
           startAyahNumber: 1,
-          endSurahId: first.surahNumber, 
-          endAyahNumber: first.number - 1 
+          endSurahId: first.surahNumber,
+          endAyahNumber: first.number - 1,
         );
         _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
       } else {
-        final newAyahs =
-            await _ayahRepo.getAyahsBySurahId(first.surahNumber - 1);
+        final newAyahs = await _ayahRepo.getAyahsBySurahId(
+          first.surahNumber - 1,
+        );
         _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
       }
     } catch (e) {
@@ -273,7 +275,12 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   Future<void> loadByPage(int pageNumber) async {
     if (pageNumber < 1 || pageNumber > 604) {
       if (state is SurahSuccess) {
-        setState(SurahSuccess((state as SurahSuccess).ayahs, warning: "sudah mencapai halaman terakhir"));
+        setState(
+          SurahSuccess(
+            (state as SurahSuccess).ayahs,
+            warning: "sudah mencapai halaman terakhir",
+          ),
+        );
         return;
       } else {
         setState(SurahError("invalid halaman"));
@@ -291,7 +298,12 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   Future<void> loadPageByJuz(int juzNumber) async {
     if (juzNumber < 1 || juzNumber > 30) {
       if (state is SurahSuccess) {
-        setState(SurahSuccess((state as SurahSuccess).ayahs, warning: "sudah mencapai juz terakhir"));
+        setState(
+          SurahSuccess(
+            (state as SurahSuccess).ayahs,
+            warning: "sudah mencapai juz terakhir",
+          ),
+        );
         return;
       } else {
         setState(SurahError("invalid juz"));
@@ -309,7 +321,12 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   Future<void> loadAyahsInPageOf(int surahId, int ayahNumber) async {
     if (surahId < 1 || surahId > 114) {
       if (state is SurahSuccess) {
-        setState(SurahSuccess((state as SurahSuccess).ayahs, warning: "sudah mencapai surah terakhir"));
+        setState(
+          SurahSuccess(
+            (state as SurahSuccess).ayahs,
+            warning: "sudah mencapai surah terakhir",
+          ),
+        );
         return;
       } else {
         setState(SurahError("invalid surah"));
@@ -334,4 +351,43 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     }
   }
 
+  Future<bool?> toggleFavorite(int surahId, int ayahNumber) async {
+    if (state is! SurahSuccess) return null;
+
+    try {
+      final result = await _ayahRepo.toggleFavorite(surahId, ayahNumber);
+      if (result != null) {
+        final currentState = state as SurahSuccess;
+        final updatedAyahs =
+            currentState.ayahs.map((ayah) {
+              if (ayah.surahNumber == surahId && ayah.number == ayahNumber) {
+                return AyahWithSurahDto(
+                  ayah.number,
+                  ayah.audioLink,
+                  ayah.juzNumber,
+                  ayah.surahNumber,
+                  ayah.surahName,
+                  ayah.nameLatin,
+                  ayah.nameIndo,
+                  ayah.arabText,
+                  ayah.translationText,
+                  ayah.totalAyah,
+                  ayah.page,
+                  result,
+                );
+              }
+              return ayah;
+            }).toList();
+
+        _updateSuccess(updatedAyahs);
+      }
+      return result;
+    } catch (e) {
+      _updateSuccess(
+        (state as SurahSuccess).ayahs,
+        warning: "Failed to update favorite",
+      );
+      return null;
+    }
+  }
 }

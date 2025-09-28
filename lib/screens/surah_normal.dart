@@ -8,6 +8,7 @@ import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:mtqmnuns/data/local/db/app_database.dart'; // added
 
 class NormalSurahScreen extends StatefulWidget {
   final LoadType loadType;
@@ -37,6 +38,8 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   bool _isReadyToRefresh = false;
   static const double _maxPullDistance = 120.0;
   static const double _triggerDistance = 80.0;
+
+  final Map<String, bool> _localFavorites = {};
 
   @override
   void initState() {
@@ -93,10 +96,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
     }
   }
 
-  bool _handleOverscroll(
-    OverscrollNotification overscroll,
-    SurahViewModel vm,
-  ) {
+  bool _handleOverscroll(OverscrollNotification overscroll, SurahViewModel vm) {
     if (_isTopLoading || _isBottomLoading) return false;
 
     if (overscroll.metrics.pixels <= overscroll.metrics.minScrollExtent &&
@@ -182,6 +182,9 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   }
 
   Widget _buildAyahCard(AyahWithSurahDto ayah, {EdgeInsets? padding}) {
+    final key = '${ayah.surahNumber}_${ayah.number}';
+    final isFav = _localFavorites[key] ?? ayah.favorite;
+
     Widget ayahCardContent = Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
@@ -248,8 +251,16 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                       return _buildActionButton(
                         icon:
                             isCurrentAyahPlaying
-                                ? LucideIcons.pause
-                                : LucideIcons.play,
+                                ? Icon(
+                                  LucideIcons.pause,
+                                  size: 20,
+                                  color: Color(0xFF672CBC),
+                                )
+                                : Icon(
+                                  LucideIcons.play,
+                                  size: 20,
+                                  color: Color(0xFF672CBC),
+                                ),
                         onPressed: () {
                           vm.togglePlayback(ayah.number - 1);
                         },
@@ -257,7 +268,11 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     },
                   ),
                   _buildActionButton(
-                    icon: LucideIcons.share2,
+                    icon: Icon(
+                      LucideIcons.share2,
+                      size: 20,
+                      color: Color(0xFF672CBC),
+                    ),
                     onPressed: () {
                       final text =
                           'Surah ${ayah.nameLatin}, Ayat ${ayah.number}:\n\n'
@@ -265,7 +280,36 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                       SharePlus.instance.share(ShareParams(text: text));
                     },
                   ),
-                  _buildActionButton(icon: LucideIcons.heart, onPressed: () {}),
+
+                  _buildActionButton(
+                    icon:
+                        isFav
+                            ? Image.asset(
+                              'assets/img/heart.png',
+                              height: 18,
+                              fit: BoxFit.contain,
+                            )
+                            : Icon(
+                              LucideIcons.heart,
+                              size: 20,
+                              color: Color(0xFF672CBC),
+                            ),
+                    onPressed: () async {
+                      final vm = context.read<SurahViewModel>();
+                      final result = await vm.toggleFavorite(
+                        ayah.surahNumber,
+                        ayah.number,
+                      );
+
+                      if (result == null && mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to update favorite'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -308,7 +352,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   }
 
   Widget _buildActionButton({
-    required IconData icon,
+    required Widget icon,
     required VoidCallback onPressed,
   }) {
     return Container(
@@ -318,10 +362,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: onPressed,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, size: 20, color: const Color(0xFF672CBC)),
-          ),
+          child: Container(padding: const EdgeInsets.all(8), child: icon),
         ),
       ),
     );
