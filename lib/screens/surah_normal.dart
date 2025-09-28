@@ -8,7 +8,6 @@ import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart'; // added
 
 class NormalSurahScreen extends StatefulWidget {
   final LoadType loadType;
@@ -56,32 +55,42 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
     super.dispose();
   }
 
-  Future<void> _loadTop(SurahViewModel vm) async {
+  void _loadTop(SurahViewModel vm) {
     if (_isTopLoading) return;
 
     setState(() => _isTopLoading = true);
     _bounceController.forward();
 
-    await switch (widget.loadType) {
-      LoadType.surah => vm.prependBySurah(),
-      LoadType.juz => vm.prependByJuz(),
-    };
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (mounted) _resetPullAnimation();
+    switch (widget.loadType) {
+      case LoadType.surah:
+        vm.prependBySurah();
+        break;
+      case LoadType.juz:
+        vm.prependByJuz();
+        break;
+    }
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _resetPullAnimation();
+    });
   }
 
   Future<void> _loadBottom(SurahViewModel vm) async {
     if (_isBottomLoading) return;
     setState(() => _isBottomLoading = true);
 
-    await switch (widget.loadType) {
-      LoadType.surah => vm.appendBySurah(),
-      LoadType.juz => vm.appendByJuz(),
-    };
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (mounted) _resetPullAnimation();
+    switch (widget.loadType) {
+      case LoadType.surah:
+        vm.appendBySurah();
+        break;
+      case LoadType.juz:
+        vm.appendByJuz();
+        break;
+    }
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _resetPullAnimation();
+    });
   }
 
   Future<void> _resetPullAnimation() async {

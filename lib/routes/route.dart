@@ -3,6 +3,7 @@ import 'package:mtqmnuns/routes/route_model.dart';
 import 'package:mtqmnuns/screens/complete_signup.dart';
 import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/explore.dart';
+import 'package:mtqmnuns/screens/profile_edit.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
@@ -78,6 +79,13 @@ class AppRoutes {
   static final profile = AppRoute(
     path: '/profile',
     pageBuilder: (context, state) => NoTransitionPage(child: ProfileScreen()),
+    isHasBottomBar: true,
+    requiresAuth: true
+  );
+
+  static final profileEdit = AppRoute(
+    path: '/profile/edit',
+    pageBuilder: (context, state) => NoTransitionPage(child: EditProfileScreen()),
     isHasBottomBar: true,
     requiresAuth: true
   );
@@ -158,6 +166,7 @@ class AppRoutes {
     splashScreen,
     intro,
     duas,
+    profileEdit
   ];
 
   static AppRoute getRouteByPath(String path) {

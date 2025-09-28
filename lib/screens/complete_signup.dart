@@ -27,10 +27,6 @@ class CompleteUserSignUp extends StatefulWidget {
 class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
   final TextEditingController _fullNameController = TextEditingController();
   final ErrorPopUpController errorController = ErrorPopUpController();
-  final ErrorPopUpController permissionController = ErrorPopUpController();
-  final ErrorPopUpController appSettingErrorController = ErrorPopUpController();
-  final ErrorPopUpController imageSizeTooBigErrorController =
-      ErrorPopUpController();
   final ImagePicker _picker = ImagePicker();
 
   bool _isLoading = false;
@@ -147,49 +143,6 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
               controller: errorController,
               buttonList: [
                 ButtonModalModel(text: "Ok", onButtonPressed: () {}),
-              ],
-            ),
-            ErrorPopUpModal(
-              title: "Gagal Membuka App Setting",
-              defaultSubtitle: "Terjadi Kesalahan Tak terduga",
-              controller: appSettingErrorController,
-              buttonList: [
-                ButtonModalModel(text: "Ok", onButtonPressed: () {}),
-              ],
-            ),
-            ErrorPopUpModal(
-              title: "Gambar Terlalu Besar",
-              defaultSubtitle: "Terjadi Kesalahan Tak terduga",
-              controller: imageSizeTooBigErrorController,
-              buttonList: [
-                ButtonModalModel(text: "Ok", onButtonPressed: () {}),
-              ],
-            ),
-            ErrorPopUpModal(
-              title: "Izin Diperlukan",
-              defaultSubtitle: "Izin diperlukan untuk mengakses fitur ini",
-              controller: permissionController,
-              buttonList: [
-                ButtonModalModel(
-                  text: "Pengaturan",
-                  onButtonPressed: () {
-                    try {
-                      app_settings.openAppSettings();
-                    } catch (e) {
-                      appSettingErrorController.open(
-                        "terdapat Kesalahan saat membuka setting : ${e.toString()}",
-                      );
-                    }
-                  },
-                ),
-                ButtonModalModel(
-                  text: "Batal",
-                  textColor: Colors.red,
-                  buttonColor: Colors.white,
-                  onButtonPressed: () {
-                    permissionController.close();
-                  },
-                ),
               ],
             ),
           ],
@@ -427,7 +380,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
     }
 
     final status = await permission.request();
-
+    if (!context.mounted) return;
     switch (status) {
       case PermissionStatus.granted:
         _pickImage(source);
@@ -443,7 +396,7 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
   }
 
   void _showPermissionPermanentlyDeniedDialog(String permissionName) {
-    permissionController.open(
+    context.read<PermissionErrorController>().open(
       'Izin $permissionName telah ditolak secara permanen. Silakan aktifkan izin melalui pengaturan aplikasi.',
     );
   }
@@ -458,8 +411,8 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
         isImageValid = sizeInBytes <= maxSizeInBytes;
       }
 
-      if (!isImageValid) {
-        imageSizeTooBigErrorController.open(
+      if (!isImageValid && mounted) {
+        context.read<ImageSizeTooBigErrorController>().open(
           "File Gambar terlalu besar, gambar harus kurang dari 5MB",
         );
         return;

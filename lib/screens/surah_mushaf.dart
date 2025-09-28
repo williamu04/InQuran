@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
@@ -7,8 +8,21 @@ import 'package:mtqmnuns/state/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 
-class MushafSurahScreen extends StatelessWidget {
+class MushafSurahScreen extends StatefulWidget {
   const MushafSurahScreen({super.key});
+
+  @override
+  State<MushafSurahScreen> createState() => _MushafSurahScreenState();
+}
+
+class _MushafSurahScreenState extends State<MushafSurahScreen> {
+  int _retryCount = 0;
+
+  void _retryLoadImage() {
+    setState(() {
+      _retryCount++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,17 +152,36 @@ class MushafSurahScreen extends StatelessWidget {
     final pageStr = page.toString().padLeft(3, '0');
     final imageUrl =
         "https://media.halonopal.space/static/mushaf/page/$pageStr.png";
+
     return Center(
-      child: Image.network(
-        imageUrl,
+      child: CachedNetworkImage(
+        key: ValueKey('mushaf_${page}_$_retryCount'), // Unique key for retry
+        imageUrl: imageUrl,
         fit: BoxFit.contain,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return const Center(child: CircularProgressIndicator());
-        },
-        errorBuilder: (context, error, stackTrace) {
-          return const Center(
-            child: Icon(Icons.error, size: 50, color: Colors.red),
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, error, stackTrace) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("Error loading data"),
+              const SizedBox(height: 16),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.purple),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                onPressed: _retryLoadImage,
+                child: const Text(
+                  "Retry",
+                  style: TextStyle(color: Colors.purple),
+                ),
+              ),
+            ],
           );
         },
       ),
@@ -251,135 +284,47 @@ class MushafSurahScreen extends StatelessWidget {
     );
   }
 
-  void onNextSurah(BuildContext context, AyahWithSurahDto ayahs) async {
+  void onNextSurah(BuildContext context, AyahWithSurahDto ayahs) {
     final vm = context.read<SurahViewModel>();
-    await vm.loadAyahsInPageOf(ayahs.surahNumber + 1, 1);
+    vm.loadAyahsInPageOf(ayahs.surahNumber + 1, 1);
     if (vm.state is SurahSuccess) {
       if ((vm.state as SurahSuccess).ayahs.last.page == ayahs.page &&
           context.mounted) {
         onNextPage(context, ayahs.page);
       }
     }
+    _retryCount = 0;
   }
 
-  void onPreviousSurah(BuildContext context, AyahWithSurahDto ayahs) async {
+  void onPreviousSurah(BuildContext context, AyahWithSurahDto ayahs) {
     final vm = context.read<SurahViewModel>();
-    await vm.loadAyahsInPageOf(ayahs.surahNumber - 1, 1);
+    vm.loadAyahsInPageOf(ayahs.surahNumber - 1, 1);
     if (vm.state is SurahSuccess) {
       if ((vm.state as SurahSuccess).ayahs.last.page == ayahs.page &&
           context.mounted) {
         onPreviousPage(context, ayahs.page);
       }
     }
+    _retryCount = 0;
   }
 
   void onNextPage(BuildContext context, int currentPage) {
     context.read<SurahViewModel>().loadByPage(currentPage + 1);
+    _retryCount = 0;
   }
 
   void onPreviousPage(BuildContext context, int currentPage) {
     context.read<SurahViewModel>().loadByPage(currentPage - 1);
+    _retryCount = 0;
   }
 
   void onPreviousJuz(BuildContext context, int juz) {
     context.read<SurahViewModel>().loadPageByJuz(juz - 1);
+    _retryCount = 0;
   }
 
   void onNextJuz(BuildContext context, int juz) {
     context.read<SurahViewModel>().loadPageByJuz(juz + 1);
-  }
-}
-
-class JustifiedBlockText extends StatelessWidget {
-  final List<String> sentences;
-  final TextStyle? style;
-
-  const JustifiedBlockText({Key? key, required this.sentences, this.style})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final fullText = sentences.join(" "); // join all into one paragraph
-    final words =
-        fullText.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
-    final textStyle = style ?? DefaultTextStyle.of(context).style;
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final lines = _layoutLines(words, constraints.maxWidth, textStyle);
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final line in lines)
-              _buildJustifiedLine(line, constraints.maxWidth, textStyle),
-          ],
-        );
-      },
-    );
-  }
-
-  List<List<String>> _layoutLines(
-    List<String> words,
-    double maxWidth,
-    TextStyle style,
-  ) {
-    final painter = TextPainter(textDirection: TextDirection.ltr);
-    List<List<String>> lines = [];
-    List<String> current = [];
-    double currentWidth = 0.0;
-
-    for (final word in words) {
-      painter.text = TextSpan(
-        text: current.isEmpty ? word : " $word",
-        style: style,
-      );
-      painter.layout();
-      final w = painter.width;
-
-      if (current.isEmpty) {
-        current = [word];
-        currentWidth = w;
-      } else if (currentWidth + w <= maxWidth) {
-        current.add(word);
-        currentWidth += w;
-      } else {
-        lines.add(List.from(current));
-        current = [word];
-        painter.text = TextSpan(text: word, style: style);
-        painter.layout();
-        currentWidth = painter.width;
-      }
-    }
-
-    if (current.isNotEmpty) lines.add(current);
-    return lines;
-  }
-
-  Widget _buildJustifiedLine(
-    List<String> line,
-    double maxWidth,
-    TextStyle style,
-  ) {
-    final painter = TextPainter(textDirection: TextDirection.ltr);
-    double wordsWidth = 0;
-
-    for (final word in line) {
-      painter.text = TextSpan(text: word, style: style);
-      painter.layout();
-      wordsWidth += painter.width;
-    }
-
-    final gaps = line.length - 1;
-    double spaceWidth = gaps > 0 ? (maxWidth - wordsWidth) / gaps : 0;
-
-    return Row(
-      children: [
-        for (int i = 0; i < line.length; i++) ...[
-          Text(line[i], style: style),
-          if (i != line.length - 1) SizedBox(width: spaceWidth),
-        ],
-      ],
-    );
+    _retryCount = 0;
   }
 }

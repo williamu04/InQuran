@@ -74,12 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              AnimatedBuilder(
-                animation: errorController,
-                builder: (context, _) {
-                  return PopUpModal(
+                  ErrorPopUpModal(
                     title: "Login gagal",
-                    subtitle: errorController.errorMessage ?? "Terjadi Kesalahan Tak terduga",
+                    defaultSubtitle: "Terjadi Kesalahan Tak terduga",
                     controller: errorController,
                     buttonList: [
                       ButtonModalModel(
@@ -87,9 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onButtonPressed: () {},
                       ),
                     ],
-                  );
-                },
-              )
+                  ),
           ],
         ) 
       ),

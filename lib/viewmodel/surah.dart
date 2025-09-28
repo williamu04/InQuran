@@ -7,6 +7,9 @@ import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   final AyahRepository _ayahRepo;
   final AudioPlayerService _audioPlayer = AudioPlayerService();
+  
+  List<AyahWithSurahDto>? _allAyahsCache;
+  bool _isInitialized = false;
 
   SurahViewModel(this._ayahRepo) : super(SurahLoading()) {
     _audioPlayer.addPlayerCompleteListener(() {
@@ -23,6 +26,58 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         );
       }
     });
+  }
+
+  Future<void> togglePlayback(int index) async {
+    if (state is! SurahSuccess) return;
+    final currentState = state as SurahSuccess;
+
+    if (currentState.playingIndex == index) {
+      if (currentState.isPlaying) {
+        _updateSuccess(
+          currentState.ayahs,
+          playingIndex: index,
+          isPlaying: false,
+        );
+        await _audioPlayer.pause();
+      } else {
+        _updateSuccess(
+          currentState.ayahs,
+          playingIndex: index,
+          isPlaying: true,
+        );
+        await _audioPlayer.resume();
+      }
+    } else {
+      _updateSuccess(currentState.ayahs, playingIndex: index, isPlaying: true);
+      final ayah = currentState.ayahs[index];
+      await _audioPlayer.play(ayah.audioLink);
+    }
+  }
+
+  bool _isHandlingComplete = false;
+
+  void onAudioComplete() {
+    if (_isHandlingComplete) return;
+    _isHandlingComplete = true;
+    if (state is! SurahSuccess) return;
+    final currentState = state as SurahSuccess;
+    final currentIndex = currentState.playingIndex;
+
+    if (currentIndex == null || currentIndex >= currentState.ayahs.length - 1) {
+      _updateSuccess(currentState.ayahs, playingIndex: null, isPlaying: false);
+    } else {
+      final nextIndex = currentIndex + 1;
+      final nextAyah = currentState.ayahs[nextIndex];
+      _updateSuccess(
+        currentState.ayahs,
+        playingIndex: nextIndex,
+        isPlaying: true,
+      );
+
+      _audioPlayer.play(nextAyah.audioLink);
+    }
+    _isHandlingComplete = false;
   }
 
   void _updateSuccess(
@@ -56,105 +111,77 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     }
   }
 
-  Future<void> togglePlayback(int index) async {
-    if (state is! SurahSuccess) return;
-    final currentState = state as SurahSuccess;
-
-    if (currentState.playingIndex == index) {
-      if (currentState.isPlaying) {
-        await _audioPlayer.pause();
-        _updateSuccess(
-          currentState.ayahs,
-          playingIndex: index,
-          isPlaying: false,
-        );
-      } else {
-        await _audioPlayer.resume();
-        _updateSuccess(
-          currentState.ayahs,
-          playingIndex: index,
-          isPlaying: true,
-        );
-      }
-    } else {
-      // Ganti ke ayat baru
-      final ayah = currentState.ayahs[index];
-      await _audioPlayer.play(ayah.audioLink);
-      _updateSuccess(currentState.ayahs, playingIndex: index, isPlaying: true);
-    }
-    // tidak perlu notifyListeners() karena setState sudah handle
-  }
-
-  /// Callback saat audio selesai
-  bool _isHandlingComplete = false;
-
-  void onAudioComplete() {
-    if (_isHandlingComplete) return;
-    _isHandlingComplete = true;
-    if (state is! SurahSuccess) return;
-    final currentState = state as SurahSuccess;
-    final currentIndex = currentState.playingIndex;
-
-    if (currentIndex == null || currentIndex >= currentState.ayahs.length - 1) {
-      // Stop playback kalau sudah ayat terakhir
-      _updateSuccess(currentState.ayahs, playingIndex: null, isPlaying: false);
-    } else {
-      // Lanjut ke ayat berikutnya
-      final nextIndex = currentIndex + 1;
-      final nextAyah = currentState.ayahs[nextIndex];
-
-      _audioPlayer.play(nextAyah.audioLink);
-      _updateSuccess(
-        currentState.ayahs,
-        playingIndex: nextIndex,
-        isPlaying: true,
-      );
-    }
-    _isHandlingComplete = false;
-  }
-
-  Future<void> loadSurah(
-    int startSurahId,
-    int startSurahAyah,
-    int endSurahId,
-    int endSurahAyah,
-  ) async {
+  Future<void> initializeCache() async {
+    if (_isInitialized) return;
+    
     setState(SurahLoading());
     try {
-      final data = await _ayahRepo.getAyahsInRange(
-        startSurahId: startSurahId,
-        startAyahNumber: startSurahAyah,
-        endSurahId: endSurahId,
-        endAyahNumber: endSurahAyah,
-      );
-      _updateSuccess(data);
+      _allAyahsCache = await _ayahRepo.getAllAyahWithSurah();
+      _isInitialized = true;
+    } catch (e) {
+      setState(SurahError('Failed to initialize: ${e.toString()}'));
+      return;
+    }
+  }
+
+  void _ensureCacheLoaded() {
+    if (!_isInitialized || _allAyahsCache == null) {
+      setState(SurahError('Cache not initialized. Call initializeCache() first.'));
+    }
+  }
+
+  bool isCacheLoaded() { return _allAyahsCache != null && _allAyahsCache!.isNotEmpty; }
+
+  void loadSurah(int startSurahId, int startSurahAyah, int endSurahId, int endSurahAyah) {
+    _ensureCacheLoaded();
+    
+    try {
+      final filteredAyahs = _allAyahsCache!.where((ayah) {
+        if (startSurahId == endSurahId) {
+          return ayah.surahNumber == startSurahId &&
+                 ayah.number >= startSurahAyah &&
+                 ayah.number <= endSurahAyah;
+        } else {
+          return (ayah.surahNumber == startSurahId && ayah.number >= startSurahAyah) ||
+                 (ayah.surahNumber > startSurahId && ayah.surahNumber < endSurahId) ||
+                 (ayah.surahNumber == endSurahId && ayah.number <= endSurahAyah);
+        }
+      }).toList();
+      
+      if (filteredAyahs.isEmpty) {
+        setState(SurahError('No ayahs found in specified range'));
+        return;
+      }
+      
+      _updateSuccess(filteredAyahs, jumpIndex: 0);
     } catch (e) {
       setState(SurahError(e.toString()));
     }
   }
 
-  Future<void> appendBySurah() async {
+  void appendBySurah() {
     if (state is! SurahSuccess) return;
+    _ensureCacheLoaded();
+    
     final ayahs = (state as SurahSuccess).ayahs;
     final last = ayahs.lastOrNull;
-    if (last == null) {
-      setState(SurahError("Internal Error(500)"));
-      return;
-    }
-    if (last.surahNumber == 114) return;
+    if (last == null || last.surahNumber == 114) return;
+
     try {
+      List<AyahWithSurahDto> newAyahs;
+      
       if (last.number < last.totalAyah) {
-        final newAyahs = await _ayahRepo.getAyahsInRange(
-          startSurahId: last.surahNumber,
-          startAyahNumber: last.number + 1,
-          endSurahId: last.surahNumber,
-          endAyahNumber: last.totalAyah,
-        );
-        _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
+        newAyahs = _allAyahsCache!.where((ayah) =>
+          ayah.surahNumber == last.surahNumber &&
+          ayah.number > last.number
+        ).toList();
       } else {
-        final newAyahs = await _ayahRepo.getAyahsBySurahId(
-          last.surahNumber + 1,
-        );
+        newAyahs = _allAyahsCache!.where((ayah) =>
+          ayah.surahNumber == last.surahNumber + 1
+        ).toList();
+      }
+      
+      if (newAyahs.isNotEmpty) {
         _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
       }
     } catch (e) {
@@ -162,29 +189,29 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     }
   }
 
-  Future<void> prependBySurah() async {
+  void prependBySurah() {
     if (state is! SurahSuccess) return;
+    _ensureCacheLoaded();
+    
     final ayahs = (state as SurahSuccess).ayahs;
     final first = ayahs.firstOrNull;
-    if (first == null) {
-      setState(SurahError("Internal Error(500)"));
-      return;
-    }
-    if (first.surahNumber == 1) return;
+    if (first == null || first.surahNumber == 1) return;
 
     try {
+      List<AyahWithSurahDto> newAyahs;
+      
       if (first.number > 1) {
-        final newAyahs = await _ayahRepo.getAyahsInRange(
-          startSurahId: first.surahNumber,
-          startAyahNumber: 1,
-          endSurahId: first.surahNumber,
-          endAyahNumber: first.number - 1,
-        );
-        _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
+        newAyahs = _allAyahsCache!.where((ayah) =>
+          ayah.surahNumber == first.surahNumber &&
+          ayah.number < first.number
+        ).toList();
       } else {
-        final newAyahs = await _ayahRepo.getAyahsBySurahId(
-          first.surahNumber - 1,
-        );
+        newAyahs = _allAyahsCache!.where((ayah) =>
+          ayah.surahNumber == first.surahNumber - 1
+        ).toList();
+      }
+      
+      if (newAyahs.isNotEmpty) {
         _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
       }
     } catch (e) {
@@ -192,87 +219,101 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     }
   }
 
-  Future<void> appendByJuz() async {
+  void appendByJuz() {
     if (state is! SurahSuccess) return;
+    _ensureCacheLoaded();
+    
     final ayahs = (state as SurahSuccess).ayahs;
     final last = ayahs.lastOrNull;
-    if (last == null) {
-      setState(SurahError("Internal Error(500)"));
-      return;
-    }
-    if (last.juzNumber == 30) return;
+    if (last == null || last.juzNumber == 30) return;
 
     try {
-      final newAyahs = await _ayahRepo.getAyahsByJuz(last.juzNumber + 1);
-      _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
+      final newAyahs = _allAyahsCache!.where((ayah) =>
+        ayah.juzNumber == last.juzNumber + 1
+      ).toList();
+      
+      if (newAyahs.isNotEmpty) {
+        _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
+      }
     } catch (e) {
       _updateSuccess(ayahs, warning: "Load Failed");
     }
   }
 
-  Future<void> prependByJuz() async {
+  void prependByJuz() {
     if (state is! SurahSuccess) return;
+    _ensureCacheLoaded();
+    
     final ayahs = (state as SurahSuccess).ayahs;
     final first = ayahs.firstOrNull;
-    if (first == null) {
-      setState(SurahError("Internal Error(500)"));
-      return;
-    }
-    if (first.juzNumber == 1) return;
+    if (first == null || first.juzNumber == 1) return;
 
     try {
-      final newAyahs = await _ayahRepo.getAyahsByJuz(first.juzNumber - 1);
-      _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
+      final newAyahs = _allAyahsCache!.where((ayah) =>
+        ayah.juzNumber == first.juzNumber - 1
+      ).toList();
+      
+      if (newAyahs.isNotEmpty) {
+        _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
+      }
     } catch (e) {
       _updateSuccess(ayahs, warning: "Load Failed");
     }
   }
 
-  Future<void> appendSurahByCount(int count) async {
+  void appendSurahByCount(int count) {
     if (state is! SurahSuccess) return;
+    _ensureCacheLoaded();
+    
     final ayahs = (state as SurahSuccess).ayahs;
     final first = ayahs.firstOrNull;
-    if (first == null) {
-      setState(SurahError("Internal Error(500)"));
-      return;
-    }
-    if (first.surahNumber == 1) return;
+    if (first == null || first.surahNumber == 1) return;
 
     try {
-      final newAyahs = await _ayahRepo.getPreviousAyahs(
-        endSurahId: first.surahNumber,
-        endAyahNumber: first.number,
-        count: count,
-      );
-      _updateSuccess([...newAyahs, ...ayahs], jumpIndex: ayahs.length - 1);
+      final allPrevious = _allAyahsCache!.where((ayah) =>
+        ayah.surahNumber < first.surahNumber ||
+        (ayah.surahNumber == first.surahNumber && ayah.number < first.number)
+      ).toList();
+      
+      final newAyahs = allPrevious.length > count 
+        ? allPrevious.sublist(allPrevious.length - count)
+        : allPrevious;
+      
+      if (newAyahs.isNotEmpty) {
+        _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
+      }
     } catch (e) {
       _updateSuccess(ayahs, warning: "Load Failed");
     }
   }
 
-  Future<void> prependSurahByCount(int count) async {
+  void prependSurahByCount(int count) {
     if (state is! SurahSuccess) return;
+    _ensureCacheLoaded();
+    
     final ayahs = (state as SurahSuccess).ayahs;
     final last = ayahs.lastOrNull;
-    if (last == null) {
-      setState(SurahError("Internal Error(500)"));
-      return;
-    }
-    if (last.surahNumber == 114) return;
+    if (last == null || last.surahNumber == 114) return;
 
     try {
-      final newAyahs = await _ayahRepo.getNextAyahs(
-        startSurahId: last.surahNumber,
-        startAyahNumber: last.number,
-        count: count,
-      );
-      _updateSuccess([...ayahs, ...newAyahs], jumpIndex: newAyahs.length);
+      final allNext = _allAyahsCache!.where((ayah) =>
+        ayah.surahNumber > last.surahNumber ||
+        (ayah.surahNumber == last.surahNumber && ayah.number > last.number)
+      ).toList();
+      
+      final newAyahs = allNext.length > count 
+        ? allNext.sublist(0, count)
+        : allNext;
+      
+      if (newAyahs.isNotEmpty) {
+        _updateSuccess([...ayahs, ...newAyahs], jumpIndex: newAyahs.length);
+      }
     } catch (e) {
       _updateSuccess(ayahs, warning: "Load Failed");
     }
   }
 
-  Future<void> loadByPage(int pageNumber) async {
+  void loadByPage(int pageNumber) {
     if (pageNumber < 1 || pageNumber > 604) {
       if (state is SurahSuccess) {
         setState(
@@ -284,18 +325,29 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         return;
       } else {
         setState(SurahError("invalid halaman"));
+        return;
       }
     }
-    setState(SurahLoading());
+    
+    _ensureCacheLoaded();
+    
     try {
-      final data = await _ayahRepo.getAyahsByPage(pageNumber);
-      _updateSuccess(data);
+      final pageAyahs = _allAyahsCache!.where((ayah) =>
+        ayah.page == pageNumber
+      ).toList();
+      
+      if (pageAyahs.isEmpty) {
+        setState(SurahError("No ayahs found for page $pageNumber"));
+        return;
+      }
+      
+      _updateSuccess(pageAyahs);
     } catch (e) {
       setState(SurahError(e.toString()));
     }
   }
 
-  Future<void> loadPageByJuz(int juzNumber) async {
+  void loadPageByJuz(int juzNumber) {
     if (juzNumber < 1 || juzNumber > 30) {
       if (state is SurahSuccess) {
         setState(
@@ -307,18 +359,30 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         return;
       } else {
         setState(SurahError("invalid juz"));
+        return;
       }
     }
-    setState(SurahLoading());
+    
+    _ensureCacheLoaded();
+    
     try {
-      final data = await _ayahRepo.getAyahsByFirstJuzPage(juzNumber);
-      _updateSuccess(data);
+      final juzAyahs = _allAyahsCache!.where((ayah) =>
+        ayah.juzNumber == juzNumber
+      ).toList();
+      
+      if (juzAyahs.isEmpty) {
+        setState(SurahError("No ayahs found for juz $juzNumber"));
+        return;
+      }
+      
+      final firstPage = juzAyahs.map((a) => a.page).reduce((a, b) => a < b ? a : b);
+      loadByPage(firstPage);
     } catch (e) {
       setState(SurahError(e.toString()));
     }
   }
 
-  Future<void> loadAyahsInPageOf(int surahId, int ayahNumber) async {
+  void loadAyahsInPageOf(int surahId, int ayahNumber) {
     if (surahId < 1 || surahId > 114) {
       if (state is SurahSuccess) {
         setState(
@@ -330,24 +394,32 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         return;
       } else {
         setState(SurahError("invalid surah"));
+        return;
       }
     }
-    setState(SurahLoading());
+    
+    _ensureCacheLoaded();
+    
     try {
-      final data = await _ayahRepo.getAyahsInPageOf(surahId, ayahNumber);
-      _updateSuccess(data);
+      final targetAyah = _allAyahsCache!.where((ayah) =>
+        ayah.surahNumber == surahId && ayah.number == ayahNumber
+      ).firstOrNull;
+      
+      if (targetAyah == null) {
+        setState(SurahError("Ayah not found"));
+        return;
+      }
+      
+      loadByPage(targetAyah.page);
     } catch (e) {
       setState(SurahError(e.toString()));
     }
   }
 
   Future<void> loadAllAyahs() async {
-    setState(SurahLoading());
-    try {
-      final data = await _ayahRepo.getAllAyahWithSurah();
-      _updateSuccess(data);
-    } catch (e) {
-      setState(SurahError(e.toString()));
+    await initializeCache();
+    if (_allAyahsCache != null) {
+      _updateSuccess(_allAyahsCache!);
     }
   }
 
@@ -357,27 +429,48 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     try {
       final result = await _ayahRepo.toggleFavorite(surahId, ayahNumber);
       if (result != null) {
+        if (_allAyahsCache != null) {
+          _allAyahsCache = _allAyahsCache!.map((ayah) {
+            if (ayah.surahNumber == surahId && ayah.number == ayahNumber) {
+              return AyahWithSurahDto(
+                ayah.number,
+                ayah.audioLink,
+                ayah.juzNumber,
+                ayah.surahNumber,
+                ayah.surahName,
+                ayah.nameLatin,
+                ayah.nameIndo,
+                ayah.arabText,
+                ayah.translationText,
+                ayah.totalAyah,
+                ayah.page,
+                result,
+              );
+            }
+            return ayah;
+          }).toList();
+        }
+        
         final currentState = state as SurahSuccess;
-        final updatedAyahs =
-            currentState.ayahs.map((ayah) {
-              if (ayah.surahNumber == surahId && ayah.number == ayahNumber) {
-                return AyahWithSurahDto(
-                  ayah.number,
-                  ayah.audioLink,
-                  ayah.juzNumber,
-                  ayah.surahNumber,
-                  ayah.surahName,
-                  ayah.nameLatin,
-                  ayah.nameIndo,
-                  ayah.arabText,
-                  ayah.translationText,
-                  ayah.totalAyah,
-                  ayah.page,
-                  result,
-                );
-              }
-              return ayah;
-            }).toList();
+        final updatedAyahs = currentState.ayahs.map((ayah) {
+          if (ayah.surahNumber == surahId && ayah.number == ayahNumber) {
+            return AyahWithSurahDto(
+              ayah.number,
+              ayah.audioLink,
+              ayah.juzNumber,
+              ayah.surahNumber,
+              ayah.surahName,
+              ayah.nameLatin,
+              ayah.nameIndo,
+              ayah.arabText,
+              ayah.translationText,
+              ayah.totalAyah,
+              ayah.page,
+              result,
+            );
+          }
+          return ayah;
+        }).toList();
 
         _updateSuccess(updatedAyahs);
       }

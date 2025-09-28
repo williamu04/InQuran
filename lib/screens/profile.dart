@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/disclosure_button.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
@@ -176,6 +178,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: TopBarUtility.buildDefaultTopBar(
                               context: context,
                               title: "Profil Pengguna",
+                              rightIcon: TopBarIconModel(
+                                icon: LucideIcons.pencilLine, 
+                                onPressed: () => context.push(AppRoutes.profileEdit.path),
+                              )
                             ),
                           ),
                           Container(
@@ -188,22 +194,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(16),
                               child: user.photoUrl != null && user.photoUrl!.isNotEmpty
-                                  ? Image.network(
-                                      user.photoUrl!,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Icon(
-                                          Icons.person,
-                                          size: pohotoHeight * 0.5,
-                                          color: Colors.grey,
-                                        );
-                                      },
-                                    )
-                                  : Icon(
+                              ? CachedNetworkImage(
+                                  imageUrl: user.photoUrl!,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Center(
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  ),
+                                  errorWidget: (context, error, stackTrace) {
+                                    return Icon(
                                       Icons.person,
                                       size: pohotoHeight * 0.5,
                                       color: Colors.grey,
-                                    ),
+                                    );
+                                  },
+                                )
+                              : Icon(
+                                  Icons.person,
+                                  size: pohotoHeight * 0.5,
+                                  color: Colors.grey,
+                                ),
                             ),
                           ),
                           Column(

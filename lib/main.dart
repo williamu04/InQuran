@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
@@ -38,6 +41,7 @@ import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
+import 'package:permission_handler/permission_handler.dart' as app_settings;
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -172,8 +176,11 @@ void main() async {
           ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
           ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
           ChangeNotifierProvider(create: (_) => LogoutLoading()),
-          ChangeNotifierProvider(create: (_) => PermissionErrorPopUp()),
           ChangeNotifierProvider(create: (_) => OpenSettingErrorPopUp()),
+          ChangeNotifierProvider(create: (_) => ExitCofirmationPopUp()),
+          ChangeNotifierProvider(create: (_) => PermissionErrorController()),
+          ChangeNotifierProvider(create: (_) => AppSettingErrorController()),
+          ChangeNotifierProvider(create: (_) => ImageSizeTooBigErrorController()),
 
           ChangeNotifierProvider(create: (_) => TransientMessageService()),
         ],
@@ -248,103 +255,188 @@ class MainScaffold extends StatelessWidget {
     final String currentPath = state.uri.toString();
     final AppRoute currentRoute = AppRoutes.getRouteByPath(currentPath);
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: SafeArea(
-        child: Stack(
-          children: [
-            Scaffold(
-              resizeToAvoidBottomInset: false,
-              extendBody: true,
-              body: Stack(
-                children: [
-                  _buildMainContent(),
-                  if (currentRoute.isHasBottomBar) _buildWhiteGradientOverlay(),
-                  _buildPurpleGradientOverlay(),
+    return  PopScope(
+      canPop: false, 
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return; 
+
+        final canPop = GoRouter.of(context).canPop();
+
+        if (canPop) {
+          GoRouter.of(context).pop();
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<ExitCofirmationPopUp>().open();
+          });
+        }
+      },
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Scaffold(
+                resizeToAvoidBottomInset: false,
+                extendBody: true,
+                body: Stack(
+                  children: [
+                    _buildMainContent(),
+                    if (currentRoute.isHasBottomBar) _buildWhiteGradientOverlay(),
+                    _buildPurpleGradientOverlay(),
+                  ],
+                ),
+                bottomNavigationBar: Consumer<GlobalConfig>(
+                  builder: (context, vm, _) {
+                    if (!currentRoute.isHasBottomBar) {
+                      return SizedBox.shrink();
+                    } else {
+                      switch (vm.isVoiceMode) {
+                        case true:
+                          if (currentRoute == AppRoutes.home) {
+                            return SizedBox.shrink();
+                          }
+                          return SafeArea(
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 25),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TranscriptionText(idleText: ''),
+                                  SizedBox(height: 10),
+                                  MicButton(size: 80),
+                                ],
+                              ),
+                            ),
+                          );
+                        case false:
+                          return BottomNavBar();
+                      }
+                    }
+                  },
+                ),
+              ),
+              MenuDrawer(),
+              SettingDrawer(),
+              PopUpModal(
+                title: "Keluar Dari Aplikasi?",
+                subtitle: "Apakah Kamu Yakin Untuk Keluar Dari Aplikasi?",
+                controller: context.read<ExitCofirmationPopUp>(),
+                buttonList: [
+                  ButtonModalModel(
+                    text: "Ya",
+                    onButtonPressed: exitApp
+                  ),
+                  ButtonModalModel(
+                    text: "Batal",
+                    textColor: Colors.red,
+                    buttonColor: Colors.white,
+                    onButtonPressed: () {},
+                  ),
                 ],
               ),
-              bottomNavigationBar: Consumer<GlobalConfig>(
-                builder: (context, vm, _) {
-                  if (!currentRoute.isHasBottomBar) {
-                    return SizedBox.shrink();
-                  } else {
-                    switch (vm.isVoiceMode) {
-                      case true:
-                        if (currentRoute == AppRoutes.home) {
-                          return SizedBox.shrink();
-                        }
-                        return SafeArea(
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 25),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TranscriptionText(idleText: ''),
-                                SizedBox(height: 10),
-                                MicButton(size: 80),
-                              ],
-                            ),
-                          ),
-                        );
-                      case false:
-                        return BottomNavBar();
-                    }
-                  }
-                },
+              PopUpModal(
+                title: "Kamu Belum Login",
+                subtitle: "Kamu harus login untuk mengakses fitur ini",
+                controller: context.read<UnauthenticatedPopUp>(),
+                buttonList: [
+                  ButtonModalModel(
+                    text: "Login",
+                    onButtonPressed: () {
+                      context.push(AppRoutes.login.path);
+                    },
+                  ),
+                ],
               ),
-            ),
-            MenuDrawer(),
-            SettingDrawer(),
-            PopUpModal(
-              title: "Kamu Belum Login",
-              subtitle: "Kamu harus login untuk mengakses fitur ini",
-              controller: context.read<UnauthenticatedPopUp>(),
-              buttonList: [
-                ButtonModalModel(
-                  text: "Login",
-                  onButtonPressed: () {
-                    context.push(AppRoutes.login.path);
-                  },
-                ),
-              ],
-            ),
-            PopUpModal(
-              title: "Logout",
-              subtitle: "Kamu yakin ingin keluar?",
-              controller: context.read<LogoutDialoguePopUp>(),
-              buttonList: [
-                ButtonModalModel(
-                  text: "Logout",
-                  onButtonPressed: () {
-                    context.read<LogoutLoading>().open();
-                    context.read<AuthViewModel>().logout();
-                    context.read<UserViewModel>().setState(
-                      UserLoadUnauthenticated(),
-                    );
-                    context.read<LogoutLoading>().close();
-                    context.read<TransientMessageService>().showMessage(
-                      context,
-                      "Logout Berhasil",
-                    );
-                  },
-                ),
-                ButtonModalModel(
-                  text: "Batal",
-                  textColor: Colors.red,
-                  buttonColor: Colors.white,
-                  onButtonPressed: () {},
-                ),
-              ],
-            ),
-            LoadingModal(
-              text: "Logging out...",
-              controller: context.read<LogoutLoading>(),
-            ),
-          ],
+              PopUpModal(
+                title: "Logout",
+                subtitle: "Kamu yakin ingin keluar?",
+                controller: context.read<LogoutDialoguePopUp>(),
+                buttonList: [
+                  ButtonModalModel(
+                    text: "Logout",
+                    onButtonPressed: () {
+                      context.read<LogoutLoading>().open();
+                      context.read<AuthViewModel>().logout();
+                      context.read<UserViewModel>().setState(
+                        UserLoadUnauthenticated(),
+                      );
+                      context.read<LogoutLoading>().close();
+                      context.read<TransientMessageService>().showMessage(
+                        context,
+                        "Logout Berhasil",
+                      );
+                    },
+                  ),
+                  ButtonModalModel(
+                    text: "Batal",
+                    textColor: Colors.red,
+                    buttonColor: Colors.white,
+                    onButtonPressed: () {},
+                  ),
+                ],
+              ),
+              ErrorPopUpModal(
+                title: "Gagal Membuka App Setting",
+                defaultSubtitle: "Terjadi Kesalahan Tak terduga",
+                controller: context.read<AppSettingErrorController>(),
+                buttonList: [
+                  ButtonModalModel(text: "Ok", onButtonPressed: () {}),
+                ],
+              ),
+              ErrorPopUpModal(
+                title: "Gambar Terlalu Besar",
+                defaultSubtitle: "Terjadi Kesalahan Tak terduga",
+                controller: context.read<ImageSizeTooBigErrorController>(),
+                buttonList: [
+                  ButtonModalModel(text: "Ok", onButtonPressed: () {}),
+                ],
+              ),
+              ErrorPopUpModal(
+                title: "Izin Diperlukan",
+                defaultSubtitle: "Izin diperlukan untuk mengakses fitur ini",
+                controller: context.read<PermissionErrorController>(),
+                buttonList: [
+                  ButtonModalModel(
+                    text: "Pengaturan",
+                    onButtonPressed: () {
+                      try {
+                        app_settings.openAppSettings();
+                      } catch (e) {
+                        context.read<AppSettingErrorController>().open(
+                          "terdapat Kesalahan saat membuka setting : ${e.toString()}",
+                        );
+                      }
+                    },
+                  ),
+                  ButtonModalModel(
+                    text: "Batal",
+                    textColor: Colors.red,
+                    buttonColor: Colors.white,
+                    onButtonPressed: () {
+                      context.read<PermissionErrorController>();
+                    },
+                  ),
+                ],
+              ),
+              LoadingModal(
+                text: "Logging out...",
+                controller: context.read<LogoutLoading>(),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      )
+    )
+    ;
   }
+
+  Future<void> exitApp() async {
+  if (Platform.isAndroid) {
+    SystemNavigator.pop();
+  } else if (Platform.isIOS) {
+  } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  }
+}
 
   Widget _buildMainContent() {
     return Positioned.fill(child: child);

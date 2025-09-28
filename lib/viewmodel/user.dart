@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mtqmnuns/common/jwt_extension.dart';
+import 'package:mtqmnuns/data/local/cache/user.dart';
 import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/exception/auth.dart';
 import 'package:mtqmnuns/repositories/user.dart';
@@ -24,6 +25,7 @@ class UserViewModel extends StatefulViewModel<UserLoadState> {
         authVm,
         (token) => _userRepo.getMeFromApi(token),
       );
+      await UserCache.saveUser(user);
       setState(UserLoaded(user));
     } on UnauthenticatedException {
       setState(UserLoadUnauthenticated());
@@ -68,15 +70,11 @@ class UserViewModel extends StatefulViewModel<UserLoadState> {
   }
 
   Future<void> _fetchUserFromCache() async {
-    setState(UserLoadedOffline(UserDto(
-      id: 1, 
-      username: '', 
-      email: '', 
-      createdAt: DateTime(2024), 
-      updatedAt: DateTime(2024)
-    )));
-    // final user = await _userRepo.getMeFromCache();
-    // setState(UserLoaded(user));
+    final user = await UserCache.loadUser();
+    if (user == null) {
+      return;
+    }
+    setState(UserLoadedOffline(user));
   }
 
 }

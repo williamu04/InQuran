@@ -88,21 +88,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ],
               ),
             ),
-            AnimatedBuilder(
-              animation: errorController,
-              builder: (context, _) {
-                return PopUpModal(
-                  title: "Pembuatan Akun Gagal",
-                  subtitle: errorController.errorMessage ?? "Terjadi Kesalahan Tak terduga",
-                  controller: errorController,
-                  buttonList: [
-                    ButtonModalModel(
-                      text: "Ok", 
-                      onButtonPressed: () {},
-                    )
-                  ],
-                );
-              },
+            ErrorPopUpModal(
+              title: "Pembuatan Akun Gagal",
+              defaultSubtitle: "Terjadi Kesalahan Tak terduga",
+              controller: errorController,
+              buttonList: [
+                ButtonModalModel(
+                  text: "Ok", 
+                  onButtonPressed: () {},
+                )
+              ],
             )
           ],
         ),

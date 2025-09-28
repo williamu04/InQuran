@@ -23,42 +23,52 @@ class _SurahScreenState extends State<SurahScreen> {
   LoadType loadType = LoadType.surah;
   bool isLoading = true; 
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      final int? startSurahId = int.tryParse(widget.queryParam['startSurahId'] ?? '');
-      final int? startSurahAyah = int.tryParse(widget.queryParam['startSurahAyah'] ?? '');
-      final int? endSurahId = int.tryParse(widget.queryParam['endSurahId'] ?? '');
-      final int? endSurahAyah = int.tryParse(widget.queryParam['endSurahAyah'] ?? '');
-      final String? loadTypeParam = widget.queryParam['loadType'];
+@override
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeAsync();
+  });
+}
 
-      if (loadTypeParam == 'juz') {
-        loadType = LoadType.juz;
-      } else if (loadTypeParam == 'surah') {
-        loadType = LoadType.surah;
-      }
+  Future<void> _initializeAsync() async {
+    final int? startSurahId = int.tryParse(widget.queryParam['startSurahId'] ?? '');
+    final int? startSurahAyah = int.tryParse(widget.queryParam['startSurahAyah'] ?? '');
+    final int? endSurahId = int.tryParse(widget.queryParam['endSurahId'] ?? '');
+    final int? endSurahAyah = int.tryParse(widget.queryParam['endSurahAyah'] ?? '');
+    final String? loadTypeParam = widget.queryParam['loadType'];
+    
+    if (loadTypeParam == 'juz') {
+      loadType = LoadType.juz;
+    } else if (loadTypeParam == 'surah') {
+      loadType = LoadType.surah;
+    }
+    
+    if (startSurahId == null || startSurahAyah == null || endSurahId == null || endSurahAyah == null) {
+      throw ArgumentError('Invalid or missing query parameters for SurahScreen');
+    }
+    
+    
+    if (!context.read<SurahViewModel>().isCacheLoaded()) {
+      await context.read<SurahViewModel>().initializeCache();
+    }
 
-      if (startSurahId == null || startSurahAyah == null || endSurahId == null || endSurahAyah == null) {
-        throw ArgumentError('Invalid or missing query parameters for SurahScreen');
-      }
-
-      if (!mounted) return;
-      final quranMode = context.read<GlobalConfig>().quranMode;
-      if (quranMode == QuranMode.normal || quranMode == QuranMode.memorize) {
-        context.read<SurahViewModel>().loadSurah(
-          startSurahId,
-          startSurahAyah,
-          endSurahId,
-          endSurahAyah,
-        );
-      } else {
-        context.read<SurahViewModel>().loadAyahsInPageOf(startSurahId, startSurahAyah);
-      }
-
-      setState(() {
-        isLoading = false; 
-      });
+    if (!mounted) return;
+    
+    final quranMode = context.read<GlobalConfig>().quranMode;
+    if (quranMode == QuranMode.normal || quranMode == QuranMode.memorize) {
+      context.read<SurahViewModel>().loadSurah(
+        startSurahId,
+        startSurahAyah,
+        endSurahId,
+        endSurahAyah,
+      );
+    } else {
+      context.read<SurahViewModel>().loadAyahsInPageOf(startSurahId, startSurahAyah);
+    }
+    
+    setState(() {
+      isLoading = false;
     });
   }
 

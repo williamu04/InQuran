@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:mtqmnuns/data/local/cache/user.dart';
 import 'package:mtqmnuns/dto/auth.dart';
 import 'package:mtqmnuns/exception/http.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
@@ -142,13 +143,13 @@ class AuthViewModel extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
-    
   }
 
   Future<void> logout() async {
     if (_sessionId != null) {
       try {
         await _clearTokens();
+        await UserCache.clearUser();
         await _authRepository.logout(_sessionId!);
       } catch (e) {
           // TODO: handling offline queue deleting refresh token
