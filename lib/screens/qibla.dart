@@ -1,12 +1,16 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mtqmnuns/common/app_color.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/services/qibla.dart';
 import 'package:vibration/vibration.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mtqmnuns/providers/location.dart';
+import 'package:provider/provider.dart';
 
 class QiblaScreen extends StatefulWidget {
   const QiblaScreen({super.key});
@@ -20,6 +24,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
   bool _loading = true;
   String? _error;
   bool _hasVibrated = false;
+  StreamSubscription<CompassEvent>? _compassSubscription; // Add this line
 
   @override
   void initState() {
@@ -42,6 +47,14 @@ class _QiblaScreenState extends State<QiblaScreen> {
     }
   }
 
+  // Add dispose method
+  @override
+  void dispose() {
+    _compassSubscription?.cancel(); // Cancel compass subscription
+    super.dispose();
+  }
+
+  // Modify the StreamBuilder to store the subscription
   @override
   Widget build(BuildContext context) {
     if (_loading) {
@@ -63,7 +76,6 @@ class _QiblaScreenState extends State<QiblaScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     await Geolocator.openLocationSettings();
-                    // cek ulang status lokasi setelah balik dari settings
                     _initQibla();
                   },
                   child: const Text("Izinkan akses lokasi"),
@@ -77,6 +89,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
       }
     }
 
+    final locationProvider = context.watch<LocationProvider>();
+
     return Scaffold(
       body: Column(
         children: [
@@ -87,10 +101,44 @@ class _QiblaScreenState extends State<QiblaScreen> {
               title: "Pencari Kiblat",
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.location_on, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      locationProvider.placeName ?? "Lokasi tidak tersedia",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Expanded(
             child: StreamBuilder<CompassEvent>(
               stream: FlutterCompass.events,
               builder: (context, snapshot) {
+                // Store the subscription when the stream is first built
+                if (_compassSubscription == null) {
+                  _compassSubscription = FlutterCompass.events?.listen((event) {
+                    // Empty listener - just to maintain the subscription
+                  });
+                }
+
                 if (snapshot.hasError) {
                   return const Center(
                     child: Text("Sensor kompas tidak tersedia"),
@@ -190,7 +238,7 @@ class QiblaCompass extends StatelessWidget {
             ],
           ),
         ),
-        Image.asset("assets/img/arrow.png", height: 160, fit: BoxFit.contain),
+        Image.asset("assets/img/arrow.png", height: 180, fit: BoxFit.contain),
         Transform.translate(
           offset: Offset(x, y),
           child: const Icon(

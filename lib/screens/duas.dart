@@ -133,21 +133,51 @@ class DuasScreen extends StatelessWidget {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "Fitur ini akan segera hadir",
+                                            ),
+                                          ),
+                                        );
+                                      },
                                       icon: const Icon(
                                         LucideIcons.play,
                                         color: Color(0xFF3B1D77),
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "Fitur ini akan segera hadir",
+                                            ),
+                                          ),
+                                        );
+                                      },
                                       icon: const Icon(
                                         LucideIcons.share2,
                                         color: Color(0xFF3B1D77),
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "Fitur ini akan segera hadir",
+                                            ),
+                                          ),
+                                        );
+                                      },
                                       icon: const Icon(
                                         LucideIcons.heart,
                                         color: Color(0xFF3B1D77),
