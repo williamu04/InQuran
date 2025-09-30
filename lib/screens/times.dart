@@ -233,13 +233,13 @@ class PrayerLocationBox extends StatelessWidget {
             backgroundColor: const Color(0xffF3F4F6),
             elevation: 0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),
           onPressed: onReload,
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Expanded(
           child: InkWell(
             borderRadius: BorderRadius.circular(8),
@@ -254,7 +254,7 @@ class PrayerLocationBox extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: AppColors.primary,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [

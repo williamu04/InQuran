@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mtqmnuns/dto/surah.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
 import 'package:mtqmnuns/services/audio_player.dart';
@@ -7,7 +8,7 @@ import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
 class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   final AyahRepository _ayahRepo;
   final AudioPlayerService _audioPlayer = AudioPlayerService();
-  
+
   List<AyahWithSurahDto>? _allAyahsCache;
   bool _isInitialized = false;
 
@@ -51,6 +52,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     } else {
       _updateSuccess(currentState.ayahs, playingIndex: index, isPlaying: true);
       final ayah = currentState.ayahs[index];
+      debugPrint('Starting playback of ayah ${ayah.number} at index $index');
       await _audioPlayer.play(ayah.audioLink);
     }
   }
@@ -60,23 +62,29 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   void onAudioComplete() {
     if (_isHandlingComplete) return;
     _isHandlingComplete = true;
+
     if (state is! SurahSuccess) return;
     final currentState = state as SurahSuccess;
     final currentIndex = currentState.playingIndex;
 
+    debugPrint('Audio completed for index: $currentIndex');
+
     if (currentIndex == null || currentIndex >= currentState.ayahs.length - 1) {
+      debugPrint('Reached end of ayahs, stopping playback');
       _updateSuccess(currentState.ayahs, playingIndex: null, isPlaying: false);
     } else {
       final nextIndex = currentIndex + 1;
       final nextAyah = currentState.ayahs[nextIndex];
+      debugPrint('Moving to next ayah ${nextAyah.number} at index $nextIndex');
+
       _updateSuccess(
         currentState.ayahs,
         playingIndex: nextIndex,
         isPlaying: true,
       );
-
       _audioPlayer.play(nextAyah.audioLink);
     }
+
     _isHandlingComplete = false;
   }
 
@@ -113,7 +121,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
 
   Future<void> initializeCache() async {
     if (_isInitialized) return;
-    
+
     setState(SurahLoading());
     try {
       _allAyahsCache = await _ayahRepo.getAllAyahWithSurah();
@@ -126,33 +134,46 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
 
   void _ensureCacheLoaded() {
     if (!_isInitialized || _allAyahsCache == null) {
-      setState(SurahError('Cache not initialized. Call initializeCache() first.'));
+      setState(
+        SurahError('Cache not initialized. Call initializeCache() first.'),
+      );
     }
   }
 
-  bool isCacheLoaded() { return _allAyahsCache != null && _allAyahsCache!.isNotEmpty; }
+  bool isCacheLoaded() {
+    return _allAyahsCache != null && _allAyahsCache!.isNotEmpty;
+  }
 
-  void loadSurah(int startSurahId, int startSurahAyah, int endSurahId, int endSurahAyah) {
+  void loadSurah(
+    int startSurahId,
+    int startSurahAyah,
+    int endSurahId,
+    int endSurahAyah,
+  ) {
     _ensureCacheLoaded();
-    
+
     try {
-      final filteredAyahs = _allAyahsCache!.where((ayah) {
-        if (startSurahId == endSurahId) {
-          return ayah.surahNumber == startSurahId &&
-                 ayah.number >= startSurahAyah &&
-                 ayah.number <= endSurahAyah;
-        } else {
-          return (ayah.surahNumber == startSurahId && ayah.number >= startSurahAyah) ||
-                 (ayah.surahNumber > startSurahId && ayah.surahNumber < endSurahId) ||
-                 (ayah.surahNumber == endSurahId && ayah.number <= endSurahAyah);
-        }
-      }).toList();
-      
+      final filteredAyahs =
+          _allAyahsCache!.where((ayah) {
+            if (startSurahId == endSurahId) {
+              return ayah.surahNumber == startSurahId &&
+                  ayah.number >= startSurahAyah &&
+                  ayah.number <= endSurahAyah;
+            } else {
+              return (ayah.surahNumber == startSurahId &&
+                      ayah.number >= startSurahAyah) ||
+                  (ayah.surahNumber > startSurahId &&
+                      ayah.surahNumber < endSurahId) ||
+                  (ayah.surahNumber == endSurahId &&
+                      ayah.number <= endSurahAyah);
+            }
+          }).toList();
+
       if (filteredAyahs.isEmpty) {
         setState(SurahError('No ayahs found in specified range'));
         return;
       }
-      
+
       _updateSuccess(filteredAyahs, jumpIndex: 0);
     } catch (e) {
       setState(SurahError(e.toString()));
@@ -162,25 +183,30 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   void appendBySurah() {
     if (state is! SurahSuccess) return;
     _ensureCacheLoaded();
-    
+
     final ayahs = (state as SurahSuccess).ayahs;
     final last = ayahs.lastOrNull;
     if (last == null || last.surahNumber == 114) return;
 
     try {
       List<AyahWithSurahDto> newAyahs;
-      
+
       if (last.number < last.totalAyah) {
-        newAyahs = _allAyahsCache!.where((ayah) =>
-          ayah.surahNumber == last.surahNumber &&
-          ayah.number > last.number
-        ).toList();
+        newAyahs =
+            _allAyahsCache!
+                .where(
+                  (ayah) =>
+                      ayah.surahNumber == last.surahNumber &&
+                      ayah.number > last.number,
+                )
+                .toList();
       } else {
-        newAyahs = _allAyahsCache!.where((ayah) =>
-          ayah.surahNumber == last.surahNumber + 1
-        ).toList();
+        newAyahs =
+            _allAyahsCache!
+                .where((ayah) => ayah.surahNumber == last.surahNumber + 1)
+                .toList();
       }
-      
+
       if (newAyahs.isNotEmpty) {
         _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
       }
@@ -192,25 +218,30 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   void prependBySurah() {
     if (state is! SurahSuccess) return;
     _ensureCacheLoaded();
-    
+
     final ayahs = (state as SurahSuccess).ayahs;
     final first = ayahs.firstOrNull;
     if (first == null || first.surahNumber == 1) return;
 
     try {
       List<AyahWithSurahDto> newAyahs;
-      
+
       if (first.number > 1) {
-        newAyahs = _allAyahsCache!.where((ayah) =>
-          ayah.surahNumber == first.surahNumber &&
-          ayah.number < first.number
-        ).toList();
+        newAyahs =
+            _allAyahsCache!
+                .where(
+                  (ayah) =>
+                      ayah.surahNumber == first.surahNumber &&
+                      ayah.number < first.number,
+                )
+                .toList();
       } else {
-        newAyahs = _allAyahsCache!.where((ayah) =>
-          ayah.surahNumber == first.surahNumber - 1
-        ).toList();
+        newAyahs =
+            _allAyahsCache!
+                .where((ayah) => ayah.surahNumber == first.surahNumber - 1)
+                .toList();
       }
-      
+
       if (newAyahs.isNotEmpty) {
         _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
       }
@@ -222,16 +253,17 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   void appendByJuz() {
     if (state is! SurahSuccess) return;
     _ensureCacheLoaded();
-    
+
     final ayahs = (state as SurahSuccess).ayahs;
     final last = ayahs.lastOrNull;
     if (last == null || last.juzNumber == 30) return;
 
     try {
-      final newAyahs = _allAyahsCache!.where((ayah) =>
-        ayah.juzNumber == last.juzNumber + 1
-      ).toList();
-      
+      final newAyahs =
+          _allAyahsCache!
+              .where((ayah) => ayah.juzNumber == last.juzNumber + 1)
+              .toList();
+
       if (newAyahs.isNotEmpty) {
         _updateSuccess([...ayahs, ...newAyahs], jumpIndex: ayahs.length - 1);
       }
@@ -243,16 +275,17 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   void prependByJuz() {
     if (state is! SurahSuccess) return;
     _ensureCacheLoaded();
-    
+
     final ayahs = (state as SurahSuccess).ayahs;
     final first = ayahs.firstOrNull;
     if (first == null || first.juzNumber == 1) return;
 
     try {
-      final newAyahs = _allAyahsCache!.where((ayah) =>
-        ayah.juzNumber == first.juzNumber - 1
-      ).toList();
-      
+      final newAyahs =
+          _allAyahsCache!
+              .where((ayah) => ayah.juzNumber == first.juzNumber - 1)
+              .toList();
+
       if (newAyahs.isNotEmpty) {
         _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
       }
@@ -264,21 +297,27 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   void appendSurahByCount(int count) {
     if (state is! SurahSuccess) return;
     _ensureCacheLoaded();
-    
+
     final ayahs = (state as SurahSuccess).ayahs;
     final first = ayahs.firstOrNull;
     if (first == null || first.surahNumber == 1) return;
 
     try {
-      final allPrevious = _allAyahsCache!.where((ayah) =>
-        ayah.surahNumber < first.surahNumber ||
-        (ayah.surahNumber == first.surahNumber && ayah.number < first.number)
-      ).toList();
-      
-      final newAyahs = allPrevious.length > count 
-        ? allPrevious.sublist(allPrevious.length - count)
-        : allPrevious;
-      
+      final allPrevious =
+          _allAyahsCache!
+              .where(
+                (ayah) =>
+                    ayah.surahNumber < first.surahNumber ||
+                    (ayah.surahNumber == first.surahNumber &&
+                        ayah.number < first.number),
+              )
+              .toList();
+
+      final newAyahs =
+          allPrevious.length > count
+              ? allPrevious.sublist(allPrevious.length - count)
+              : allPrevious;
+
       if (newAyahs.isNotEmpty) {
         _updateSuccess([...newAyahs, ...ayahs], jumpIndex: newAyahs.length);
       }
@@ -290,21 +329,25 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   void prependSurahByCount(int count) {
     if (state is! SurahSuccess) return;
     _ensureCacheLoaded();
-    
+
     final ayahs = (state as SurahSuccess).ayahs;
     final last = ayahs.lastOrNull;
     if (last == null || last.surahNumber == 114) return;
 
     try {
-      final allNext = _allAyahsCache!.where((ayah) =>
-        ayah.surahNumber > last.surahNumber ||
-        (ayah.surahNumber == last.surahNumber && ayah.number > last.number)
-      ).toList();
-      
-      final newAyahs = allNext.length > count 
-        ? allNext.sublist(0, count)
-        : allNext;
-      
+      final allNext =
+          _allAyahsCache!
+              .where(
+                (ayah) =>
+                    ayah.surahNumber > last.surahNumber ||
+                    (ayah.surahNumber == last.surahNumber &&
+                        ayah.number > last.number),
+              )
+              .toList();
+
+      final newAyahs =
+          allNext.length > count ? allNext.sublist(0, count) : allNext;
+
       if (newAyahs.isNotEmpty) {
         _updateSuccess([...ayahs, ...newAyahs], jumpIndex: newAyahs.length);
       }
@@ -328,19 +371,18 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         return;
       }
     }
-    
+
     _ensureCacheLoaded();
-    
+
     try {
-      final pageAyahs = _allAyahsCache!.where((ayah) =>
-        ayah.page == pageNumber
-      ).toList();
-      
+      final pageAyahs =
+          _allAyahsCache!.where((ayah) => ayah.page == pageNumber).toList();
+
       if (pageAyahs.isEmpty) {
         setState(SurahError("No ayahs found for page $pageNumber"));
         return;
       }
-      
+
       _updateSuccess(pageAyahs);
     } catch (e) {
       setState(SurahError(e.toString()));
@@ -362,20 +404,21 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         return;
       }
     }
-    
+
     _ensureCacheLoaded();
-    
+
     try {
-      final juzAyahs = _allAyahsCache!.where((ayah) =>
-        ayah.juzNumber == juzNumber
-      ).toList();
-      
+      final juzAyahs =
+          _allAyahsCache!.where((ayah) => ayah.juzNumber == juzNumber).toList();
+
       if (juzAyahs.isEmpty) {
         setState(SurahError("No ayahs found for juz $juzNumber"));
         return;
       }
-      
-      final firstPage = juzAyahs.map((a) => a.page).reduce((a, b) => a < b ? a : b);
+
+      final firstPage = juzAyahs
+          .map((a) => a.page)
+          .reduce((a, b) => a < b ? a : b);
       loadByPage(firstPage);
     } catch (e) {
       setState(SurahError(e.toString()));
@@ -397,19 +440,23 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         return;
       }
     }
-    
+
     _ensureCacheLoaded();
-    
+
     try {
-      final targetAyah = _allAyahsCache!.where((ayah) =>
-        ayah.surahNumber == surahId && ayah.number == ayahNumber
-      ).firstOrNull;
-      
+      final targetAyah =
+          _allAyahsCache!
+              .where(
+                (ayah) =>
+                    ayah.surahNumber == surahId && ayah.number == ayahNumber,
+              )
+              .firstOrNull;
+
       if (targetAyah == null) {
         setState(SurahError("Ayah not found"));
         return;
       }
-      
+
       loadByPage(targetAyah.page);
     } catch (e) {
       setState(SurahError(e.toString()));

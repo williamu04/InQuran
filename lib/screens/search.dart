@@ -33,6 +33,7 @@ class SearchScreen extends StatelessWidget {
   }
 
   Widget _buildCategoryCard(
+    BuildContext context,
     String title,
     String subtitle,
     List<String> chips, {
@@ -40,46 +41,57 @@ class SearchScreen extends StatelessWidget {
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-      child: roundedCard(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-        borderRadius: 20,
-        gradient: const LinearGradient(
-          colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        allRounded: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Fitur ini akan segera hadir")),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: roundedCard(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+            borderRadius: 20,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
+            allRounded: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ...chips.map((chip) => _buildChip(chip)),
-                _buildChip(
-                  'Lainnya',
-                  color: etcColor ?? const Color(0xFF672CBC),
-                  textColor: Colors.white,
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  children: [
+                    ...chips.map((chip) => _buildChip(chip)),
+                    _buildChip(
+                      'Lainnya',
+                      color: etcColor ?? const Color(0xFF672CBC),
+                      textColor: Colors.white,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -93,13 +105,13 @@ class SearchScreen extends StatelessWidget {
         children: [
           // Fixed Gradient Top Section
           roundedCard(
-            padding: const EdgeInsets.symmetric(
-              vertical: 20,
-              horizontal: 24
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
             child: Column(
               children: [
-                TopBarUtility.buildDefaultTopBar(context:context, title: "Jelajahi"),  
+                TopBarUtility.buildDefaultTopBar(
+                  context: context,
+                  title: "Jelajahi",
+                ),
                 // Top bar spacing
                 const SizedBox(height: 10),
                 // Info Card
@@ -128,7 +140,7 @@ class SearchScreen extends StatelessWidget {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 11
+                            fontSize: 11,
                           ),
                         ),
                         TextSpan(
@@ -136,7 +148,7 @@ class SearchScreen extends StatelessWidget {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
-                            fontSize: 11
+                            fontSize: 11,
                           ),
                         ),
                       ],
@@ -156,6 +168,7 @@ class SearchScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 24),
                     _buildCategoryCard(
+                      context,
                       'Dasar-Dasar Islam',
                       'Akidah dan Ibadah',
                       [
@@ -165,16 +178,22 @@ class SearchScreen extends StatelessWidget {
                         'Akhlak & Adab',
                       ],
                     ),
-                    _buildCategoryCard('Sosial & Etika', 'Pedoman Hidup', [
-                      'Hubungan Antar Manusia',
-                      'Muamalah & Perdagangan',
-                      'Pakaian Islami',
-                      'Keadilan',
-                      'Makanan Halal',
-                      'Pernikahan',
-                      'Peran Perempuan',
-                    ]),
                     _buildCategoryCard(
+                      context,
+                      'Sosial & Etika',
+                      'Pedoman Hidup',
+                      [
+                        'Hubungan Antar Manusia',
+                        'Muamalah & Perdagangan',
+                        'Pakaian Islami',
+                        'Keadilan',
+                        'Makanan Halal',
+                        'Pernikahan',
+                        'Peran Perempuan',
+                      ],
+                    ),
+                    _buildCategoryCard(
+                      context,
                       "Hakikat Kehidupan",
                       'dan Akhirat',
                       [
