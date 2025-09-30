@@ -122,6 +122,7 @@ class AppRoutes {
     path: '/favorite',
     pageBuilder: (context, state) => NoTransitionPage(child: FavoriteScreen()),
     isHasBottomBar: true,
+    requiresAuth: true
 
   );
 

@@ -7,6 +7,7 @@ import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/screens/home_main.dart';
 import 'package:mtqmnuns/screens/home_voice.dart';
 import 'package:mtqmnuns/state/user.dart';
+import 'package:mtqmnuns/viewmodel/favorites.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserViewModel>().loadUser();
+      context.read<FavoritesViewModel>().getAllFavorites();
     });
     super.initState();
   }

@@ -142,25 +142,27 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<SuccessOrFail<TokenWithUserDto>> refreshToken() async {
+  Future<TokenWithUserDto> refreshToken() async {
     await _deleteJwtToken();
+
     final refreshToken = _refreshToken;
     final sessionId = _sessionId;
+
     if (refreshToken == null && sessionId == null) {
-      return Failure<TokenWithUserDto>("Unauthenticated");
+      throw Exception("Unauthenticated");
     }
 
     try {
       final res = await _authRepository.refreshToken(refreshToken!, sessionId!);
       await _writeNewToken(res.token);
-      return Success<TokenWithUserDto>(res);
-    } on RefreshTokenInvalidError catch (_) {
+      return res; 
+    } on RefreshTokenInvalidError {
       _clearTokens();
-      return Failure("Session Invalid atau Expired");
+      rethrow; 
     } on HttpError catch (e) {
-      return Failure(e.message);
+      throw Exception(e.message); 
     } catch (e) {
-      return Failure("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+      throw Exception("Terjadi Kesalahan Tak Terduga: ${e.toString()}"); 
     } finally {
       notifyListeners();
     }
@@ -174,6 +176,22 @@ class AuthViewModel extends ChangeNotifier {
       } catch (e) {
           // TODO: handling offline queue deleting refresh token
       }
+    }
+  }
+
+  Future<String> getValidTokenOrThrow() async {
+    if (!isLoggedIn()) {
+      throw Exception("Unauthenticated");
+    }
+
+    final token = getValidJwtOrNull();
+    if (token != null) return token;
+
+    try {
+      final res = await refreshToken(); 
+      return res.token.jwtToken;
+    } catch (e) {
+      rethrow; 
     }
   }
 }

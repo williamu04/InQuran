@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/error_popup.dart';
+import 'package:mtqmnuns/components/popup_modal.dart';
+import 'package:mtqmnuns/dto/favorites.dart';
 import 'package:mtqmnuns/dto/surah.dart';
+import 'package:mtqmnuns/routes/route.dart';
+import 'package:mtqmnuns/state/favorites.dart';
+import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/state/surah.dart';
+import 'package:mtqmnuns/state/user.dart';
+import 'package:mtqmnuns/viewmodel/favorites.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -25,6 +35,7 @@ class NormalSurahScreen extends StatefulWidget {
 class _NormalSurahScreenState extends State<NormalSurahScreen>
     with SingleTickerProviderStateMixin {
   final ItemScrollController _itemScrollController = ItemScrollController();
+  final ErrorPopUpController errorController = ErrorPopUpController();
   final ItemPositionsListener _itemPositionsListener =
       ItemPositionsListener.create();
 
@@ -38,8 +49,6 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   static const double _maxPullDistance = 120.0;
   static const double _triggerDistance = 80.0;
 
-  final Map<String, bool> _localFavorites = {};
-
   @override
   void initState() {
     super.initState();
@@ -47,6 +56,10 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FavoritesViewModel>().getAllFavorites();
+    });
   }
 
   @override
@@ -133,9 +146,39 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
 
     return false;
   }
-
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        buildMainScreen(context),
+        ErrorPopUpModal(
+          title: "Error", 
+          defaultSubtitle: "Terjadi Kesalhan Tidak Terduga", 
+          buttonList: [
+            ButtonModalModel(
+              text: "Login", 
+              onButtonPressed: () {
+                context.replace(AppRoutes.login.path);
+              },
+            ),
+            ButtonModalModel(
+              text: "Kembali", 
+              textColor: Colors.red,
+              buttonColor: Colors.white,
+              onButtonPressed: () {
+                context.replace(AppRoutes.home.path);
+                context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+              },
+            )
+          ],
+          controller: errorController
+          )
+
+      ],
+    );
+  }
+
+  Widget buildMainScreen(BuildContext context) {
     return Consumer<SurahViewModel>(
       builder: (context, vm, child) {
         final state = vm.state;
@@ -192,7 +235,6 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
 
   Widget _buildAyahCard(AyahWithSurahDto ayah, {EdgeInsets? padding}) {
     final key = '${ayah.surahNumber}_${ayah.number}';
-    final isFav = _localFavorites[key] ?? ayah.favorite;
 
     Widget ayahCardContent = Card(
       elevation: 0,
@@ -289,36 +331,73 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                       SharePlus.instance.share(ShareParams(text: text));
                     },
                   ),
+                  Consumer<FavoritesViewModel>(
+                    builder: (context, favVm, child) {
+                      final state = favVm.state;
 
-                  _buildActionButton(
-                    icon:
-                        isFav
-                            ? Image.asset(
-                              'assets/img/heart.png',
-                              height: 18,
-                              fit: BoxFit.contain,
-                            )
-                            : Icon(
+                      switch (state) {
+                        case FavoritesLoadLoading():
+                        case FavoritesLoadUnauthenticated():
+                        case FavoritesLoadError():
+                          return _buildActionButton(
+                            icon: const Icon(
                               LucideIcons.heart,
                               size: 20,
                               color: Color(0xFF672CBC),
                             ),
-                    onPressed: () async {
-                      final vm = context.read<SurahViewModel>();
-                      final result = await vm.toggleFavorite(
-                        ayah.surahNumber,
-                        ayah.number,
-                      );
+                            onPressed: () {
+                              if (state is FavoritesLoadUnauthenticated) {
+                                errorController.open('Fitur ini memerlukan login, login terlebih dahulu?');
+                              } else if (state is FavoritesLoadError) {
+                                errorController.open('Error: ${state.message}');
+                              }
+                            },
+                          );
 
-                      if (result == null && mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to update favorite'),
-                          ),
-                        );
+                        case FavoritesLoaded(:final favorites):
+                          final isFav = favorites.any((f) =>
+                              f.surahNumber == ayah.surahNumber && f.ayahNumber == ayah.number);
+
+                          return _buildActionButton(
+                            icon: isFav
+                                ? Image.asset(
+                                    'assets/img/heart.png',
+                                    height: 18,
+                                    fit: BoxFit.contain,
+                                  )
+                                : const Icon(
+                                    LucideIcons.heart,
+                                    size: 20,
+                                    color: Color(0xFF672CBC),
+                                  ),
+                            onPressed: () async {
+                              final favorite = FavoriteDto(
+                                ayah.surahNumber,
+                                ayah.number,
+                              );
+
+                              if (isFav) {
+                                final res = await favVm.deleteFavorite(favorite);
+                                switch (res) {
+                                  case Success():
+                                    break;
+                                  case Failure(:final reason):
+                                    errorController.open(reason);
+                                }
+                              } else {
+                                final res = await favVm.addFavorite(favorite);
+                                switch (res) {
+                                  case Success():
+                                    break;
+                                  case Failure(:final reason):
+                                    errorController.open(reason);
+                                }
+                              }
+                            },
+                          );
                       }
                     },
-                  ),
+                  )
                 ],
               ),
             ),
@@ -376,6 +455,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
       ),
     );
   }
+  
 }
 
 // ignore: must_be_immutable

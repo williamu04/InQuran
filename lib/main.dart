@@ -17,9 +17,11 @@ import 'package:mtqmnuns/config/dio.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
 import 'package:mtqmnuns/data/remote/auth.dart';
+import 'package:mtqmnuns/data/remote/favorites.dart';
 import 'package:mtqmnuns/data/remote/user.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
+import 'package:mtqmnuns/repositories/favorites.dart';
 import 'package:mtqmnuns/repositories/stt.dart';
 import 'package:mtqmnuns/repositories/user.dart';
 import 'package:mtqmnuns/routes/go_router.dart';
@@ -36,6 +38,7 @@ import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
 import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
+import 'package:mtqmnuns/viewmodel/favorites.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
@@ -77,10 +80,14 @@ void main() async {
 
           // Remote
           Provider(create: (_) => UserRemoteDataSource(client: dio)),
+          Provider(create: (_) => FavoritesDataSource(client: dio)),
 
           // Repositories
           Provider(
             create: (context) => SurahRepository(context.read<SurahDao>()),
+          ),
+          Provider(
+            create: (context) => FavoritesRepository(context.read<FavoritesDataSource>()),
           ),
           Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
           Provider(
@@ -137,6 +144,13 @@ void main() async {
                 context.read<AuthViewModel>(),
               ),
         ),
+        ChangeNotifierProvider(
+          create:
+              (context) => FavoritesViewModel(
+                context.read<FavoritesRepository>(),
+                context.read<AuthViewModel>(),
+              ),
+        ),
           // ViewModels
           ChangeNotifierProvider(
             create:
@@ -161,13 +175,6 @@ void main() async {
             create:
                 (context) =>
                     SurahViewModel(context.read<AyahRepository>()),
-          ),
-          ChangeNotifierProvider(
-            create:
-                (context) => UserViewModel(
-                  context.read<UserRepository>(),
-                  context.read<AuthViewModel>(),
-                ),
           ),
 
           //toggleable ui state
