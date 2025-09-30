@@ -1,5 +1,11 @@
 
 class Validation {
+  static String? isEmpty(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Kolom wajib diisi';
+    }
+    return null;
+  }
   static String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
       return 'Username wajib diisi';

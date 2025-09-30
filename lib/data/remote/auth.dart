@@ -3,6 +3,7 @@ import 'package:mtqmnuns/common/exception.dart';
 import 'package:mtqmnuns/config/env.dart';
 import 'package:mtqmnuns/dto/auth.dart';
 import 'package:dio/dio.dart';
+import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/exception/http.dart';
 
 class AuthRemoteDataSource {
@@ -17,7 +18,7 @@ class AuthRemoteDataSource {
         },
       );
 
-  Future<TokenDto> refreshToken(String refreshToken, String sessionId) async {
+  Future<TokenWithUserDto> refreshToken(String refreshToken, String sessionId) async {
     try {
       final response = await client.post(
         '${Env.baseUrl}/auth/refresh-token',
@@ -36,7 +37,7 @@ class AuthRemoteDataSource {
     }
   }
 
-Future<TokenDto> loginEmail(String email, String password) async {
+Future<TokenWithUserDto> loginEmail(String email, String password) async {
   try {
     final response = await client.post(
       '${Env.baseUrl}/auth/login',
@@ -52,7 +53,7 @@ Future<TokenDto> loginEmail(String email, String password) async {
   }
 }
 
-  Future<TokenDto> register(
+  Future<TokenWithUserDto> register(
     String username,
     String email,
     String password,
@@ -71,6 +72,32 @@ Future<TokenDto> loginEmail(String email, String password) async {
     }
   }
 
+  Future<GoogleTokenWithUserDto> googleOauthLogin(GoogleUserDTO user) async {
+    try {
+      final response = await client.post(
+        '${Env.baseUrl}/auth/register/oauth/google',
+        data: {
+          "email": user.email,
+          "fullName": user.displayName, 
+          "googleId": user.id,
+        },
+        options: _defaultOptions,
+      );
+
+      return GoogleTokenWithUserDto(
+        TokenDto.fromJson(Map<String, dynamic>.from(response.data['data']['tokens'])),
+        UserDto.fromJson(response.data['data']['user']),
+        response.data['data']['isNewUser']
+      );
+
+    } on SocketException catch (e) {
+      throw NoConnectionError('Tidak ada koneksi internet: ${e.message}');
+    } on DioException catch (e) {
+      dioExceptionHandler(e);
+    }
+  }
+
+
   Future<void> logout(String sessionId) async {
     try {
       await client.post(
@@ -85,9 +112,12 @@ Future<TokenDto> loginEmail(String email, String password) async {
     }
   }
 
-  TokenDto _handleTokenResponse(Response response) {
+  TokenWithUserDto _handleTokenResponse(Response response) {
     try {
-      return TokenDto.fromJson(Map<String, dynamic>.from(response.data['data']));
+      return TokenWithUserDto(
+        TokenDto.fromJson(Map<String, dynamic>.from(response.data['data']['tokens'])),
+        UserDto.fromJson(response.data['data']['user'])
+      );
     } catch (e) {
       throw DataParsingError('Gagal parsing data: ${e.toString()}');
     }

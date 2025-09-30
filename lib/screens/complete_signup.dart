@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -6,11 +7,14 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/app_color.dart';
 import 'package:mtqmnuns/common/validation.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
+import 'package:mtqmnuns/components/retry_button.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/components/text_field.dart';
 import 'package:mtqmnuns/components/transient_modal.dart';
+import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/success_or_fail.dart';
+import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,6 +32,9 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
   final TextEditingController _fullNameController = TextEditingController();
   final ErrorPopUpController errorController = ErrorPopUpController();
   final ImagePicker _picker = ImagePicker();
+
+  final ErrorPopUpController unauthenticatedPopUpController = ErrorPopUpController();
+  final ErrorPopUpController sessionExpiredPopUpController = ErrorPopUpController();
 
   bool _isLoading = false;
   bool _isFormValid = true;
@@ -54,6 +61,15 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
       _isFormValid =
           Validation.validateFullName(_fullNameController.text) == null;
     });
+  }
+
+  String? _initialFullName;
+
+  void _setInitialFullName(UserDto user) {
+    if (_initialFullName != user.fullName) {
+      _initialFullName = user.fullName;
+      _fullNameController.text = user.fullName ?? '';
+    }
   }
 
   @override
@@ -119,22 +135,63 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
                   ),
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 60),
-                        _buildProfileSection(),
-                        const SizedBox(height: 40),
-                        _buildTitle(),
-                        const SizedBox(height: 30),
-                        _buildFormField(),
-                        const SizedBox(height: 40),
-                        const SizedBox(height: 60),
-                      ],
-                    ),
-                  ),
-                ),
+                  child: Consumer<UserViewModel>(
+                    builder:(context, value, child) {
+                      switch(value.state) {
+                        case UserLoadLoading():
+                          return const Center(child: CircularProgressIndicator());
+                        case UserLoadUnauthenticated():
+                            if (value.state is UserLoadSessionExpired) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                sessionExpiredPopUpController.open();
+                              });
+                            } else {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                unauthenticatedPopUpController.open();
+                              });
+                            }
+                            return Center(child: const Text("Unauthenticated"));
+                        case UserLoadError():
+                          return RetryWidget(
+                            onRetry: () {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                context.read<UserViewModel>().loadUser();
+                              });
+                            },
+                          );
+                        case UserLoaded(:final user):
+                          if (value.state is UserLoadedOffline) {
+                            return RetryWidget(
+                              message: "Error loading data, nyalakan internet dan coba lagi",
+                              onRetry: () {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  context.read<UserViewModel>().loadUser();
+                                });
+                              },
+                            );
+                          } else {
+
+                          _setInitialFullName(user);
+                          return SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 60),
+                                _buildProfileSection(user),
+                                const SizedBox(height: 40),
+                                _buildTitle(),
+                                const SizedBox(height: 30),
+                                _buildFormField(),
+                                const SizedBox(height: 40),
+                                const SizedBox(height: 60),
+                              ],
+                            ),
+                          );
+                          }
+                        }
+                      }
+                  )
+                )
               ],
             ),
             ErrorPopUpModal(
@@ -145,13 +202,60 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
                 ButtonModalModel(text: "Ok", onButtonPressed: () {}),
               ],
             ),
+            PopUpModal(
+              title: "Kamu Belum Login",
+              subtitle: "Kamu harus login untuk mengakses fitur ini",
+              closeOnlyOnButtonPress: true,
+              controller: unauthenticatedPopUpController,
+              buttonList: [
+                ButtonModalModel(
+                  text: "Login", 
+                  onButtonPressed: () {
+                    context.replace(AppRoutes.login.path);
+                    context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+                  },
+                ),
+                ButtonModalModel(
+                  text: "Kembali", 
+                  textColor: Colors.red,
+                  buttonColor: Colors.white,
+                  onButtonPressed: () {
+                    context.replace(AppRoutes.home.path);
+                    context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+                  },
+                )
+              ],
+            ),
+            PopUpModal(
+              title: "Sesion Expired",
+              subtitle: "Apakah Kamu Ingin Login Kembali?",
+              closeOnlyOnButtonPress: true,
+              controller: sessionExpiredPopUpController,
+              onClosed: () {
+                context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+              },
+              buttonList: [
+                ButtonModalModel(
+                  text: "Login", 
+                  onButtonPressed: () {
+                    context.push(AppRoutes.login.path);
+                  }
+                ),
+                ButtonModalModel(
+                  text: "Batal", 
+                  textColor: Colors.red,
+                  buttonColor: Colors.white,
+                  onButtonPressed: () {}
+                )
+              ],
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileSection() {
+  Widget _buildProfileSection(UserDto user) {
     return Column(
       children: [
         GestureDetector(
@@ -166,21 +270,31 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
                   color: Colors.grey.shade200,
                   border: Border.all(color: Colors.grey.shade300, width: 2),
                 ),
-                child:
-                    _selectedImage != null
-                        ? ClipOval(
-                          child: Image.file(
-                            _selectedImage!,
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ),
+                child: ClipOval(
+                  child: _selectedImage != null
+                      ? Image.file(
+                          _selectedImage!,
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
                         )
-                        : const Icon(
-                          Icons.person,
-                          size: 60,
-                          color: Colors.grey,
-                        ),
+                      : (user.photoUrl != null && user.photoUrl!.isNotEmpty)
+                          ? CachedNetworkImage(
+                              imageUrl: user.photoUrl!,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => 
+                                  const Center(child: CircularProgressIndicator()),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.person, size: 60, color: Colors.grey),
+                            )
+                          : const Icon(
+                              Icons.person,
+                              size: 60,
+                              color: Colors.grey,
+                            ),
+                ),
               ),
               Positioned(
                 bottom: 0,
@@ -246,10 +360,9 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
     setState(() => _isLoading = true);
 
     final fullName = _fullNameController.text.trim();
-    final hasFullName = fullName.isNotEmpty;
     final hasImage = _selectedImage != null;
 
-    if (!hasFullName && !hasImage) {
+    if (!hasImage) {
       setState(() => _isLoading = false);
       if (context.mounted) {
         context.replace(AppRoutes.home.path);
@@ -274,31 +387,19 @@ class _CompleteUserSignUpState extends State<CompleteUserSignUp> {
         }
       }
 
-      if (hasFullName) {
-        if (context.mounted) {
-          result = await context.read<UserViewModel>().updateFullName(
-            fullName: fullName,
-          );
-        }
-        if (result is Failure) {
-          _showError(result.reason);
-          return;
-        }
+      if (context.mounted) {
+        result = await context.read<UserViewModel>().updateFullName(
+          fullName: fullName,
+        );
+      }
+      if (result is Failure) {
+        _showError(result.reason);
+        return;
       }
 
       if (context.mounted) {
         context.replace(AppRoutes.home.path);
-
-        String message = "";
-        if (hasFullName && hasImage) {
-          message = "Profil dan foto berhasil diperbarui";
-        } else if (hasFullName) {
-          message = "Nama profil berhasil diperbarui";
-        } else if (hasImage) {
-          message = "Foto profil berhasil diperbarui";
-        }
-
-        context.read<TransientMessageService>().showMessage(context, message);
+        context.read<TransientMessageService>().showMessage(context, "Profil berhasil diperbarui");
       }
     } catch (e) {
       _showError("Terjadi kesalahan: ${e.toString()}");

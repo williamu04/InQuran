@@ -6,6 +6,10 @@ class UserLoadLoading extends UserLoadState {}
 
 class UserLoadUnauthenticated extends UserLoadState {}
 
+class UserLoadError extends UserLoadState{
+  String message;
+  UserLoadError(this.message);
+}
 
 class UserLoadSessionExpired extends UserLoadUnauthenticated{}
 

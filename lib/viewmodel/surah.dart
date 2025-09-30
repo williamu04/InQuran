@@ -471,65 +471,6 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   }
 
   Future<bool?> toggleFavorite(int surahId, int ayahNumber) async {
-    if (state is! SurahSuccess) return null;
-
-    try {
-      final result = await _ayahRepo.toggleFavorite(surahId, ayahNumber);
-      if (result != null) {
-        if (_allAyahsCache != null) {
-          _allAyahsCache =
-              _allAyahsCache!.map((ayah) {
-                if (ayah.surahNumber == surahId && ayah.number == ayahNumber) {
-                  return AyahWithSurahDto(
-                    ayah.number,
-                    ayah.audioLink,
-                    ayah.juzNumber,
-                    ayah.surahNumber,
-                    ayah.surahName,
-                    ayah.nameLatin,
-                    ayah.nameIndo,
-                    ayah.arabText,
-                    ayah.translationText,
-                    ayah.totalAyah,
-                    ayah.page,
-                    result,
-                  );
-                }
-                return ayah;
-              }).toList();
-        }
-
-        final currentState = state as SurahSuccess;
-        final updatedAyahs =
-            currentState.ayahs.map((ayah) {
-              if (ayah.surahNumber == surahId && ayah.number == ayahNumber) {
-                return AyahWithSurahDto(
-                  ayah.number,
-                  ayah.audioLink,
-                  ayah.juzNumber,
-                  ayah.surahNumber,
-                  ayah.surahName,
-                  ayah.nameLatin,
-                  ayah.nameIndo,
-                  ayah.arabText,
-                  ayah.translationText,
-                  ayah.totalAyah,
-                  ayah.page,
-                  result,
-                );
-              }
-              return ayah;
-            }).toList();
-
-        _updateSuccess(updatedAyahs);
-      }
-      return result;
-    } catch (e) {
-      _updateSuccess(
-        (state as SurahSuccess).ayahs,
-        warning: "Failed to update favorite",
-      );
-      return null;
-    }
+    return true;
   }
 }

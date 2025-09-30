@@ -1,16 +1,22 @@
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/app_color.dart';
+import 'package:mtqmnuns/common/google_oauth.dart';
 import 'package:mtqmnuns/common/validation.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
+import 'package:mtqmnuns/components/retry_button.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/components/text_field.dart';
 import 'package:mtqmnuns/components/transient_modal.dart';
+import 'package:mtqmnuns/dto/auth.dart';
+import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/state/user.dart';
@@ -30,6 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
+  final ValueNotifier<bool> _isUserHasPassword = ValueNotifier<bool>(false);
 
   final ErrorPopUpController errorController = ErrorPopUpController();
   final ErrorPopUpController unauthenticatedPopUpController = ErrorPopUpController();
@@ -47,21 +54,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
     super.initState();
     _fullNameController.addListener(_updateFormValidity);
+    _emailController.addListener(_updateFormValidity);
+    _usernameController.addListener(_updateFormValidity);
+    _isUserHasPassword.addListener(_updateFormValidity);
   }
 
   @override
   void dispose() {
     _fullNameController.removeListener(_updateFormValidity);
+    _emailController.removeListener(_updateFormValidity);
+    _usernameController.removeListener(_updateFormValidity);
+    _isUserHasPassword.removeListener(_updateFormValidity);
     _fullNameController.dispose();
+    _emailController.dispose();
+    _usernameController.dispose();
+    _isUserHasPassword.dispose();
     super.dispose();
   }
 
   void _updateFormValidity() {
     setState(() {
-      _isFormValid =
-          Validation.validateFullName(_fullNameController.text) == null && 
-          Validation.validateEmail(_emailController.text) == null && 
+      bool isFullNameValid = Validation.validateFullName(_fullNameController.text) == null;
+      bool isPasswordValid = true;
+      if (_isUserHasPassword.value) {
+        isPasswordValid = Validation.validateEmail(_emailController.text) == null && 
           Validation.validateUsername(_usernameController.text) == null;
+      }
+      _isFormValid = isFullNameValid && isPasswordValid;
     });
   }
 
@@ -83,7 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: 50,
                         child: IconButton(
                           icon: Icon(
-                            LucideIcons.house,
+                            LucideIcons.arrowLeft,
                             color:
                                 !_isLoading
                                     ? Colors.white
@@ -91,7 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           onPressed:
                               !_isLoading
-                                  ? () => context.replace(AppRoutes.home.path)
+                                  ? () => context.pop()
                                   : null,
                           iconSize: 26,
                         ),
@@ -127,76 +146,70 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                 ),
-                Consumer<UserViewModel>(
-                  builder: (context, uservm, _) {
-                    switch (uservm.state) {
-                      case UserLoadLoading():
-                        return Expanded(child: Center(child: CircularProgressIndicator()));
-                      case UserLoaded(:final user):
-                      if (uservm.state is UserLoadedOffline) {
-                        return
-                        Expanded(child:Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text("Error loading data"),
-                            const SizedBox(height: 16),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                side: const BorderSide(color: Colors.purple),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                              ),
-                              onPressed: () {
+                Expanded(
+                  child: Consumer<UserViewModel>(
+                    builder: (context, uservm, _) {
+                      switch (uservm.state) {
+                        case UserLoadLoading():
+                          return const Center(child: CircularProgressIndicator());
+
+                        case UserLoadError():
+                          return RetryWidget(
+                            onRetry: () {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                context.read<UserViewModel>().loadUser();
+                              });
+                            },
+                          );
+
+                        case UserLoaded(:final user):
+                          if (uservm.state is UserLoadedOffline) {
+                            return RetryWidget(
+                              message: "Error loading data, nyalakan internet dan coba lagi",
+                              onRetry: () {
                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                   context.read<UserViewModel>().loadUser();
                                 });
                               },
-                              child: const Text(
-                                "Coba Lagi",
-                                style: TextStyle(color: Colors.purple),
-                              ),
-                            ),
-                          ],
-                        ));
+                            );
+                          } else {
+                            _setInitialData(user);
+                            return SingleChildScrollView(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 40),
+                                    _buildProfileSection(user),
+                                    const SizedBox(height: 50),
+                                    _buildFormField(user),
+                                    const SizedBox(height: 20),
+                                    _buildBindingSection(user),
+                                    const SizedBox(height: 150),
+                                  ],
+                                ),
+                              );
+                          }
+
+                        case UserLoadUnauthenticated():
+                            if (uservm.state is UserLoadSessionExpired) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                sessionExpiredPopUpController.open();
+                              });
+                            } else {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                unauthenticatedPopUpController.open();
+                              });
+                            }
+                            return Center(child: const Text("Unauthenticated"));
+
                       }
-                      _usernameController.text = user.username;
-                      _emailController.text = user.email;
-                      _fullNameController.text = user.fullName ?? '';
-                        return Expanded(
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 40),
-                                _buildProfileSection(context),
-                                const SizedBox(height: 50),
-                                _buildFormField(),
-                                const SizedBox(height: 50),
-                              ],
-                            ),
-                          ),
-                        );
-                      case UserLoadUnauthenticated():
-                        if (uservm.state is UserLoadSessionExpired) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            sessionExpiredPopUpController.open();
-                          });
-                        } else {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            unauthenticatedPopUpController.open();
-                          });
-                        }
-                        return Center();
                     }
-                  }
-                ),
+                  ),
+                )
               ],
             ),
             ErrorPopUpModal(
-              title: "Gagal Memperbarui Profil",
+              title: "Error",
               defaultSubtitle: "Terjadi Kesalahan Tak terduga",
               controller: errorController,
               buttonList: [
@@ -256,7 +269,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildProfileSection(BuildContext contexxt) {
+  Widget _buildProfileSection(UserDto user) {
     return Column(
       children: [
         GestureDetector(
@@ -271,21 +284,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   color: Colors.grey.shade200,
                   border: Border.all(color: Colors.grey.shade300, width: 2),
                 ),
-                child:
-                    _selectedImage != null
-                        ? ClipOval(
-                          child: Image.file(
-                            _selectedImage!,
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ),
+                child: ClipOval(
+                  child: _selectedImage != null
+                      ? Image.file(
+                          _selectedImage!,
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
                         )
-                        : const Icon(
-                          Icons.person,
-                          size: 60,
-                          color: Colors.grey,
-                        ),
+                      : (user.photoUrl != null && user.photoUrl!.isNotEmpty)
+                          ? CachedNetworkImage(
+                              imageUrl: user.photoUrl!,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => 
+                                  const Center(child: CircularProgressIndicator()),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.person, size: 60, color: Colors.grey),
+                            )
+                          : const Icon(
+                              Icons.person,
+                              size: 60,
+                              color: Colors.grey,
+                            ),
+                ),
               ),
               Positioned(
                 bottom: 0,
@@ -311,9 +334,172 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ],
     );
   }
+  String? _initialFullName;
+  String? _initialUsername;
+  String? _initialEmail;
+
+  void _setInitialData(UserDto user) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_initialFullName != user.fullName) {
+        _initialFullName = user.fullName;
+        _fullNameController.text = user.fullName ?? '';
+      }
+      if (_initialUsername != user.username) {
+        _initialUsername = user.username;
+        _usernameController.text = user.username ?? '';
+      }
+      if (_initialEmail != user.email) {
+        _initialEmail = user.email;
+        _emailController.text = user.email ?? '';
+      }
+      _isUserHasPassword.value = user.hasPassword == true;
+    });
+  }
 
 
-  Widget _buildFormField() {
+  Widget _buildBindingSection(UserDto user) {
+    return Column(
+    children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: [
+              const Icon(LucideIcons.lock, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Password",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      user.hasPassword == true ? "******" : "Belum diatur",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (user.hasPassword == true) {
+                    context.push(AppRoutes.changePassword.path);
+                  } else {
+                    context.push(AppRoutes.setPassword.path);
+                  }
+                },
+                child: Text(
+                  user.hasPassword == true ? "Ubah" : "Atur",
+                ),
+              ),
+            ],
+          ),
+        ),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Image.asset(
+              "assets/img/google-logo.png",
+              height: 28,
+              width: 28,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Google",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    AutoSizeText(
+                      minFontSize: 6,
+                      maxFontSize: 12,
+                      user.googleEmail ?? "Tidak terhubung",
+                      style: TextStyle(
+                        color: Colors.grey
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (user.googleEmail == null)
+                TextButton(
+                  onPressed: () => _handleGoogleBind(user),
+                  child: const Text("Hubungkan"),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+      ],
+    );
+  }
+
+  Future<void> _handleGoogleBind(UserDto user) async {
+    setState(() => _isLoading = true);
+
+    final userViewModel = context.read<UserViewModel>();
+    final messageService = context.read<TransientMessageService>();
+
+    try {
+      final googleSignInResult = await handleGoogleSignIn();
+      if (googleSignInResult is Failure<GoogleUserDTO>) {
+        errorController.open(googleSignInResult.reason);
+        return;
+      }
+      final googleUser = (googleSignInResult as Success<GoogleUserDTO>).data;
+      final photoUrl = googleUser.photoUrl;
+      if (photoUrl != null && user.photoUrl == null) {
+        final photoFile = await downloadProfilePhoto(photoUrl);
+        if (photoFile != null) {
+          final updatedPhotoUser = await userViewModel.updatePhoto(imageFile: photoFile);
+          if (!mounted) return;
+          if (updatedPhotoUser is Success<UserDto>) {
+            context.read<UserViewModel>().setState(UserLoaded(updatedPhotoUser.data));
+          }
+        } else {
+          debugPrint('Failed to download profile photo.');
+        }
+      }
+      String fullName = user.fullName ?? googleUser.displayName;
+      final res = await context.read<UserViewModel>().bindGoogleOauth(
+        googleInfo: GoogleUserDTO(id: googleUser.id, displayName: fullName, email: googleUser.email)
+      );
+
+      switch(res) {
+        case Success<UserDto>():
+          messageService.showMessage(context, "Bind Berhasil");
+        case Failure<UserDto>(:final reason):
+          errorController.open(reason);
+      }
+
+    } catch (e, stack) {
+      debugPrint('Unexpected error during Google login: $e');
+      debugPrintStack(stackTrace: stack);
+      errorController.open('Something went wrong. Please try again.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Widget _buildFormField(UserDto dto) {
+    bool locked = !(dto.hasPassword ?? false);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -322,73 +508,104 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("username", style: TextStyle(color: Colors.grey)),
-              SizedBox(height: 5,),
-              CustomTextField(
-                controller: _usernameController,
-                hintText: 'username',
-                keyboardType: TextInputType.name,
-                validator: Validation.validateUsername,
-              ),
-
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("email"),
-              SizedBox(height: 5),
-              CustomTextField(
-                controller: _emailController,
-                hintText: 'email',
-                keyboardType: TextInputType.name,
-                validator: Validation.validateEmail,
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
               Text("Nama Lengkap"),
-              SizedBox(height: 5,),
+              SizedBox(height: 5),
               CustomTextField(
                 controller: _fullNameController,
                 hintText: 'Nama Lengkap',
                 keyboardType: TextInputType.name,
                 validator: Validation.validateFullName,
-              )
-
+              ),
             ],
           ),
         ),
-      ],
-    );
-  }
+        GestureDetector(
+          onTap: locked
+              ? () {
+                  errorController.open(
+                    "Kamu hanya bisa mengubah username setelah membuat password.",
+                  );
+                }
+              : null,
+          child: AbsorbPointer(
+            absorbing: locked,
+            child: Opacity(
+              opacity: locked ? 0.6 : 1.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Username",
+                      style: TextStyle(
+                        color: locked ? Colors.grey : Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    CustomTextField(
+                      controller: _usernameController,
+                      hintText: 'username',
+                      keyboardType: TextInputType.name,
+                      validator: Validation.validateUsername,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Email
+        GestureDetector(
+          onTap: locked
+              ? () {
+                  errorController.open(
+                    "Kamu hanya bisa mengubah email setelah membuat password.",
+                  );
+                }
+              : null,
+          child: AbsorbPointer(
+            absorbing: locked,
+            child: Opacity(
+              opacity: locked ? 0.6 : 1.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Email",
+                      style: TextStyle(
+                        color: locked ? Colors.grey : Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    CustomTextField(
+                      controller: _emailController,
+                      hintText: 'email',
+                      keyboardType: TextInputType.emailAddress,
+                      validator: Validation.validateEmail,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+            ],
+          );
+        }
+
 
   Future<void> _handleSave(BuildContext context) async {
     setState(() => _isLoading = true);
 
     final fullName = _fullNameController.text.trim();
-    final hasFullName = fullName.isNotEmpty;
+    final  username = _usernameController.text.trim();
+    final  email = _emailController.text.trim();
     final hasImage = _selectedImage != null;
-
-    if (!hasFullName && !hasImage) {
-      setState(() => _isLoading = false);
-      if (context.mounted) {
-        context.replace(AppRoutes.home.path);
-        context.read<TransientMessageService>().showMessage(
-          context,
-          "Tidak ada perubahan profil",
-        );
-      }
-      return;
-    }
 
     SuccessOrFail result = Success("OK");
 
@@ -403,10 +620,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       }
 
-      if (hasFullName) {
+      if (!_isUserHasPassword.value) {
         if (context.mounted) {
-          result = await context.read<UserViewModel>().updateFullName(
-            fullName: fullName,
+          result = await context.read<UserViewModel>()
+          .updateFullName(fullName: fullName);
+        }
+        if (result is Failure) {
+          _showError(result.reason);
+          return;
+        }
+
+      } else {
+        if (context.mounted) {
+          result = await context.read<UserViewModel>()
+          .update(
+            updatedProfileData: UpdateUserDto(username: username, email: email, fullName: fullName)
           );
         }
         if (result is Failure) {
@@ -416,18 +644,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       if (context.mounted) {
-        context.replace(AppRoutes.home.path);
-
-        String message = "";
-        if (hasFullName && hasImage) {
-          message = "Profil dan foto berhasil diperbarui";
-        } else if (hasFullName) {
-          message = "Nama profil berhasil diperbarui";
-        } else if (hasImage) {
-          message = "Foto profil berhasil diperbarui";
-        }
-
-        context.read<TransientMessageService>().showMessage(context, message);
+        context.pop();
+        context.read<TransientMessageService>().showMessage(context, "Profile Berhasil Di Perbarui");
       }
     } catch (e) {
       _showError("Terjadi kesalahan: ${e.toString()}");

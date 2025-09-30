@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:mtqmnuns/data/local/cache/user.dart';
 import 'package:mtqmnuns/dto/auth.dart';
+import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/exception/http.dart';
 import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/state/success_or_fail.dart';
@@ -92,12 +92,19 @@ class AuthViewModel extends ChangeNotifier {
     return _refreshToken != null || _sessionId != null;
   }
 
+  String? getValidJwtOrNull() {
+    if (_jwtToken != null && _jwtToken!.isNotEmpty && !JwtDecoder.isExpired(_jwtToken!)) {
+      return _jwtToken!; 
+    }
+    return null;
+  }
 
-  Future<SuccessOrFail> loginEmail(String email, String password) async {
+
+  Future<SuccessOrFail<UserDto>> loginEmail(String email, String password) async {
     try {
-      final newToken = await _authRepository.loginEmail(email, password);
-      await _writeNewToken(newToken);
-      return Success<String>('OK');
+      final res = await _authRepository.loginEmail(email, password);
+      await _writeNewToken(res.token);
+      return Success<UserDto>(res.user);
     } on HttpError catch (e) {
       return Failure(e.message);
     } catch (e) {
@@ -107,11 +114,11 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<SuccessOrFail> signup(String username, String email, String password) async {
+  Future<SuccessOrFail<GoogleUserLoginResult>> loginGoogleOauth(GoogleUserDTO user) async {
     try {
-      final newToken = await _authRepository.registerUser(username, email, password);
-      await _writeNewToken(newToken);
-      return Success<String>('OK');
+      final res = await _authRepository.loginGoogleOauth(user);
+      await _writeNewToken(res.token);
+      return Success<GoogleUserLoginResult>(GoogleUserLoginResult(res.user, res.isNew));
     } on HttpError catch (e) {
       return Failure(e.message);
     } catch (e) {
@@ -121,25 +128,39 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<SuccessOrFail<TokenDto>> refreshToken() async {
+  Future<SuccessOrFail<UserDto>> signup(String username, String email, String password) async {
+    try {
+      final res = await _authRepository.registerUser(username, email, password);
+      await _writeNewToken(res.token);
+      return Success(res.user);
+    } on HttpError catch (e) {
+      return Failure(e.message);
+    } catch (e) {
+      return Failure("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<SuccessOrFail<TokenWithUserDto>> refreshToken() async {
     await _deleteJwtToken();
     final refreshToken = _refreshToken;
     final sessionId = _sessionId;
     if (refreshToken == null && sessionId == null) {
-      return Failure<TokenDto>("Unauthenticated");
+      return Failure<TokenWithUserDto>("Unauthenticated");
     }
 
     try {
-      final newToken = await _authRepository.refreshToken(refreshToken!, sessionId!);
-      await _writeNewToken(newToken);
-      return Success<TokenDto>(newToken);
+      final res = await _authRepository.refreshToken(refreshToken!, sessionId!);
+      await _writeNewToken(res.token);
+      return Success<TokenWithUserDto>(res);
     } on RefreshTokenInvalidError catch (_) {
       _clearTokens();
-      return Failure<TokenDto>("Session Invalid atau Expired");
+      return Failure("Session Invalid atau Expired");
     } on HttpError catch (e) {
       return Failure(e.message);
     } catch (e) {
-      return Failure<TokenDto>("Terjadi Kesalahan Tak Terduga ${e.toString()}");
+      return Failure("Terjadi Kesalahan Tak Terduga ${e.toString()}");
     } finally {
       notifyListeners();
     }
@@ -149,7 +170,6 @@ class AuthViewModel extends ChangeNotifier {
     if (_sessionId != null) {
       try {
         await _clearTokens();
-        await UserCache.clearUser();
         await _authRepository.logout(_sessionId!);
       } catch (e) {
           // TODO: handling offline queue deleting refresh token
