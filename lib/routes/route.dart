@@ -3,6 +3,8 @@ import 'package:mtqmnuns/routes/route_model.dart';
 import 'package:mtqmnuns/screens/complete_signup.dart';
 import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/explore.dart';
+import 'package:mtqmnuns/screens/password_change.dart';
+import 'package:mtqmnuns/screens/password_setter.dart';
 import 'package:mtqmnuns/screens/profile_edit.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
@@ -86,7 +88,20 @@ class AppRoutes {
   static final profileEdit = AppRoute(
     path: '/profile/edit',
     pageBuilder: (context, state) => NoTransitionPage(child: EditProfileScreen()),
-    isHasBottomBar: true,
+    isHasBottomBar: false,
+    requiresAuth: true
+  );
+  static final setPassword = AppRoute(
+    path: '/profile/edit/password/set',
+    pageBuilder: (context, state) => NoTransitionPage(child: SetPasswordScreen()),
+    isHasBottomBar: false,
+    requiresAuth: true
+  );
+
+  static final changePassword = AppRoute(
+    path: '/profile/edit/password/set',
+    pageBuilder: (context, state) => NoTransitionPage(child: ChangePasswordScreen()),
+    isHasBottomBar: false,
     requiresAuth: true
   );
 
@@ -166,7 +181,9 @@ class AppRoutes {
     splashScreen,
     intro,
     duas,
-    profileEdit
+    profileEdit,
+    changePassword,
+    setPassword
   ];
 
   static AppRoute getRouteByPath(String path) {

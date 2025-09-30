@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late List<DisclosureButtonModel> buttonList;
   final ToggleableUiController sessionExpiredPopUpController = ToggleableUiController();
   final ToggleableUiController unauthenticatedPopUpController = ToggleableUiController();
+  final ErrorPopUpController errorPopUpController = ErrorPopUpController();
 
   final Set<int> _expandedIndices = {};
   final double fontSize = 14;
@@ -106,6 +107,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   });
                 }
                 return Center();
+              case UserLoadError():
+                return
+                Expanded(child:Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Error loading data, tolong nyalakan koneksi internat dan coba lagi"),
+                    const SizedBox(height: 16),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.purple),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      onPressed: () {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          context.read<UserViewModel>().loadUser();
+                        });
+                      },
+                      child: const Text(
+                        "Coba Lagi",
+                        style: TextStyle(color: Colors.purple),
+                      ),
+                    ),
+                  ],
+                ));
             }
           }
         ),
@@ -218,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Column(
                             children: [
                               Text(
-                                user.fullName ?? user.username,
+                                user.fullName ?? user.username ?? '',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,

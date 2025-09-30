@@ -75,7 +75,7 @@ class FavoriteScreen extends StatelessWidget {
                               children: [
                                 // Teks Arab
                                 Text(
-                                  ayah.ayahText ?? "",
+                                  ayah.ayahText,
                                   textAlign: TextAlign.right,
                                   style: const TextStyle(
                                     fontSize: 28,
@@ -94,7 +94,7 @@ class FavoriteScreen extends StatelessWidget {
 
                                 // Terjemahan
                                 Text(
-                                  ayah.indoText ?? "",
+                                  ayah.indoText,
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Color(0xFF3B1D77),
@@ -104,7 +104,7 @@ class FavoriteScreen extends StatelessWidget {
 
                                 // Sumber Surah
                                 Text(
-                                  "Surah ${ayah.surahId ?? '-'} ayat ${ayah.ayahNumber}",
+                                  "Surah ${ayah.surahId} - ayat ${ayah.ayahNumber}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Color(0xff672CBC),

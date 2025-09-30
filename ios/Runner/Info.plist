@@ -52,5 +52,17 @@
     
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Aplikasi ini memerlukan akses galeri untuk memilih foto profil</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+	<dict>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+		<string>com.googleusercontent.apps.YOUR_CLIENT_ID</string>
+		</array>
+	</dict>
+	</array>
+
 </dict>
 </plist>

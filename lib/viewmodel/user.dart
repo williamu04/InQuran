@@ -1,16 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:mtqmnuns/common/jwt_extension.dart';
-import 'package:mtqmnuns/data/local/cache/user.dart';
+import 'package:mtqmnuns/dto/auth.dart';
 import 'package:mtqmnuns/dto/user.dart';
-import 'package:mtqmnuns/exception/auth.dart';
 import 'package:mtqmnuns/repositories/user.dart';
 import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
-import 'package:path/path.dart' as p;
 
 class UserViewModel extends StatefulViewModel<UserLoadState> {
   final UserRepository _userRepo;
@@ -19,62 +15,200 @@ class UserViewModel extends StatefulViewModel<UserLoadState> {
   UserViewModel(this._userRepo, this.authVm) : super(UserLoadLoading());
 
   Future<void> loadUser() async {
-      setState(UserLoadLoading());
-    try {
-      final user = await executeWithJwtRetry(
-        authVm,
-        (token) => _userRepo.getMeFromApi(token),
-      );
-      await UserCache.saveUser(user);
-      setState(UserLoaded(user));
-    } on UnauthenticatedException {
+    if (state is UserLoaded) return;
+    if (!authVm.isLoggedIn()) {
       setState(UserLoadUnauthenticated());
-    } on TokenRefreshException {
-      setState(UserLoadSessionExpired());
+      return;
+    }
+    setState(UserLoadLoading());
+    try {
+      final token = authVm.getValidJwtOrNull();
+      if (token == null) {
+        final res = await authVm.refreshToken();
+        switch(res) {
+          case Success<TokenWithUserDto>(:final data):
+            setState(UserLoaded(data.user));
+            break;
+          case Failure():
+            setState(UserLoadSessionExpired());
+            break;
+        }
+      } else {
+        final user = await _userRepo.getMeFromApi(token);
+        setState(UserLoaded(user));
+      }
     } catch (e) {
       await _errorFallback();
     }
   }
 
-  Future<SuccessOrFail> updateFullName({required String fullName}) async {
-    return executeApiOperation(
-      authVm,
-      (token) => _userRepo.updateFullName(token, fullName),
-    );
+  Future<SuccessOrFail<UserDto>> updateFullName({required String fullName}) async {
+    if (!authVm.isLoggedIn()) {
+      setState(UserLoadUnauthenticated());
+      return Failure("Unauthenticated");
+    }
+    try {
+      String? token = authVm.getValidJwtOrNull();
+      if (token == null) {
+        final res = await authVm.refreshToken();
+        switch(res) {
+          case Success<TokenWithUserDto>(:final data):
+            token = data.token.jwtToken;
+            break;
+          case Failure(:final reason):
+            setState(UserLoadSessionExpired());
+            return Failure(reason);
+        }
+      }
+      final user = await _userRepo.updateFullName(token, fullName);
+      setState(UserLoaded(user));
+      return Success<UserDto>(user);
+    } catch (e) {
+      return Failure(e.toString());
+    }
+
+  }
+  Future<SuccessOrFail<UserDto>> updatePhoto({required File imageFile}) async {
+    if (!authVm.isLoggedIn()) {
+      setState(UserLoadUnauthenticated());
+      return Failure("Unauthenticated");
+    }
+    try {
+      String? token = authVm.getValidJwtOrNull();
+      if (token == null) {
+        final res = await authVm.refreshToken();
+        switch(res) {
+          case Success<TokenWithUserDto>(:final data):
+            token = data.token.jwtToken;
+            break;
+          case Failure(:final reason):
+            setState(UserLoadSessionExpired());
+            return Failure(reason);
+        }
+      }
+      final user = await _userRepo.updatePhoto(token, imageFile);
+      setState(UserLoaded(user));
+      return Success<UserDto>(user);
+    } catch (e) {
+      return Failure(e.toString());
+    }
   }
 
-  Future<SuccessOrFail> updatePhoto({required File imageFile}) async {
-    final ext = p.extension(imageFile.path).toLowerCase();
-    debugPrint('Extension: $ext');
-    return executeApiOperation(
-      authVm,
-      (token) => _userRepo.updatePhoto(token, imageFile),
-      onUnauthenticated: () => setState(UserLoadUnauthenticated()),
-    );
+  Future<SuccessOrFail<UserDto>> update({required UpdateUserDto updatedProfileData}) async {
+    if (!authVm.isLoggedIn()) {
+      setState(UserLoadUnauthenticated());
+      return Failure("Unauthenticated");
+    }
+    try {
+      String? token = authVm.getValidJwtOrNull();
+      if (token == null) {
+        final res = await authVm.refreshToken();
+        switch(res) {
+          case Success<TokenWithUserDto>(:final data):
+            token = data.token.jwtToken;
+            break;
+          case Failure(:final reason):
+            setState(UserLoadSessionExpired());
+            return Failure(reason);
+        }
+      }
+      final user = await _userRepo.updateUser(token, updatedProfileData);
+
+      setState(UserLoaded(user));
+      return Success<UserDto>(user);
+    } catch (e) {
+      return Failure(e.toString());
+    }
   }
 
-  Future<SuccessOrFail> update({required UserDto updatedProfileData}) async {
-    return executeApiOperation(
-      authVm,
-      (token) => _userRepo.updateUser(token, updatedProfileData),
-      onUnauthenticated: () => setState(UserLoadUnauthenticated()),
-    );
+  Future<SuccessOrFail<UserDto>> bindGoogleOauth({required GoogleUserDTO googleInfo}) async {
+    if (!authVm.isLoggedIn()) {
+      setState(UserLoadUnauthenticated());
+      return Failure("Unauthenticated");
+    }
+    try {
+      String? token = authVm.getValidJwtOrNull();
+      if (token == null) {
+        final res = await authVm.refreshToken();
+        switch(res) {
+          case Success<TokenWithUserDto>(:final data):
+            token = data.token.jwtToken;
+            break;
+          case Failure(:final reason):
+            setState(UserLoadSessionExpired());
+            return Failure(reason);
+        }
+      }
+      final user = await _userRepo.bindGoogleOauth(token, googleInfo);
+      setState(UserLoaded(user));
+      return Success<UserDto>(user);
+    } catch (e) {
+      return Failure(e.toString());
+    }
+  }
+
+  Future<SuccessOrFail<UserDto>> bindPassword({required String username, required String password, required String email}) async {
+    if (!authVm.isLoggedIn()) {
+      setState(UserLoadUnauthenticated());
+      return Failure("Unauthenticated");
+    }
+    try {
+      String? token = authVm.getValidJwtOrNull();
+      if (token == null) {
+        final res = await authVm.refreshToken();
+        switch(res) {
+          case Success<TokenWithUserDto>(:final data):
+            token = data.token.jwtToken;
+            break;
+          case Failure(:final reason):
+            setState(UserLoadSessionExpired());
+            return Failure(reason);
+        }
+      }
+      final user = await _userRepo.bindPassword(token, username: username, password: password, email: email);
+      setState(UserLoaded(user));
+      return Success<UserDto>(user);
+    } catch (e) {
+      return Failure(e.toString());
+    }
+  }
+  Future<SuccessOrFail<UserDto>> changePassword({required String oldPassword, required String newPassword}) async {
+    if (!authVm.isLoggedIn()) {
+      setState(UserLoadUnauthenticated());
+      return Failure("Unauthenticated");
+    }
+    try {
+      String? token = authVm.getValidJwtOrNull();
+      if (token == null) {
+        final res = await authVm.refreshToken();
+        switch(res) {
+          case Success<TokenWithUserDto>(:final data):
+            token = data.token.jwtToken;
+            break;
+          case Failure(:final reason):
+            setState(UserLoadSessionExpired());
+            return Failure(reason);
+        }
+      }
+      final user = await _userRepo.changePassword(token, oldPassword: oldPassword, newPassword: newPassword);
+      setState(UserLoaded(user));
+      return Success<UserDto>(user);
+    } catch (e) {
+      return Failure(e.toString());
+    }
   }
 
   Future<void> _errorFallback() async {
     if (authVm.isLoggedIn()) {
-      await _fetchUserFromCache();
+      try {
+        final user = await _userRepo.getMeFromCache();
+        setState(UserLoadedOffline(user));
+      } catch (e){
+        setState(UserLoadError(e.toString()));
+      }
     } else {
       setState(UserLoadUnauthenticated());
     }
-  }
-
-  Future<void> _fetchUserFromCache() async {
-    final user = await UserCache.loadUser();
-    if (user == null) {
-      return;
-    }
-    setState(UserLoadedOffline(user));
   }
 
 }

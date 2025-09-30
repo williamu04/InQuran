@@ -1,15 +1,21 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/common/app_color.dart';
+import 'package:mtqmnuns/common/google_oauth.dart';
 import 'package:mtqmnuns/components/google_auth.dart';
 import 'package:mtqmnuns/components/logo.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/text_field.dart';
 import 'package:mtqmnuns/components/transient_modal.dart';
+import 'package:mtqmnuns/dto/auth.dart';
+import 'package:mtqmnuns/dto/user.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/success_or_fail.dart';
+import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
 
 
@@ -265,9 +271,58 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleGoogleLogin() async {
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    errorController.open("Unimplemented");
-    setState(() => _isLoading = false);
+
+    final authViewModel = context.read<AuthViewModel>();
+    final userViewModel = context.read<UserViewModel>();
+    final messageService = context.read<TransientMessageService>();
+
+    try {
+      final googleSignInResult = await handleGoogleSignIn();
+      if (googleSignInResult is Failure<GoogleUserDTO>) {
+        errorController.open(googleSignInResult.reason);
+        return;
+      }
+
+      final googleUser = (googleSignInResult as Success<GoogleUserDTO>).data;
+
+      final loginResult = await authViewModel.loginGoogleOauth(googleUser);
+      if (loginResult is Failure<GoogleUserLoginResult>) {
+        errorController.open(loginResult.reason);
+        return;
+      }
+
+      final loginData = (loginResult as Success<GoogleUserLoginResult>).data;
+      if (!mounted) return;
+      context.read<UserViewModel>().setState(UserLoaded(loginData.user));
+
+      messageService.showMessage(context, "Login berhasil");
+
+      if (loginData.isNew) {
+        final photoUrl = googleUser.photoUrl;
+        if (photoUrl != null) {
+          final photoFile = await downloadProfilePhoto(photoUrl);
+          if (photoFile != null) {
+            final updatedPhotoUser = await userViewModel.updatePhoto(imageFile: photoFile);
+            if (!mounted) return;
+            if (updatedPhotoUser is Success<UserDto>) {
+              context.read<UserViewModel>().setState(UserLoaded(updatedPhotoUser.data));
+            }
+          } else {
+            debugPrint('Failed to download profile photo.');
+          }
+        }
+        if (!mounted) return;
+        context.push(AppRoutes.completeSignUp.path);
+      } else {
+        context.push(AppRoutes.home.path);
+      }
+    } catch (e, stack) {
+      debugPrint('Unexpected error during Google login: $e');
+      debugPrintStack(stackTrace: stack);
+      errorController.open('Something went wrong. Please try again.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _handleLogin(BuildContext context) async {
@@ -279,6 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
     switch (res) {
       case Success():
       if (context.mounted) {
+        context.read<UserViewModel>().setState(UserLoaded(res.data));
         context.replace(AppRoutes.home.path);
         context.read<TransientMessageService>().showMessage(
           context,
