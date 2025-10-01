@@ -246,7 +246,7 @@ class PrayerLocationBox extends StatelessWidget {
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Fitur pencarian lokasi belum diimplementasi"),
+                  content: Text("Fitur pencarian lokasi akan segera hadir"),
                 ),
               );
             },
@@ -372,7 +372,7 @@ class PrayerCard extends StatelessWidget {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("Alarm untuk $title belum diimplementasi"),
+                    content: Text("Alarm untuk $title akan segera hadir"),
                   ),
                 );
               },

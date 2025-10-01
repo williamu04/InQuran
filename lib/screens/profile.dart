@@ -24,8 +24,10 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late List<DisclosureButtonModel> buttonList;
-  final ToggleableUiController sessionExpiredPopUpController = ToggleableUiController();
-  final ToggleableUiController unauthenticatedPopUpController = ToggleableUiController();
+  final ToggleableUiController sessionExpiredPopUpController =
+      ToggleableUiController();
+  final ToggleableUiController unauthenticatedPopUpController =
+      ToggleableUiController();
   final ErrorPopUpController errorPopUpController = ErrorPopUpController();
 
   final Set<int> _expandedIndices = {};
@@ -45,33 +47,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Catatan",
         fontSize: 14,
-        action: SystemAction(() => {}),
+        action: SystemAction(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Fitur ini akan segera hadir")),
+          );
+        }),
       ),
       DisclosureButtonModel(
         textWidget: Text.rich(
-          TextSpan(children: [
-            TextSpan(
-             text:  'Favorit  ·  ',
-             style: TextStyle(fontSize: 14, color: Color(0xFF672CBC), fontWeight: FontWeight.bold)
-            ),
-            TextSpan(
-             text:  '2 Items',
-             style: TextStyle(fontSize: 14, color: Color(0xFF7C8BA0), fontWeight: FontWeight.w300)
-            )
-          ])
-
+          TextSpan(
+            children: [
+              TextSpan(
+                text: 'Favorit  ·  ',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF672CBC),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: '2 Items',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF7C8BA0),
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ],
+          ),
         ),
         action: SystemAction(() => {}),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Poin",
         fontSize: 14,
-        action: SystemAction(() => {}),
+        action: SystemAction(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Fitur ini akan segera hadir")),
+          );
+        }),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
         text: 'Bantuan & Dukungan',
         fontSize: 14,
-        action: SystemAction(() => {}),
+        action: SystemAction(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Fitur ini akan segera hadir")),
+          );
+        }),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Logout",
@@ -80,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }),
         fontSize: 14,
         showIcon: false,
-        color: Color(0xFFEA4335)
+        color: Color(0xFFEA4335),
       ),
     ];
   }
@@ -108,35 +131,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
                 return Center();
               case UserLoadError():
-                return
-                Expanded(child:Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Error loading data, tolong nyalakan koneksi internat dan coba lagi"),
-                    const SizedBox(height: 16),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.purple),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
+                return Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Error loading data, tolong nyalakan koneksi internat dan coba lagi",
+                      ),
+                      const SizedBox(height: 16),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.purple),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        onPressed: () {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            context.read<UserViewModel>().loadUser();
+                          });
+                        },
+                        child: const Text(
+                          "Coba Lagi",
+                          style: TextStyle(color: Colors.purple),
+                        ),
                       ),
-                      onPressed: () {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          context.read<UserViewModel>().loadUser();
-                        });
-                      },
-                      child: const Text(
-                        "Coba Lagi",
-                        style: TextStyle(color: Colors.purple),
-                      ),
-                    ),
-                  ],
-                ));
+                    ],
+                  ),
+                );
             }
-          }
+          },
         ),
         PopUpModal(
           title: "Kamu Belum Login",
@@ -145,21 +174,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: unauthenticatedPopUpController,
           buttonList: [
             ButtonModalModel(
-              text: "Login", 
+              text: "Login",
               onButtonPressed: () {
                 context.replace(AppRoutes.login.path);
-                context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+                context.read<UserViewModel>().setState(
+                  UserLoadUnauthenticated(),
+                );
               },
             ),
             ButtonModalModel(
-              text: "Kembali", 
+              text: "Kembali",
               textColor: Colors.red,
               buttonColor: Colors.white,
               onButtonPressed: () {
                 context.replace(AppRoutes.home.path);
-                context.read<UserViewModel>().setState(UserLoadUnauthenticated());
+                context.read<UserViewModel>().setState(
+                  UserLoadUnauthenticated(),
+                );
               },
-            )
+            ),
           ],
         ),
         PopUpModal(
@@ -172,63 +205,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
           buttonList: [
             ButtonModalModel(
-              text: "Login", 
+              text: "Login",
               onButtonPressed: () {
                 context.push(AppRoutes.login.path);
-              }
+              },
             ),
             ButtonModalModel(
-              text: "Batal", 
+              text: "Batal",
               textColor: Colors.red,
               buttonColor: Colors.white,
-              onButtonPressed: () {}
-            )
+              onButtonPressed: () {},
+            ),
           ],
-        )
+        ),
       ],
     );
   }
 
-
   Widget _buildProfilePage(UserDto user) {
     return Column(
-        children: [
-          roundedCard(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 80, maxHeight: 300),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      double pohotoHeight = constraints.maxHeight * 0.35; 
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, left: 24, right: 24),
-                            child: TopBarUtility.buildDefaultTopBar(
-                              context: context,
-                              title: "Profil Pengguna",
-                              rightIcon: TopBarIconModel(
-                                icon: LucideIcons.pencilLine, 
-                                onPressed: () => context.push(AppRoutes.profileEdit.path),
-                              )
-                            ),
-                          ),
-                          Container(
-                            height: pohotoHeight,
-                            width: pohotoHeight,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: user.photoUrl != null && user.photoUrl!.isNotEmpty
-                              ? CachedNetworkImage(
+      children: [
+        roundedCard(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 80, maxHeight: 300),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double pohotoHeight = constraints.maxHeight * 0.35;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 20,
+                        left: 24,
+                        right: 24,
+                      ),
+                      child: TopBarUtility.buildDefaultTopBar(
+                        context: context,
+                        title: "Profil Pengguna",
+                        rightIcon: TopBarIconModel(
+                          icon: LucideIcons.pencilLine,
+                          onPressed:
+                              () => context.push(AppRoutes.profileEdit.path),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: pohotoHeight,
+                      width: pohotoHeight,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child:
+                            user.photoUrl != null && user.photoUrl!.isNotEmpty
+                                ? CachedNetworkImage(
                                   imageUrl: user.photoUrl!,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Center(
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  ),
+                                  placeholder:
+                                      (context, url) => Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
                                   errorWidget: (context, error, stackTrace) {
                                     return Icon(
                                       Icons.person,
@@ -237,74 +278,84 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     );
                                   },
                                 )
-                              : Icon(
+                                : Icon(
                                   Icons.person,
                                   size: pohotoHeight * 0.5,
                                   color: Colors.grey,
                                 ),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          user.fullName ?? user.username ?? '',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              "Akun Basic ",
+                              style: TextStyle(
+                                color: Color(0xFF994EF8),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                user.fullName ?? user.username ?? '',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text(
-                                    "Akun Basic ",
-                                    style: TextStyle(color: Color(0xFF994EF8), fontWeight: FontWeight.bold),
-                                  ),
-                                  Icon(Icons.info_outline, color: Color(0xFF994EF8), size: 14),
-                                ],
-                              ),
-                              SizedBox(height: 10)
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                            Icon(
+                              Icons.info_outline,
+                              color: Color(0xFF994EF8),
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
+        ),
 
-
-          Expanded(
-            child: ListView.builder(
-              primary: false,
-              padding: const EdgeInsets.only(top:50, left: 40,right: 40),
-              itemCount: buttonList.length,
-              itemBuilder: (context, index) {
-                final button = buttonList[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DisclosureButton(
-                        model: button,
-                        isExpanded: _expandedIndices.contains(index),
-                        onTap: () => _handleButtonTap(button, index),
-                      ),
-                      if (_expandedIndices.contains(index) && button.action is ExpandNestedDrawerAction)
-                        _buildNestedDrawer((button.action as ExpandNestedDrawerAction).nestedButtons)
-                      else
-                        const SizedBox.shrink(),
-                    ],
-                  ),
-                );
+        Expanded(
+          child: ListView.builder(
+            primary: false,
+            padding: const EdgeInsets.only(top: 50, left: 40, right: 40),
+            itemCount: buttonList.length,
+            itemBuilder: (context, index) {
+              final button = buttonList[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DisclosureButton(
+                      model: button,
+                      isExpanded: _expandedIndices.contains(index),
+                      onTap: () => _handleButtonTap(button, index),
+                    ),
+                    if (_expandedIndices.contains(index) &&
+                        button.action is ExpandNestedDrawerAction)
+                      _buildNestedDrawer(
+                        (button.action as ExpandNestedDrawerAction)
+                            .nestedButtons,
+                      )
+                    else
+                      const SizedBox.shrink(),
+                  ],
+                ),
+              );
             },
           ),
         ),
       ],
-    ); 
+    );
   }
 
   Widget _buildNestedDrawer(List<DisclosureButtonModel> buttons) {
@@ -312,19 +363,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.only(left: 10, right: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: buttons.asMap().entries.map((entry) {
-          final nestedIndex = entry.key;
-          final button = entry.value;
+        children:
+            buttons.asMap().entries.map((entry) {
+              final nestedIndex = entry.key;
+              final button = entry.value;
 
-          return Padding(
-            padding: const EdgeInsets.only(top:6),
-            child: DisclosureButton(
-              model: button,
-              isExpanded: _expandedIndices.contains(nestedIndex),
-              onTap: () => _handleButtonTap(button, nestedIndex),
-            )
-          ,); 
-        }).toList(),
+              return Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: DisclosureButton(
+                  model: button,
+                  isExpanded: _expandedIndices.contains(nestedIndex),
+                  onTap: () => _handleButtonTap(button, nestedIndex),
+                ),
+              );
+            }).toList(),
       ),
     );
   }
