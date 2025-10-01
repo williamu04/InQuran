@@ -118,7 +118,7 @@ class DuasScreen extends StatelessWidget {
 
                                 // Sumber Surah
                                 Text(
-                                  "Surah ${dua.surah?.nameLatin ?? '-'} ayat ${dua.ayah.ayahNumber}",
+                                  "[QS ${dua.surah?.nameLatin ?? ' : '} ${dua.ayah.ayahNumber}]",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Color(0xff672CBC),

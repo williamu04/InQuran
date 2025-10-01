@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:mtqmnuns/data/aggregate/surah.dart';
 import 'package:mtqmnuns/data/entity/ayah.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:mtqmnuns/dto/favorites.dart';
 
 part 'ayah_dao.g.dart';
 
@@ -249,7 +250,6 @@ class AyahDao extends DatabaseAccessor<AppDatabase> with _$AyahDaoMixin {
     return getAyahsByPage(firstPage);
   }
 
-  // new: toggle favorite by surahId + ayahNumber
   Future<bool?> toggleFavoriteBySurahAndAyah(
     int surahId,
     int ayahNumber,
@@ -271,7 +271,31 @@ class AyahDao extends DatabaseAccessor<AppDatabase> with _$AyahDaoMixin {
     return newVal;
   }
 
-  Future<List<AyahData>> getAllFavorites() {
-    return (select(ayah)..where((t) => t.favorite.equals(true))).get();
+  Future<List<AyahWithSurah>> getAyahsFromFavorites(
+    List<FavoriteDto> favorites,
+  ) async {
+    if (favorites.isEmpty) return [];
+
+    final results = <AyahWithSurah>[];
+
+    for (final fav in favorites) {
+      final ayahData =
+          await (select(ayah)..where(
+            (t) =>
+                t.surahId.equals(fav.surahNumber) &
+                t.ayahNumber.equals(fav.ayahNumber),
+          )).getSingleOrNull();
+
+      if (ayahData != null) {
+        final surahData =
+            await (select(surah)
+              ..where((s) => s.id.equals(ayahData.surahId))).getSingleOrNull();
+        if (surahData != null) {
+          results.add(AyahWithSurah(surah: surahData, ayah: ayahData));
+        }
+      }
+    }
+
+    return results;
   }
 }
