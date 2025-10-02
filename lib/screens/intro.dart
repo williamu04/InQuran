@@ -24,56 +24,78 @@ class _IntroScreenState extends State<IntroScreen> {
           children: [
             const SizedBox(height: 40),
 
-            Container(
-              margin: const EdgeInsets.only(bottom: 32.0),
-              child: Image.asset(
-                'assets/img/logoSplashScreen.png',
-                width: 120,
-                height: 120,
-                fit: BoxFit.contain,
+            // Logo dengan deskripsi TalkBack
+            Semantics(
+              label: "Logo aplikasi InQuran",
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 32.0),
+                child: Image.asset(
+                  'assets/img/logoSplashScreen.png',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
 
-            const Text(
-              'QuranApp',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF672CBC),
+            // Judul aplikasi
+            Semantics(
+              header: true,
+              label: "Judul aplikasi",
+              child: Text(
+                'InQuran',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF672CBC),
+                ),
               ),
             ),
 
             const SizedBox(height: 8),
 
-            const Text(
-              'Slogan atau Jargon',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF4E2999),
+            // Slogan
+            Semantics(
+              label: "Slogan aplikasi",
+              child: Text(
+                'Suarakan Niat\nDengarkan Ayat\nDekap Hidayah',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF4E2999),
+                ),
               ),
             ),
 
             const SizedBox(height: 24),
 
-            const Text(
-              '"Read and Understand\nThe Meaning of The Holy Verses Easily,\nAnytime and Anywhere."',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                height: 1.3,
-                color: Color(0xFF7C8BA0),
+            // Deskripsi kutipan
+            Semantics(
+              label:
+                  'Kutipan motivasi: Read and Understand The Meaning of The Holy Verses Easily, Anytime and Anywhere.',
+              child: Text(
+                '"Read and Understand\nThe Meaning of The Holy Verses Easily,\nAnytime and Anywhere."',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.3,
+                  color: Color(0xFF7C8BA0),
+                ),
               ),
             ),
 
             const SizedBox(height: 40),
 
+            // Tombol aksi
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
+                // Tombol mulai membaca
+                Semantics(
+                  button: true,
+                  label: "Mulai membaca Al-Qur'an dalam mode biasa",
                   child: SizedBox(
                     height: 40,
                     child: ElevatedButton(
@@ -108,9 +130,13 @@ class _IntroScreenState extends State<IntroScreen> {
 
                 const SizedBox(width: 14),
 
-                SizedBox(
+                // Tombol mode voice command
+                Semantics(
+                  button: true,
+                  label:
+                      "Masuk ke mode voice command, cocok untuk pengguna dengan gangguan penglihatan",
                   child: SizedBox(
-                    height: 40, // Reduced button height
+                    height: 40,
                     child: OutlinedButton(
                       onPressed: () async {
                         final isFirst = GlobalConfig().isFirstLaunch;

@@ -100,21 +100,25 @@ class MainHomeScreen extends StatelessWidget {
 
   Widget _homeTitle(BuildContext context) {
     return roundedCard(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           TopBarUtility.buildDefaultTopBar(context: context, title: "InQuran"),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Column(
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset('assets/img/logo.png', height: 40),
+                    Semantics(
+                      label: "Logo aplikasi InQuran",
+                      image: true,
+                      child: Image.asset('assets/img/logo.png', height: 40),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -135,7 +139,7 @@ class MainHomeScreen extends StatelessWidget {
                               Text usernameWidget(String username) {
                                 return Text(
                                   username,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontFamily: 'Plus Jakarta',
                                     fontSize: 20,
@@ -171,6 +175,7 @@ class MainHomeScreen extends StatelessWidget {
                   color: Colors.white38,
                 ),
                 const SizedBox(height: 20),
+                // Ayat Al Qur'an → tetap dibacakan
                 const Center(
                   child: AutoSizeText(
                     'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
@@ -202,15 +207,18 @@ class MainHomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Center(
-                  child: Text(
-                    'Maryam : 96',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Plus Jakarta',
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                      color: Color(0xFF994EF8),
+                // Referensi ayat → dekoratif, tidak perlu dibaca
+                const ExcludeSemantics(
+                  child: Center(
+                    child: Text(
+                      'Maryam : 96',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Plus Jakarta',
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFF994EF8),
+                      ),
                     ),
                   ),
                 ),
@@ -229,7 +237,7 @@ class MainHomeScreen extends StatelessWidget {
     double gap = 8.0,
   }) {
     return Container(
-      padding: EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 15),
+      padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 15),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final totalHeight = constraints.maxHeight;
@@ -297,37 +305,42 @@ class MainHomeScreen extends StatelessWidget {
     required HomeMenuItem item,
     MainAxisAlignment alignment = MainAxisAlignment.start,
   }) {
-    return ElevatedButton(
-      onPressed: item.action,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: item.buttonColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+    return Semantics(
+      label: item.title,
+      hint: "Ketuk dua kali untuk membuka ${item.title}",
+      button: true,
+      child: ElevatedButton(
+        onPressed: item.action,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: item.buttonColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          padding: EdgeInsets.zero,
         ),
-        padding: EdgeInsets.zero,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Row(
-          mainAxisAlignment: alignment,
-          children: [
-            Icon(item.icon, color: Colors.white),
-            const SizedBox(width: 10.0),
-            Flexible(
-              child: AutoSizeText(
-                item.title,
-                maxLines: 2,
-                minFontSize: 10,
-                maxFontSize: 14,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Plus Jakarta',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Row(
+            mainAxisAlignment: alignment,
+            children: [
+              Icon(item.icon, color: Colors.white),
+              const SizedBox(width: 10.0),
+              Flexible(
+                child: AutoSizeText(
+                  item.title,
+                  maxLines: 2,
+                  minFontSize: 10,
+                  maxFontSize: 14,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Plus Jakarta',
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

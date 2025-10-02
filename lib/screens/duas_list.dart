@@ -36,9 +36,8 @@ class _DuasListScreenState extends State<DuasListScreen> {
   @override
   void initState() {
     super.initState();
-    _db = AppDatabase(); // langsung inisialisasi database
-    // only fetch category rows (lighter than fetching full joined dua rows)
-    _futureCategories = _db.duasDao.getDuasCategory(); // ambil kategori doa
+    _db = AppDatabase();
+    _futureCategories = _db.duasDao.getDuasCategory();
   }
 
   @override
@@ -46,7 +45,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
     return Column(
       children: [
         roundedCard(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           child: TopBarUtility.buildDefaultTopBar(
             context: context,
             title: "Koleksi Doa-Doa",
@@ -66,9 +65,7 @@ class _DuasListScreenState extends State<DuasListScreen> {
                 return const Center(child: Text('Belum ada doa.'));
               }
 
-              // snapshot.data contains category rows directly
               final categories = snapshot.data!;
-
               return GridView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -79,64 +76,11 @@ class _DuasListScreenState extends State<DuasListScreen> {
                 ),
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
-                  final category = categories[index];
-
-                  final rowIndex = index ~/ 2;
-                  final bgColor =
-                      rowIndex % 2 == 0
-                          ? const Color(0xff672CBC)
-                          : const Color(0xff3B1D77);
-
-                  final iconData =
-                      index < duaCategoryIcons.length
-                          ? duaCategoryIcons[index]
-                          : LucideIcons.book;
-
-                  return GestureDetector(
-                    onTap: () {
-                      navigateToDuaCategory(context, category);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(width: 6),
-                          Icon(iconData, color: Colors.white, size: 36),
-                          const SizedBox(width: 12),
-
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Doa tentang",
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  category.nama,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  return DuaCategoryCard(
+                    category: categories[index],
+                    index: index,
+                    onTap:
+                        () => navigateToDuaCategory(context, categories[index]),
                   );
                 },
               );
@@ -144,6 +88,88 @@ class _DuasListScreenState extends State<DuasListScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// 🔹 Widget terpisah untuk 1 item kategori doa
+class DuaCategoryCard extends StatelessWidget {
+  final DoaCategoryData category;
+  final int index;
+  final VoidCallback onTap;
+
+  const DuaCategoryCard({
+    super.key,
+    required this.category,
+    required this.index,
+    required this.onTap,
+  });
+
+  Color _getBackgroundColor(int index) {
+    final rowIndex = index ~/ 2;
+    return rowIndex % 2 == 0
+        ? const Color(0xff672CBC)
+        : const Color(0xff3B1D77);
+  }
+
+  IconData _getIcon(int index) {
+    return index < duaCategoryIcons.length
+        ? duaCategoryIcons[index]
+        : LucideIcons.book;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = _getBackgroundColor(index);
+    final iconData = _getIcon(index);
+
+    return Semantics(
+      label: "Kategori doa: ${category.nama}",
+      hint: "Ketuk dua kali untuk membuka doa tentang ${category.nama}",
+      button: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(width: 6),
+              Icon(iconData, color: Colors.white, size: 36),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const ExcludeSemantics(
+                      // ⛔ teks dekoratif tidak dibaca TalkBack
+                      child: Text(
+                        "Doa tentang",
+                        style: TextStyle(color: Colors.white70, fontSize: 10),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      category.nama,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

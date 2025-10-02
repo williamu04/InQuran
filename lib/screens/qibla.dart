@@ -109,22 +109,37 @@ class _QiblaScreenState extends State<QiblaScreen> {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.location_on, color: Colors.white),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      locationProvider.placeName ?? "Lokasi tidak tersedia",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              child: // In _QiblaScreenState build method, update the location container:
+                  Semantics(
+                label: 'Lokasi saat ini',
+                value: locationProvider.placeName ?? "Lokasi tidak tersedia",
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
                   ),
-                ],
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.location_on, color: Colors.white),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          locationProvider.placeName ?? "Lokasi tidak tersedia",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -216,39 +231,72 @@ class QiblaCompass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          width: 300,
-          height: 300,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-              colors: [Color(0xff240F4F), Color(0xff863ED5)],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xff672CBC).withValues(alpha: 0.6),
-                blurRadius: 40,
-                spreadRadius: 10,
+    // Convert angle to degrees for accessibility announcement
+    final degrees = (angle * (180 / pi)).round();
+    final direction = getDirectionFromAngle(degrees);
+
+    return Semantics(
+      label: 'Kompas Kiblat',
+      value:
+          isFacingQibla
+              ? 'Anda menghadap kiblat'
+              : 'Kiblat berada di arah $direction, $degrees derajat',
+      liveRegion: true,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 300,
+            height: 300,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [Color(0xff240F4F), Color(0xff863ED5)],
               ),
-            ],
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xff672CBC).withValues(alpha: 0.6),
+                  blurRadius: 40,
+                  spreadRadius: 10,
+                ),
+              ],
+            ),
           ),
-        ),
-        Image.asset("assets/img/arrow.png", height: 180, fit: BoxFit.contain),
-        Transform.translate(
-          offset: Offset(x, y),
-          child: const Icon(
-            LucideIcons.locateFixed,
-            size: 40,
-            color: Colors.white,
+          Semantics(
+            label: 'Panah penunjuk arah utara',
+            child: Image.asset(
+              "assets/img/arrow.png",
+              height: 180,
+              fit: BoxFit.contain,
+            ),
           ),
-        ),
-      ],
+          Semantics(
+            label: 'Penanda arah kiblat',
+            child: Transform.translate(
+              offset: Offset(x, y),
+              child: const Icon(
+                LucideIcons.locateFixed,
+                size: 40,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  String getDirectionFromAngle(int degrees) {
+    if (degrees >= 337.5 || degrees < 22.5) return 'utara';
+    if (degrees >= 22.5 && degrees < 67.5) return 'timur laut';
+    if (degrees >= 67.5 && degrees < 112.5) return 'timur';
+    if (degrees >= 112.5 && degrees < 157.5) return 'tenggara';
+    if (degrees >= 157.5 && degrees < 202.5) return 'selatan';
+    if (degrees >= 202.5 && degrees < 247.5) return 'barat daya';
+    if (degrees >= 247.5 && degrees < 292.5) return 'barat';
+    return 'barat laut';
   }
 }
 
@@ -259,17 +307,24 @@ class QiblaCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24.0, left: 40, right: 40),
-      child: Text(
+    final message =
         isFacingQibla
             ? "Anda menghadap ke arah kiblat"
-            : "Putar ponsel Anda hingga panah menghadap target untuk menghadap ke arah kiblat",
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Color(0xff3B1D77),
-          fontWeight: FontWeight.w500,
+            : "Putar ponsel Anda hingga panah menghadap target untuk menghadap ke arah kiblat";
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 24.0, left: 40, right: 40),
+      child: Semantics(
+        label: 'Status arah kiblat',
+        value: message,
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Color(0xff3B1D77),
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );

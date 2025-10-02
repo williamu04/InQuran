@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
+import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/data/aggregate/doa.dart';
 import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:mtqmnuns/common/translator.dart';
@@ -13,34 +14,32 @@ class DuasScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final db = AppDatabase();
     final categoryId = int.tryParse(queryParam['categoryId'] ?? '');
     final categoryName = queryParam['categoryName'] ?? '';
 
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 24,
-        ), // ⬅️ padding luar
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
         child: Column(
           children: [
             // 🔹 Topbar
-            TopBarUtility.buildPurpleTitleTopbar(
-              leftIcon: TopBarIconModel(
-                icon: LucideIcons.arrowLeft,
-                onPressed: () => context.pop(),
-                color: Colors.grey,
+            roundedCard(
+              child: TopBarUtility.buildPurpleTitleTopbar(
+                leftIcon: TopBarIconModel(
+                  icon: LucideIcons.arrowLeft,
+                  onPressed: () => context.pop(),
+                  color: Colors.grey,
+                ),
+                context: context,
+                title: "Koleksi Doa-Doa",
               ),
-              context: context,
-              title: "Koleksi Doa-Doa",
             ),
 
             // 🔹 Konten utama
             Expanded(
               child: FutureBuilder<List<CompleteDuaData>>(
-                future: AppDatabase().duasDao.getDuasByCategory(
-                  categoryId ?? 0,
-                ),
+                future: db.duasDao.getDuasByCategory(categoryId ?? 0),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -54,12 +53,7 @@ class DuasScreen extends StatelessWidget {
 
                   final duas = snapshot.data!;
                   return ListView(
-                    padding: const EdgeInsets.only(
-                      top: 20,
-                      bottom: 90,
-                      left: 16,
-                      right: 16,
-                    ), // ⬅️ aman dari bottom bar
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 90),
                     children: [
                       // 🔹 Judul kategori
                       Padding(
@@ -78,124 +72,122 @@ class DuasScreen extends StatelessWidget {
                       ),
 
                       // 🔹 List Doa
-                      ...duas.map((dua) {
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          elevation: 4,
-                          child: Padding(
-                            padding: const EdgeInsets.all(32),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Teks Arab
-                                Text(
-                                  dua.ayah.ayahText,
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(
-                                    fontSize: 28,
-                                    fontFamily: 'Arab Typesetting',
-                                    color: Color(0xFF3B1D77),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Divider
-                                const Divider(
-                                  color: Color(0xFF994EF8),
-                                  thickness: 1,
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Arti
-                                Text(
-                                  dua.ayah.indoText,
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Color(0xFF3B1D77),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Sumber Surah
-                                Text(
-                                  "[QS ${dua.surah?.nameLatin ?? ' : '} ${dua.ayah.ayahNumber}]",
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xff672CBC),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 12),
-
-                                // Tombol aksi
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Fitur ini akan segera hadir",
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      icon: const Icon(
-                                        LucideIcons.play,
-                                        color: Color(0xFF3B1D77),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Fitur ini akan segera hadir",
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      icon: const Icon(
-                                        LucideIcons.share2,
-                                        color: Color(0xFF3B1D77),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Fitur ini akan segera hadir",
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      icon: const Icon(
-                                        LucideIcons.heart,
-                                        color: Color(0xFF3B1D77),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }),
+                      ...duas.map((dua) => DoaCard(dua: dua)),
                     ],
                   );
                 },
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 🔹 Widget DoaCard terpisah (lebih maintainable + accessible)
+class DoaCard extends StatelessWidget {
+  final CompleteDuaData dua;
+
+  const DoaCard({super.key, required this.dua});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label:
+          "Doa dari surah ${dua.surah?.nameLatin ?? ''}, ayat ${dua.ayah.ayahNumber}.",
+      hint:
+          "Geser untuk membaca terjemahan. Gunakan tombol play untuk mendengarkan.",
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 🔹 Teks Arab
+              ExcludeSemantics(
+                child: Text(
+                  dua.ayah.ayahText,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontFamily: 'Arab Typesetting',
+                    color: Color(0xFF3B1D77),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // 🔹 Divider
+              const Divider(color: Color(0xFF994EF8), thickness: 1),
+              const SizedBox(height: 8),
+
+              // 🔹 Terjemahan (dibaca TalkBack)
+              Text(
+                dua.ayah.indoText,
+                style: const TextStyle(fontSize: 12, color: Color(0xFF3B1D77)),
+              ),
+              const SizedBox(height: 8),
+
+              // 🔹 Sumber surah
+              Text(
+                "[QS ${dua.surah?.nameLatin ?? ''} : ${dua.ayah.ayahNumber}]",
+                style: const TextStyle(fontSize: 12, color: Color(0xff672CBC)),
+              ),
+              const SizedBox(height: 12),
+
+              // 🔹 Tombol aksi
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                    tooltip: "Putar doa ini",
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Fitur ini akan segera hadir"),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      LucideIcons.play,
+                      color: Color(0xFF3B1D77),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: "Bagikan doa ini",
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Fitur ini akan segera hadir"),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      LucideIcons.share2,
+                      color: Color(0xFF3B1D77),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: "Tambahkan ke favorit",
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Fitur ini akan segera hadir"),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      LucideIcons.heart,
+                      color: Color(0xFF3B1D77),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

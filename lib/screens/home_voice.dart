@@ -4,6 +4,101 @@ import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/normal_button.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
 
+// class VoiceHomeScreen extends StatelessWidget {
+//   final ValueNotifier<bool> isListening = ValueNotifier(false);
+
+//   VoiceHomeScreen({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final size = MediaQuery.of(context).size;
+//     final height = size.height;
+
+//     const scale = 0.92;
+
+//     return SizedBox(
+//       width: double.infinity,
+//       height: double.infinity,
+//       child: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           Padding(
+//             padding: EdgeInsets.symmetric(vertical: 20 * scale, horizontal: 24 * scale),
+//             child: TopBarUtility.buildPurpleTitleTopbar(context: context, title: "InQuran"),
+//           ),
+//           _title(height, scale),
+//           SizedBox(height: height * 0.055 * scale),
+//           MicButton(size: height * 0.3 * scale),
+//           SizedBox(height: height * 0.035 * scale),
+//           Column(
+//             mainAxisSize: MainAxisSize.min,
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             children: [
+//               TranscriptionText(idleText: 'Tap To Talk'),
+//               SizedBox(height: height * 0.008 * scale),
+//               _helpingText(height, scale),
+//             ],
+//           ),
+//           SizedBox(height: height * 0.03 * scale),
+//           NormalButton(),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _helpingText(double height, double scale) {
+//     return ConstrainedBox(
+//       constraints: BoxConstraints(maxWidth: height * 0.25 * scale),
+//       child: Text(
+//         "Membantu mereka yang memiliki gangguan penglihatan untuk menekan tombol.",
+//         textAlign: TextAlign.center,
+//         style: TextStyle(
+//           color: const Color(0xFF7C8BA0),
+//           fontSize: height * 0.013 * scale,
+//           fontFamily: "Plus Jakarta",
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _title(double height, double scale) {
+//     return Column(
+//       children: [
+//         Text(
+//           "Mode",
+//           style: TextStyle(
+//             fontFamily: "Plus Jakarta",
+//             fontSize: height * 0.035 * scale,
+//             color: const Color(0xFF672CBC),
+//           ),
+//         ),
+//         Text(
+//           "Voice",
+//           style: TextStyle(
+//             fontFamily: "Plus Jakarta",
+//             fontSize: height * 0.035 * scale,
+//             fontWeight: FontWeight.bold,
+//             color: const Color(0xFF672CBC),
+//             height: 1.0,
+//           ),
+//         ),
+//         Text(
+//           "Command",
+//           style: TextStyle(
+//             fontFamily: "Plus Jakarta",
+//             fontSize: height * 0.035 * scale,
+//             fontWeight: FontWeight.bold,
+//             color: const Color(0xFF672CBC),
+//             height: 1.0,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+import 'package:flutter/material.dart';
+
 class VoiceHomeScreen extends StatelessWidget {
   final ValueNotifier<bool> isListening = ValueNotifier(false);
 
@@ -13,86 +108,152 @@ class VoiceHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
-
     const scale = 0.92;
 
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 20 * scale, horizontal: 24 * scale),
-            child: TopBarUtility.buildPurpleTitleTopbar(context: context, title: "InQuran"),
-          ),
-          _title(height, scale),
-          SizedBox(height: height * 0.055 * scale),
-          MicButton(size: height * 0.3 * scale),
-          SizedBox(height: height * 0.035 * scale),
-          Column(
+    return Scaffold(
+      body: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TranscriptionText(idleText: 'Tap To Talk'),
-              SizedBox(height: height * 0.008 * scale),
-              _helpingText(height, scale),
+              // 🔹 Topbar
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: 20 * scale,
+                  horizontal: 24 * scale,
+                ),
+                child: TopBarUtility.buildPurpleTitleTopbar(
+                  context: context,
+                  title: "InQuran",
+                ),
+              ),
+
+              // 🔹 Title Section
+              _TitleSection(height: height, scale: scale),
+
+              SizedBox(height: height * 0.055 * scale),
+
+              // 🔹 Mic Button dengan TalkBack
+              ValueListenableBuilder<bool>(
+                valueListenable: isListening,
+                builder: (context, listening, _) {
+                  return Semantics(
+                    button: true,
+                    label:
+                        listening
+                            ? "Tombol mikrofon. Saat ini mendengarkan perintah."
+                            : "Tombol mikrofon. Ketuk untuk mulai berbicara.",
+                    child: MicButton(size: height * 0.3 * scale),
+                  );
+                },
+              ),
+
+              SizedBox(height: height * 0.035 * scale),
+
+              // 🔹 Transcription Text
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Semantics(
+                    liveRegion: true, // agar screen reader baca otomatis
+                    child: TranscriptionText(idleText: 'Tap To Talk'),
+                  ),
+                  SizedBox(height: height * 0.008 * scale),
+                  _HelpingText(height: height, scale: scale),
+                ],
+              ),
+
+              SizedBox(height: height * 0.03 * scale),
+
+              // 🔹 Normal Button
+              Semantics(
+                button: true,
+                label: "Tombol untuk melanjutkan ke mode normal",
+                child: NormalButton(),
+              ),
             ],
           ),
-          SizedBox(height: height * 0.03 * scale),
-          NormalButton(),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bagian judul
+class _TitleSection extends StatelessWidget {
+  final double height;
+  final double scale;
+
+  const _TitleSection({required this.height, required this.scale});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      header: true,
+      label: "Mode Voice Command",
+      child: Column(
+        children: [
+          Text(
+            "Mode",
+            style: TextStyle(
+              fontFamily: "Plus Jakarta",
+              fontSize: height * 0.035 * scale,
+              color: const Color(0xFF672CBC),
+            ),
+          ),
+          Text(
+            "Voice",
+            style: TextStyle(
+              fontFamily: "Plus Jakarta",
+              fontSize: height * 0.035 * scale,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF672CBC),
+              height: 1.0,
+            ),
+          ),
+          Text(
+            "Command",
+            style: TextStyle(
+              fontFamily: "Plus Jakarta",
+              fontSize: height * 0.035 * scale,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF672CBC),
+              height: 1.0,
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _helpingText(double height, double scale) {
+/// Teks bantuan
+class _HelpingText extends StatelessWidget {
+  final double height;
+  final double scale;
+
+  const _HelpingText({required this.height, required this.scale});
+
+  @override
+  Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: height * 0.25 * scale),
-      child: Text(
-        "Membantu mereka yang memiliki gangguan penglihatan untuk menekan tombol.",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: const Color(0xFF7C8BA0),
-          fontSize: height * 0.013 * scale,
-          fontFamily: "Plus Jakarta",
+      child: Semantics(
+        label:
+            "Teks bantuan. Membantu mereka yang memiliki gangguan penglihatan untuk menekan tombol.",
+        child: Text(
+          "Membantu mereka yang memiliki gangguan penglihatan untuk menekan tombol.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: const Color(0xFF7C8BA0),
+            fontSize: height * 0.013 * scale,
+            fontFamily: "Plus Jakarta",
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _title(double height, double scale) {
-    return Column(
-      children: [
-        Text(
-          "Mode",
-          style: TextStyle(
-            fontFamily: "Plus Jakarta",
-            fontSize: height * 0.035 * scale,
-            color: const Color(0xFF672CBC),
-          ),
-        ),
-        Text(
-          "Voice",
-          style: TextStyle(
-            fontFamily: "Plus Jakarta",
-            fontSize: height * 0.035 * scale,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF672CBC),
-            height: 1.0,
-          ),
-        ),
-        Text(
-          "Command",
-          style: TextStyle(
-            fontFamily: "Plus Jakarta",
-            fontSize: height * 0.035 * scale,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF672CBC),
-            height: 1.0,
-          ),
-        ),
-      ],
     );
   }
 }
