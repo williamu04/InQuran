@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/components/error_popup.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/dto/favorites.dart';
 import 'package:mtqmnuns/dto/surah.dart';
-import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/favorites.dart';
 import 'package:mtqmnuns/state/success_or_fail.dart';
 import 'package:mtqmnuns/state/surah.dart';
-import 'package:mtqmnuns/state/user.dart';
 import 'package:mtqmnuns/viewmodel/favorites.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
-import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -156,20 +152,9 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
           defaultSubtitle: "Terjadi Kesalhan Tidak Terduga", 
           buttonList: [
             ButtonModalModel(
-              text: "Login", 
-              onButtonPressed: () {
-                context.replace(AppRoutes.login.path);
-              },
+              text: "Ok",
+              onButtonPressed: () {},
             ),
-            ButtonModalModel(
-              text: "Kembali", 
-              textColor: Colors.red,
-              buttonColor: Colors.white,
-              onButtonPressed: () {
-                context.replace(AppRoutes.home.path);
-                context.read<UserViewModel>().setState(UserLoadUnauthenticated());
-              },
-            )
           ],
           controller: errorController
           )
@@ -234,8 +219,6 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   }
 
   Widget _buildAyahCard(AyahWithSurahDto ayah, {EdgeInsets? padding}) {
-    final key = '${ayah.surahNumber}_${ayah.number}';
-
     Widget ayahCardContent = Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
@@ -293,8 +276,9 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                   Consumer<SurahViewModel>(
                     builder: (context, vm, child) {
                       final currentState = vm.state;
-                      if (currentState is! SurahSuccess)
+                      if (currentState is! SurahSuccess) {
                         return const SizedBox();
+                      }
 
                       final isCurrentAyahPlaying =
                           currentState.playingIndex == ayah.number - 1 &&
@@ -337,7 +321,6 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
 
                       switch (state) {
                         case FavoritesLoadLoading():
-                        case FavoritesLoadUnauthenticated():
                         case FavoritesLoadError():
                           return _buildActionButton(
                             icon: const Icon(
@@ -346,9 +329,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                               color: Color(0xFF672CBC),
                             ),
                             onPressed: () {
-                              if (state is FavoritesLoadUnauthenticated) {
-                                errorController.open('Fitur ini memerlukan login, login terlebih dahulu?');
-                              } else if (state is FavoritesLoadError) {
+                              if (state is FavoritesLoadError) {
                                 errorController.open('Error: ${state.message}');
                               }
                             },

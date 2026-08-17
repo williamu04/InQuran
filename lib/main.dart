@@ -2,28 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/components/drawer_menu.dart';
 import 'package:mtqmnuns/components/drawer_setting.dart';
-import 'package:mtqmnuns/components/loading_viewmodel.dart';
 import 'package:mtqmnuns/components/mic_button.dart';
 import 'package:mtqmnuns/components/popup_modal.dart';
 import 'package:mtqmnuns/components/transcription_text.dart';
-import 'package:mtqmnuns/components/transient_modal.dart';
-import 'package:mtqmnuns/config/dio.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
-import 'package:mtqmnuns/data/remote/auth.dart';
-import 'package:mtqmnuns/data/remote/favorites.dart';
-import 'package:mtqmnuns/data/remote/user.dart';
-import 'package:mtqmnuns/repositories/auth.dart';
 import 'package:mtqmnuns/repositories/ayah.dart';
-import 'package:mtqmnuns/repositories/favorites.dart';
 import 'package:mtqmnuns/repositories/stt.dart';
-import 'package:mtqmnuns/repositories/user.dart';
 import 'package:mtqmnuns/routes/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
 import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
@@ -36,41 +26,28 @@ import 'package:mtqmnuns/repositories/surah.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/services/stt.dart';
 import 'package:mtqmnuns/services/surah_filter.dart';
-import 'package:mtqmnuns/state/user.dart';
-import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/favorites.dart';
 import 'package:mtqmnuns/viewmodel/stt.dart';
 import 'package:mtqmnuns/viewmodel/surah.dart';
 import 'package:mtqmnuns/viewmodel/surah_list.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
-import 'package:mtqmnuns/viewmodel/user.dart';
 import 'package:permission_handler/permission_handler.dart' as app_settings;
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final dio = DioConfig().init();
 
   final globalConfig = GlobalConfig();
   await globalConfig.initialize();
 
   final db = AppDatabase();
 
-  final FlutterSecureStorage storage = FlutterSecureStorage();
-
-  final authRemote = AuthRemoteDataSource(client: dio);
-  final authRepository = AuthRepository(authRemote);
-  final authViewModel = await AuthViewModel.create(authRepository, storage);
-
   initializeDateFormatting('id_ID', null).then(
     (_) => runApp(
       MultiProvider(
         providers: [
-          // Intialized
+          // Config
           ChangeNotifierProvider<GlobalConfig>.value(value: globalConfig),
-          Provider.value(value: authRemote),
-          Provider.value(value: authRepository),
-          ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
 
           // DAOs
           Provider.value(value: db.surahDao),
@@ -78,79 +55,25 @@ void main() async {
           Provider.value(value: db.ayahDao),
           Provider.value(value: db.duasDao),
 
-          // Remote
-          Provider(create: (_) => UserRemoteDataSource(client: dio)),
-          Provider(create: (_) => FavoritesDataSource(client: dio)),
-
           // Repositories
           Provider(
             create: (context) => SurahRepository(context.read<SurahDao>()),
-          ),
-          Provider(
-            create: (context) => FavoritesRepository(context.read<FavoritesDataSource>()),
           ),
           Provider(create: (context) => JuzRepository(context.read<JuzDao>())),
           Provider(
             create: (context) => AyahRepository(context.read<AyahDao>()),
           ),
           Provider(
-            create:
-                (context) =>
-                    UserRepository(context.read<UserRemoteDataSource>()),
-          ),
-
-          Provider(
-            create:
-                (context) => SttRepository(
-                  context.read<SurahDao>(),
-                  context.read<DuasDao>(),
-
-                  // context.read<AyahDao>(),
-                ),
+            create: (context) => SttRepository(
+              context.read<SurahDao>(),
+              context.read<DuasDao>(),
+            ),
           ),
 
           // Services
           Provider(create: (_) => SttService()),
           Provider(create: (_) => SurahFilterService()),
 
-        // ViewModels
-        ChangeNotifierProvider(
-          create:
-              (context) => SurahListViewModel(
-                context.read<SurahRepository>(),
-                context.read<SurahFilterService>(),
-                context.read<JuzRepository>(),
-              ),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) => SttViewModel(
-                context,
-                context.read<SttService>(),
-                context.read<SttRepository>(),
-              ),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => LocationProvider()..loadLocation(),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) => SurahViewModel(context.read<AyahRepository>()),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) => UserViewModel(
-                context.read<UserRepository>(),
-                context.read<AuthViewModel>(),
-              ),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) => FavoritesViewModel(
-                context.read<FavoritesRepository>(),
-                context.read<AuthViewModel>(),
-              ),
-        ),
           // ViewModels
           ChangeNotifierProvider(
             create:
@@ -173,23 +96,16 @@ void main() async {
           ),
           ChangeNotifierProvider(
             create:
-                (context) =>
-                    SurahViewModel(context.read<AyahRepository>()),
+                (context) => SurahViewModel(context.read<AyahRepository>()),
           ),
+          ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
 
-          //toggleable ui state
+          // Toggleable UI state
           ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
           ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
-          ChangeNotifierProvider(create: (_) => LogoutDialoguePopUp()),
-          ChangeNotifierProvider(create: (_) => UnauthenticatedPopUp()),
-          ChangeNotifierProvider(create: (_) => LogoutLoading()),
-          ChangeNotifierProvider(create: (_) => OpenSettingErrorPopUp()),
           ChangeNotifierProvider(create: (_) => ExitCofirmationPopUp()),
           ChangeNotifierProvider(create: (_) => PermissionErrorController()),
           ChangeNotifierProvider(create: (_) => AppSettingErrorController()),
-          ChangeNotifierProvider(create: (_) => ImageSizeTooBigErrorController()),
-
-          ChangeNotifierProvider(create: (_) => TransientMessageService()),
         ],
         child: const MyApp(),
       ),
@@ -341,59 +257,10 @@ class MainScaffold extends StatelessWidget {
                   ),
                 ],
               ),
-              PopUpModal(
-                title: "Kamu Belum Login",
-                subtitle: "Kamu harus login untuk mengakses fitur ini",
-                controller: context.read<UnauthenticatedPopUp>(),
-                buttonList: [
-                  ButtonModalModel(
-                    text: "Login",
-                    onButtonPressed: () {
-                      context.push(AppRoutes.login.path);
-                    },
-                  ),
-                ],
-              ),
-              PopUpModal(
-                title: "Logout",
-                subtitle: "Kamu yakin ingin keluar?",
-                controller: context.read<LogoutDialoguePopUp>(),
-                buttonList: [
-                  ButtonModalModel(
-                    text: "Logout",
-                    onButtonPressed: () {
-                      context.read<LogoutLoading>().open();
-                      context.read<AuthViewModel>().logout();
-                      context.read<UserViewModel>().setState(
-                        UserLoadUnauthenticated(),
-                      );
-                      context.read<LogoutLoading>().close();
-                      context.read<TransientMessageService>().showMessage(
-                        context,
-                        "Logout Berhasil",
-                      );
-                    },
-                  ),
-                  ButtonModalModel(
-                    text: "Batal",
-                    textColor: Colors.red,
-                    buttonColor: Colors.white,
-                    onButtonPressed: () {},
-                  ),
-                ],
-              ),
               ErrorPopUpModal(
                 title: "Gagal Membuka App Setting",
                 defaultSubtitle: "Terjadi Kesalahan Tak terduga",
                 controller: context.read<AppSettingErrorController>(),
-                buttonList: [
-                  ButtonModalModel(text: "Ok", onButtonPressed: () {}),
-                ],
-              ),
-              ErrorPopUpModal(
-                title: "Gambar Terlalu Besar",
-                defaultSubtitle: "Terjadi Kesalahan Tak terduga",
-                controller: context.read<ImageSizeTooBigErrorController>(),
                 buttonList: [
                   ButtonModalModel(text: "Ok", onButtonPressed: () {}),
                 ],
@@ -424,10 +291,6 @@ class MainScaffold extends StatelessWidget {
                     },
                   ),
                 ],
-              ),
-              LoadingModal(
-                text: "Logging out...",
-                controller: context.read<LogoutLoading>(),
               ),
             ],
           ),

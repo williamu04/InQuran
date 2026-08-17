@@ -1,11 +1,8 @@
-
 import 'package:mtqmnuns/dto/favorites.dart';
 
 sealed class FavoritesLoadState {}
 
 class FavoritesLoadLoading extends FavoritesLoadState {}
-
-class FavoritesLoadUnauthenticated extends FavoritesLoadState {}
 
 class FavoritesLoadError extends FavoritesLoadState {
   String message;
@@ -15,8 +12,4 @@ class FavoritesLoadError extends FavoritesLoadState {
 class FavoritesLoaded extends FavoritesLoadState {
   final List<FavoriteDto> favorites;
   FavoritesLoaded(this.favorites);
-}
-
-class FavoritesLoadedOffline extends FavoritesLoaded {
-  FavoritesLoadedOffline(super.favorites);
 }

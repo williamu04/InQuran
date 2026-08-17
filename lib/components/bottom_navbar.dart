@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/routes/guard_navigation.dart';
 import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
 
@@ -21,7 +20,7 @@ class BottomNavBar extends StatelessWidget {
       BottomNavicon(icon: LucideIcons.search, route: AppRoutes.search),
       BottomNavicon(icon: LucideIcons.house, route: AppRoutes.home),
       BottomNavicon(icon: LucideIcons.handHeart, route: AppRoutes.duasList),
-      BottomNavicon(icon: LucideIcons.user, route: AppRoutes.profile),
+      BottomNavicon(icon: LucideIcons.heart, route: AppRoutes.favorites),
     ];
 
     return AnimatedBuilder(
@@ -71,7 +70,7 @@ class BottomNavBar extends StatelessWidget {
                           ),
                           onPressed: () {
                             if (!isSelected) {
-                              context.authPush(nav.route.path);
+                              context.push(nav.route.path);
                             }
                           },
                         );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/config/Global.dart';
+import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/routes/route.dart';
 
 class IntroScreen extends StatefulWidget {

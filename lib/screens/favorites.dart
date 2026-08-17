@@ -30,9 +30,6 @@ class FavoriteScreen extends StatelessWidget {
                     FavoritesLoadLoading() => const Center(
                       child: CircularProgressIndicator(),
                     ),
-                    FavoritesLoadUnauthenticated() => const _Message(
-                      text: "Silakan login untuk melihat favorit.",
-                    ),
                     FavoritesLoadError(:final message) => _Message(
                       text: "Error: $message",
                     ),
@@ -40,6 +37,7 @@ class FavoriteScreen extends StatelessWidget {
                       favorites.isEmpty
                           ? const _Message(text: "Belum ada ayat favorit.")
                           : FutureBuilder<List<AyahWithSurah>>(
+                            key: ValueKey(favorites.length),
                             future: db.ayahDao.getAyahsFromFavorites(favorites),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
@@ -169,10 +167,10 @@ class FavoriteCard extends StatelessWidget {
                       ayah.ayah.ayahNumber,
                     );
                     final result = await favVm.deleteFavorite(favorite);
+                    if (!context.mounted) return;
                     switch (result) {
                       case Success():
                         _showSnack(context, "Berhasil dihapus dari favorit");
-                        (context as Element).reassemble();
                         break;
                       case Failure(:final reason):
                         _showSnack(context, "Gagal hapus: $reason");

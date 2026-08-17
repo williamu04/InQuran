@@ -5,11 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mtqmnuns/common/top_bar_utils.dart';
 import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/routes/guard_navigation.dart';
 import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/state/user.dart';
-import 'package:mtqmnuns/viewmodel/user.dart';
-import 'package:provider/provider.dart';
 
 class HomeMenuItem {
   String title;
@@ -60,7 +56,7 @@ class MainHomeScreen extends StatelessWidget {
         title: "Favorit",
         icon: LucideIcons.bookHeart,
         buttonColor: const Color(0xFF672CBC),
-        action: () => context.authPush(AppRoutes.favorites.path),
+        action: () => context.push(AppRoutes.favorites.path),
       ),
       HomeMenuItem(
         title: "Jelajahi",
@@ -133,35 +129,15 @@ class MainHomeScreen extends StatelessWidget {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          Consumer<UserViewModel>(
-                            builder: (context, vm, child) {
-                              final state = vm.state;
-                              Text usernameWidget(String username) {
-                                return Text(
-                                  username,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Plus Jakarta',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                );
-                              }
-
-                              switch (state) {
-                                case UserLoadLoading():
-                                  return usernameWidget("Loading..");
-                                case UserLoadUnauthenticated():
-                                  return usernameWidget("Sebelas Maret");
-                                case UserLoadError():
-                                  return usernameWidget("Sebelas Maret");
-                                case UserLoaded(:final user):
-                                  return usernameWidget(
-                                    user.fullName ?? user.username ?? '',
-                                  );
-                              }
-                            },
+                          Text(
+                            "Sebelas Maret",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Plus Jakarta',
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),

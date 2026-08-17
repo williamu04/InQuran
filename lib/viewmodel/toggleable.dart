@@ -41,11 +41,6 @@ class ErrorPopUpController extends ToggleableUiController {
 
 class SettingSlideDrawer extends ToggleableUiController {}
 class MenuSlideDrawer extends ToggleableUiController {}
-class LogoutDialoguePopUp extends ToggleableUiController {}
-class LogoutLoading extends ToggleableUiController {}
-class UnauthenticatedPopUp extends ToggleableUiController {}
-class OpenSettingErrorPopUp extends ErrorPopUpController {}
 class ExitCofirmationPopUp extends ToggleableUiController {}
 class PermissionErrorController extends ErrorPopUpController {}
 class AppSettingErrorController extends ErrorPopUpController {}
-class ImageSizeTooBigErrorController extends ErrorPopUpController {}

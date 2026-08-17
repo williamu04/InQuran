@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtqmnuns/components/drawer_generic_helper.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
-import 'package:mtqmnuns/routes/route.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
-import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +21,6 @@ class MenuDrawer extends StatelessWidget {
 
   List<DisclosureButtonModel> _createMenuButtonList(BuildContext context) {
     GlobalConfig globalConfig = context.read<GlobalConfig>();
-    AuthViewModel authvm = context.read<AuthViewModel>();
     return [
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Tugas Harian",
@@ -55,19 +52,8 @@ class MenuDrawer extends StatelessWidget {
         ]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
-        text: "Pengaturan Profil",
-        action: NavigateAction(AppRoutes.profile),
-      ),
-      DisclosureButtonModel.withDefaultTextStyle(
         text: "Bantuan & Dukungan",
         action: ExpandNestedDrawerAction([]),
-      ),
-      DisclosureButtonModel.withDefaultTextStyle(
-        text: authvm.isLoggedIn() ? "Logout" : "Login",
-        action: authvm.isLoggedIn() ?
-         SystemAction(context.read<LogoutDialoguePopUp>().open) : NavigateAction(AppRoutes.login),
-        showIcon: false,
-        color: authvm.isLoggedIn() ? Color(0xFFEA4335) : Colors.green,
       ),
     ];
   }

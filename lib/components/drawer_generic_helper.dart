@@ -6,7 +6,6 @@ import 'package:mtqmnuns/components/rounded_card.dart';
 import 'package:mtqmnuns/config/global.dart';
 import 'package:mtqmnuns/models/disclosure_button.dart';
 import 'package:mtqmnuns/state/disclosure_button.dart';
-import 'package:mtqmnuns/viewmodel/auth.dart';
 import 'package:mtqmnuns/viewmodel/toggleable.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +47,6 @@ class _GenericDrawerState<T extends ToggleableUiController>
     _listScrollController = ScrollController();
     buttonList = widget.createButtonList(context);
     context.read<GlobalConfig>().addListener(_onGlobalConfigChanged);
-    context.read<AuthViewModel>().addListener(_onGlobalConfigChanged);
   }
 
   void _onGlobalConfigChanged() {
@@ -171,13 +169,6 @@ class _GenericDrawerState<T extends ToggleableUiController>
   void _handleButtonTap(DisclosureButtonModel button, int index) {
     switch (button.action) {
       case NavigateAction(:var route):
-        final auth = context.read<AuthViewModel>();
-
-        if (route.requiresAuth && !auth.isLoggedIn()) {
-          context.read<UnauthenticatedPopUp>().open();
-          return;
-        }
-
         context.push(route.path);
         _closeDrawer();
 

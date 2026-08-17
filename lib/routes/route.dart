@@ -1,50 +1,24 @@
 import 'package:go_router/go_router.dart';
 import 'package:mtqmnuns/routes/route_model.dart';
-import 'package:mtqmnuns/screens/complete_signup.dart';
 import 'package:mtqmnuns/screens/duas.dart';
 import 'package:mtqmnuns/screens/explore.dart';
-import 'package:mtqmnuns/screens/password_change.dart';
-import 'package:mtqmnuns/screens/password_setter.dart';
-import 'package:mtqmnuns/screens/profile_edit.dart';
 import 'package:mtqmnuns/screens/surah_list.dart';
 import 'package:mtqmnuns/screens/calendar.dart';
 import 'package:mtqmnuns/screens/etc.dart';
 import 'package:mtqmnuns/screens/favorites.dart';
 import 'package:mtqmnuns/screens/intro.dart';
-import 'package:mtqmnuns/screens/login.dart';
-import 'package:mtqmnuns/screens/profile.dart';
 import 'package:mtqmnuns/screens/qibla.dart';
 import 'package:mtqmnuns/screens/search.dart';
 import 'package:mtqmnuns/screens/duas_list.dart';
 import 'package:mtqmnuns/screens/home.dart';
-import 'package:mtqmnuns/screens/signup.dart';
 import 'package:mtqmnuns/screens/surah.dart';
 import 'package:mtqmnuns/screens/splash.dart';
 import 'package:mtqmnuns/screens/times.dart';
 
 class AppRoutes {
-  static final signUp = AppRoute(
-    path: '/signup',
-    pageBuilder: (context, state) => NoTransitionPage(child: SignUpScreen()),
-    isHasBottomBar: false,
-  );
-
-  static final completeSignUp = AppRoute(
-    path: '/signup/complete',
-    pageBuilder: (context, state) => NoTransitionPage(child: CompleteUserSignUp()),
-    isHasBottomBar: false,
-    requiresAuth: true
-  );
-
   static final intro = AppRoute(
     path: '/intro',
     pageBuilder: (context, state) => NoTransitionPage(child: IntroScreen()),
-    isHasBottomBar: false,
-  );
-
-  static final login = AppRoute(
-    path: '/login',
-    pageBuilder: (context, state) => NoTransitionPage(child: LoginScreen()),
     isHasBottomBar: false,
   );
 
@@ -78,33 +52,6 @@ class AppRoutes {
     isHasBottomBar: true,
   );
 
-  static final profile = AppRoute(
-    path: '/profile',
-    pageBuilder: (context, state) => NoTransitionPage(child: ProfileScreen()),
-    isHasBottomBar: true,
-    requiresAuth: true
-  );
-
-  static final profileEdit = AppRoute(
-    path: '/profile/edit',
-    pageBuilder: (context, state) => NoTransitionPage(child: EditProfileScreen()),
-    isHasBottomBar: false,
-    requiresAuth: true
-  );
-  static final setPassword = AppRoute(
-    path: '/profile/edit/password/set',
-    pageBuilder: (context, state) => NoTransitionPage(child: SetPasswordScreen()),
-    isHasBottomBar: false,
-    requiresAuth: true
-  );
-
-  static final changePassword = AppRoute(
-    path: '/profile/edit/password/set',
-    pageBuilder: (context, state) => NoTransitionPage(child: ChangePasswordScreen()),
-    isHasBottomBar: false,
-    requiresAuth: true
-  );
-
   static final prayer = AppRoute(
     path: '/times',
     pageBuilder:
@@ -122,8 +69,6 @@ class AppRoutes {
     path: '/favorite',
     pageBuilder: (context, state) => NoTransitionPage(child: FavoriteScreen()),
     isHasBottomBar: true,
-    requiresAuth: true
-
   );
 
   static final calendar = AppRoute(
@@ -165,26 +110,20 @@ class AppRoutes {
   );
 
   static final List<AppRoute> all = [
+    home,
     surahList,
     search,
-    home,
     duasList,
-    profile,
     prayer,
     qibla,
     favorites,
     calendar,
+    explore,
     etc,
-    signUp,
-    completeSignUp,
-    login,
     surah,
-    splashScreen,
-    intro,
     duas,
-    profileEdit,
-    changePassword,
-    setPassword
+    intro,
+    splashScreen,
   ];
 
   static AppRoute getRouteByPath(String path) {
