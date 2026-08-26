@@ -1,4 +1,4 @@
-import 'package:mtqmnuns/dto/surah.dart';
+import 'package:inquran/dto/surah.dart';
 
 sealed class SurahDetailState {}
 

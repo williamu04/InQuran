@@ -1506,7 +1506,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final SurahDao surahDao = SurahDao(this as AppDatabase);
   late final AyahDao ayahDao = AyahDao(this as AppDatabase);
   late final JuzDao juzDao = JuzDao(this as AppDatabase);
-  late final DuasDao duasDao = DuasDao(this as AppDatabase);
+  late final DoaDao doaDao = DoaDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

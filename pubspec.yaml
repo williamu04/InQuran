@@ -1,4 +1,4 @@
-name: mtqmnuns
+name: inquran
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -74,6 +74,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.26.0
   build_runner: ^2.4.15
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -82,6 +83,14 @@ dev_dependencies:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/img/logo_icon.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/img/logo_icon.png"
+
 flutter:
   uses-material-design: true
 

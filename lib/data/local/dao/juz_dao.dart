@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
-import 'package:mtqmnuns/data/entity/ayah.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/data/aggregate/juz.dart'; 
+import 'package:inquran/data/entity/ayah.dart';
+import 'package:inquran/data/local/db/app_database.dart';
+import 'package:inquran/data/aggregate/juz.dart'; 
 
 part 'juz_dao.g.dart';
 

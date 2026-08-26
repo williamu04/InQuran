@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/data/aggregate/surah.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/dto/favorites.dart';
-import 'package:mtqmnuns/state/favorites.dart';
-import 'package:mtqmnuns/state/success_or_fail.dart';
-import 'package:mtqmnuns/viewmodel/favorites.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/data/aggregate/surah.dart';
+import 'package:inquran/dto/favorites.dart';
+import 'package:inquran/state/favorites.dart';
+import 'package:inquran/state/success_or_fail.dart';
+import 'package:inquran/viewmodel/favorites.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class FavoriteScreen extends StatelessWidget {
   const FavoriteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final db = AppDatabase();
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
@@ -31,34 +29,12 @@ class FavoriteScreen extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     ),
                     FavoritesLoadError(:final message) => _Message(
-                      text: "Error: $message",
+                      text: "Terjadi kesalahan: $message",
                     ),
-                    FavoritesLoaded(:final favorites) =>
-                      favorites.isEmpty
+                    FavoritesLoaded(:final ayahs) =>
+                      ayahs.isEmpty
                           ? const _Message(text: "Belum ada ayat favorit.")
-                          : FutureBuilder<List<AyahWithSurah>>(
-                            key: ValueKey(favorites.length),
-                            future: db.ayahDao.getAyahsFromFavorites(favorites),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                              if (snapshot.hasError) {
-                                return _Message(
-                                  text: "Error: ${snapshot.error}",
-                                );
-                              }
-                              final ayahs = snapshot.data ?? [];
-                              return ayahs.isEmpty
-                                  ? const _Message(
-                                    text: "Belum ada ayat favorit.",
-                                  )
-                                  : FavoriteList(ayahs: ayahs);
-                            },
-                          ),
+                          : FavoriteList(ayahs: ayahs),
                   };
                 },
               ),
@@ -124,25 +100,25 @@ class FavoriteCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 28,
                 fontFamily: 'Arab Typesetting',
-                color: Color(0xFF3B1D77),
+                color: AppColors.deepPurple,
               ),
             ),
             const SizedBox(height: 8),
 
-            const Divider(color: Color(0xFF994EF8), thickness: 1),
+            const Divider(color: AppColors.primaryLight, thickness: 1),
             const SizedBox(height: 8),
 
             // Terjemahan
             Text(
               ayah.ayah.indoText,
-              style: const TextStyle(fontSize: 10, color: Color(0xFF3B1D77)),
+              style: const TextStyle(fontSize: 10, color: AppColors.deepPurple),
             ),
             const SizedBox(height: 8),
 
             // Sumber Surah
             Text(
               "[QS ${ayah.surah.nameLatin} : ${ayah.ayah.ayahNumber}]",
-              style: const TextStyle(fontSize: 12, color: Color(0xff672CBC)),
+              style: const TextStyle(fontSize: 12, color: AppColors.primary),
             ),
 
             const SizedBox(height: 12),
@@ -195,7 +171,7 @@ class _ActionIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      icon: Icon(icon, color: const Color(0xFF3B1D77)),
+      icon: Icon(icon, color: AppColors.deepPurple),
     );
   }
 }

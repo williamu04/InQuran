@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/models/disclosure_button.dart';
+import 'package:inquran/state/disclosure_button.dart';
+import 'package:inquran/common/app_color.dart';
 
 class DisclosureButton extends StatelessWidget {
   final DisclosureButtonModel model;
@@ -26,7 +27,7 @@ class DisclosureButton extends StatelessWidget {
             Icon(
               isExpanded ? LucideIcons.chevronDown : LucideIcons.chevronRight,
               size: 20,
-              color: model.textWidget.style?.color ??  Color(0xFF672CBC),
+              color: model.textWidget.style?.color ??  AppColors.primary,
             ),
         ],
       ),

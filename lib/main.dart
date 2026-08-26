@@ -2,35 +2,39 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:mtqmnuns/components/bottom_navbar.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/components/drawer_menu.dart';
-import 'package:mtqmnuns/components/drawer_setting.dart';
-import 'package:mtqmnuns/components/mic_button.dart';
-import 'package:mtqmnuns/components/popup_modal.dart';
-import 'package:mtqmnuns/components/transcription_text.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
-import 'package:mtqmnuns/repositories/ayah.dart';
-import 'package:mtqmnuns/repositories/stt.dart';
-import 'package:mtqmnuns/routes/go_router.dart';
-import 'package:mtqmnuns/routes/route_model.dart';
-import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
-import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
-import 'package:mtqmnuns/data/local/dao/duas_dao.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/providers/location.dart';
-import 'package:mtqmnuns/repositories/juz.dart';
-import 'package:mtqmnuns/repositories/surah.dart';
-import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/services/stt.dart';
-import 'package:mtqmnuns/services/surah_filter.dart';
-import 'package:mtqmnuns/viewmodel/favorites.dart';
-import 'package:mtqmnuns/viewmodel/stt.dart';
-import 'package:mtqmnuns/viewmodel/surah.dart';
-import 'package:mtqmnuns/viewmodel/surah_list.dart';
-import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:inquran/components/bottom_nav_bar.dart';
+import 'package:inquran/components/drawer_menu.dart';
+import 'package:inquran/components/drawer_setting.dart';
+import 'package:inquran/components/mic_button.dart';
+import 'package:inquran/components/popup_modal.dart';
+import 'package:inquran/components/transcription_text.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/data/local/dao/ayah_dao.dart';
+import 'package:inquran/data/local/dao/doa_dao.dart';
+import 'package:inquran/data/local/dao/juz_dao.dart';
+import 'package:inquran/data/local/dao/surah_dao.dart';
+import 'package:inquran/data/local/db/app_database.dart';
+import 'package:inquran/repositories/ayah.dart';
+import 'package:inquran/repositories/doa.dart';
+import 'package:inquran/repositories/juz.dart';
+import 'package:inquran/repositories/stt.dart';
+import 'package:inquran/repositories/surah.dart';
+import 'package:inquran/routes/go_router.dart';
+import 'package:inquran/routes/route.dart';
+import 'package:inquran/routes/route_model.dart';
+import 'package:inquran/services/prayer.dart';
+import 'package:inquran/services/stt.dart';
+import 'package:inquran/services/surah_filter.dart';
+import 'package:inquran/state/ui_controllers.dart';
+import 'package:inquran/viewmodel/doa.dart';
+import 'package:inquran/viewmodel/favorites.dart';
+import 'package:inquran/viewmodel/location.dart';
+import 'package:inquran/viewmodel/prayer_time.dart';
+import 'package:inquran/viewmodel/stt.dart';
+import 'package:inquran/viewmodel/surah.dart';
+import 'package:inquran/viewmodel/surah_list.dart';
 import 'package:permission_handler/permission_handler.dart' as app_settings;
 import 'package:provider/provider.dart';
 
@@ -53,7 +57,7 @@ void main() async {
           Provider.value(value: db.surahDao),
           Provider.value(value: db.juzDao),
           Provider.value(value: db.ayahDao),
-          Provider.value(value: db.duasDao),
+          Provider.value(value: db.doaDao),
 
           // Repositories
           Provider(
@@ -64,15 +68,19 @@ void main() async {
             create: (context) => AyahRepository(context.read<AyahDao>()),
           ),
           Provider(
+            create: (context) => DoaRepository(context.read<DoaDao>()),
+          ),
+          Provider(
             create: (context) => SttRepository(
               context.read<SurahDao>(),
-              context.read<DuasDao>(),
+              context.read<DoaDao>(),
             ),
           ),
 
           // Services
           Provider(create: (_) => SttService()),
           Provider(create: (_) => SurahFilterService()),
+          Provider(create: (_) => PrayerService()),
 
           // ViewModels
           ChangeNotifierProvider(
@@ -92,15 +100,29 @@ void main() async {
                 ),
           ),
           ChangeNotifierProvider(
-            create: (_) => LocationProvider()..loadLocation(),
+            create: (_) => LocationViewModel()..loadLocation(),
           ),
           ChangeNotifierProvider(
             create:
                 (context) => SurahViewModel(context.read<AyahRepository>()),
           ),
-          ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
+          ChangeNotifierProvider(
+            create: (context) => DoaListViewModel(context.read<DoaRepository>()),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => DoaDetailViewModel(context.read<DoaRepository>()),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => FavoritesViewModel(context.read<AyahDao>()),
+          ),
+          ChangeNotifierProvider(
+            create:
+                (context) =>
+                    PrayerTimeViewModel(context.read<PrayerService>())
+                      ..loadPrayerTimes(),
+          ),
 
-          // Toggleable UI state
+          // UI controllers
           ChangeNotifierProvider(create: (_) => SettingSlideDrawer()),
           ChangeNotifierProvider(create: (_) => MenuSlideDrawer()),
           ChangeNotifierProvider(create: (_) => ExitCofirmationPopUp()),

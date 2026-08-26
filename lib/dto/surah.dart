@@ -1,5 +1,5 @@
-import 'package:mtqmnuns/data/aggregate/surah.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:inquran/data/aggregate/surah.dart';
+import 'package:inquran/data/local/db/app_database.dart';
 
 class SurahInfoDto {
   final int number;

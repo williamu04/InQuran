@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/components/rounded_card.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/components/rounded_card.dart';
+import 'package:inquran/common/app_color.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -24,7 +25,7 @@ class SearchScreen extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: textColor ?? const Color(0xFF672CBC),
+          color: textColor ?? AppColors.primary,
           fontWeight: FontWeight.w600,
           fontSize: 14,
         ),
@@ -54,7 +55,7 @@ class SearchScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
             borderRadius: 20,
             gradient: const LinearGradient(
-              colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
+              colors: [AppColors.purpleAccent, AppColors.darkestPurple],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -84,7 +85,7 @@ class SearchScreen extends StatelessWidget {
                     ...chips.map((chip) => _buildChip(chip)),
                     _buildChip(
                       'Lainnya',
-                      color: etcColor ?? const Color(0xFF672CBC),
+                      color: etcColor ?? AppColors.primary,
                       textColor: Colors.white,
                     ),
                   ],
@@ -100,7 +101,7 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9FE),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
           // Fixed Gradient Top Section
@@ -122,7 +123,7 @@ class SearchScreen extends StatelessWidget {
                     horizontal: 20,
                   ),
                   decoration: BoxDecoration(
-                    color: Color(0xFF672CBC),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -202,7 +203,7 @@ class SearchScreen extends StatelessWidget {
                         'Kematian',
                         'Alam Ghaib',
                       ],
-                      // etcColor: const Color(0xFF240F4F),
+                      // etcColor: AppColors.darkestPurple,
                     ),
                     const SizedBox(height: 32),
                     // Add bottom padding to account for bottom navigation bar

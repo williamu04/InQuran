@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inquran/common/app_color.dart';
 
 Widget roundedCard({
   required Widget child,
@@ -22,7 +23,7 @@ Widget roundedCard({
           boxShadow ??
           [
             BoxShadow(
-              color: Color(0x50240F4F),
+              color: AppColors.darkestPurple.withValues(alpha: 0.31),
               blurRadius: 15,
               offset: Offset(0, 12),
             ),
@@ -34,7 +35,7 @@ Widget roundedCard({
         gradient:
             gradient ??
             const LinearGradient(
-              colors: [Color(0xFF863ED5), Color(0xFF240F4F)],
+              colors: [AppColors.purpleAccent, AppColors.darkestPurple],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

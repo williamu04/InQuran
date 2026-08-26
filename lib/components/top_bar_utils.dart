@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/components/top_bar.dart';
-import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:inquran/components/top_bar.dart';
+import 'package:inquran/state/ui_controllers.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class TopBarIconModel {
   IconData icon;
@@ -19,17 +20,17 @@ class TopBarUtility {
     );
   }
 
-  static openMenuDrawer(BuildContext context) {
+  static void openMenuDrawer(BuildContext context) {
     final vm = context.read<MenuSlideDrawer>();
     vm.open();
   }
 
-  static openSettingDrawer(BuildContext context) {
+  static void openSettingDrawer(BuildContext context) {
     final vm = context.read<SettingSlideDrawer>();
     vm.open();
   }
 
-  static buildDefaultTopBar({
+  static Widget buildDefaultTopBar({
     required BuildContext context, 
     TopBarIconModel? leftIcon, 
     TopBarIconModel? rightIcon, 
@@ -52,7 +53,7 @@ class TopBarUtility {
     );
   }
 
-  static buildPurpleTitleTopbar({
+  static Widget buildPurpleTitleTopbar({
     required BuildContext context, 
     TopBarIconModel? leftIcon, 
     TopBarIconModel? rightIcon, 
@@ -63,7 +64,7 @@ class TopBarUtility {
       leftIcon: leftIcon ?? menuIcon(context: context, buttonColor: Colors.grey),
       rightIcon: rightIcon ?? settingIcon(context: context, buttonColor: Colors.grey),
       title: title,
-      titleColor: Color(0xFF672CBC)
+      titleColor: AppColors.primary
     );
 
   }

@@ -1,20 +1,16 @@
-import 'package:flutter/foundation.dart';
-import 'package:mtqmnuns/models/prayer.dart';
-import 'package:mtqmnuns/services/geocode.dart';
-import 'package:mtqmnuns/services/prayer.dart';
+import 'package:inquran/services/geocode.dart';
+import 'package:inquran/services/prayer.dart';
+import 'package:inquran/state/prayer_time.dart';
+import 'package:inquran/state/stateful_viewmodel.dart';
 
-class PrayerTimeViewModel extends ChangeNotifier {
+class PrayerTimeViewModel extends StatefulViewModel<PrayerTimeState> {
   final PrayerService service;
-  PrayerTime? prayerTime;
-  bool isLoading = true;
-  String currentLocation = "Memuat lokasi...";
   DateTime selectedDate = DateTime.now();
 
-  PrayerTimeViewModel(this.service);
+  PrayerTimeViewModel(this.service) : super(PrayerTimeLoading());
 
   Future<void> loadPrayerTimes({DateTime? date}) async {
-    isLoading = true;
-    notifyListeners();
+    setState(PrayerTimeLoading());
 
     final targetDate = date ?? selectedDate;
     try {
@@ -29,8 +25,14 @@ class PrayerTimeViewModel extends ChangeNotifier {
         position.longitude,
       );
 
-      prayerTime = result;
-      currentLocation = placeName;
+      selectedDate = targetDate;
+      setState(
+        PrayerTimeSuccess(
+          prayerTime: result,
+          currentLocation: placeName,
+          selectedDate: targetDate,
+        ),
+      );
     } catch (_) {
       // fallback ke Jakarta
       const jakartaLat = -6.200000;
@@ -41,16 +43,18 @@ class PrayerTimeViewModel extends ChangeNotifier {
           jakartaLon,
           date: targetDate,
         );
-        prayerTime = result;
-        currentLocation = "Jakarta (default)";
+        selectedDate = targetDate;
+        setState(
+          PrayerTimeSuccess(
+            prayerTime: result,
+            currentLocation: "Jakarta (default)",
+            selectedDate: targetDate,
+          ),
+        );
       } catch (e) {
-        currentLocation = "Lokasi tidak tersedia";
+        setState(PrayerTimeError("Lokasi tidak tersedia"));
       }
     }
-
-    isLoading = false;
-    selectedDate = targetDate;
-    notifyListeners();
   }
 
   void changeDate(int offset) {

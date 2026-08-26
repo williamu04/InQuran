@@ -1,6 +1,6 @@
 # AGENTS.md — Guide for AI Coding Agents
 
-InQuran (package name `mtqmnuns`) is a **fully offline** Flutter **Al-Qur'an application** for UNS. This guide tells you how the codebase is organized, how to make changes safely, and which commands to run.
+InQuran (package name `inquran`) is a **fully offline** Flutter **Al-Qur'an application** for UNS. This guide tells you how the codebase is organized, how to make changes safely, and which commands to run.
 
 ## Project at a Glance
 
@@ -19,11 +19,11 @@ flutter pub get                                   # install deps
 dart run build_runner build --delete-conflicting-outputs   # regenerate drift *.g.dart
 dart run build_runner watch                       # watch mode
 flutter analyze                                   # static analysis (before finishing work)
-flutter test                                      # tests (only a stale boilerplate test exists)
+flutter test                                      # splash smoke test
 flutter run -d <device>                           # run on Android/iOS
 ```
 
-Always run `flutter analyze` after making changes. `flutter test` exists but `test/widget_test.dart` is stale (won't compile/run against the current `MyApp`) — do not rely on it; do not delete it without a replacement.
+Always run `flutter analyze` after making changes. `test/widget_test.dart` is a minimal smoke test that pumps `SplashScreen`; keep it compiling when you change the splash/router.
 
 ## Architecture & Where Code Lives
 
@@ -36,19 +36,21 @@ screens → viewmodel → repositories → (data/local[dao/entity/cache]) → se
 | Layer            | Directory                 | Responsibility                                          |
 | ---------------- | ------------------------- | ------------------------------------------------------- |
 | Drift tables     | `lib/data/entity/`        | `Table` subclasses (`Surah`, `Ayah`, `Doa`, `DoaCategory`) |
-| DAOs             | `lib/data/local/dao/`     | SQL queries. **Generated `.g.dart` files must never be hand-edited.** |
+| DAOs             | `lib/data/local/dao/`     | SQL queries (`surah_dao`, `ayah_dao`, `juz_dao`, `doa_dao`). **Generated `.g.dart` files must never be hand-edited.** |
 | DB singleton     | `lib/data/local/db/app_database.dart` | `@DriftDatabase` registration + connection bootstrap (re-copies bundled DB each launch) |
-| Aggregates       | `lib/data/aggregate/`     | Joined read models (`SurahWithAyahs`, `AyahWithSurah`, `JuzInfo`, `CompleteDuaData`) |
+| Aggregates       | `lib/data/aggregate/`     | Joined read models (`SurahWithAyahs`, `AyahWithSurah`, `JuzInfo`, `CompleteDoaData`) |
 | Caches           | `lib/data/local/cache/`   | `SharedPreferences` persistence (`FavoriteCache` only)     |
 | DTOs             | `lib/dto/`                | Entity→DTO factories (`favorites`, `juz`, `surah` only)   |
+| Domain models    | `lib/models/`             | Pure domain models only (`PrayerTime`)                     |
 | Repositories     | `lib/repositories/`       | Only layer screens/ViewModels talk to; all local DB queries |
-| Services         | `lib/services/`           | Stateless infra (`audio_player`, `stt`, `prayer`, `location`, `geocode`, `qibla`, `surah_filter`) |
-| ViewModels       | `lib/viewmodel/`          | `StatefulViewModel<S>` (extends `StatefulViewModel`, call `setState(...)`) |
-| State families   | `lib/state/`              | `sealed` classes per feature (loading/success/error/empty) |
+| Services         | `lib/services/`           | Stateless infra (`audio_player`, `stt`, `prayer`, `geocode`, `qibla`, `surah_filter`) |
+| ViewModels       | `lib/viewmodel/`          | `StatefulViewModel<S>` subclasses (sealed-state); call `setState(...)` |
+| State families   | `lib/state/`              | `sealed` classes per feature + the `StatefulViewModel` base + UI toggle controllers |
 | Screens          | `lib/screens/`            | One widget per route; exhaustively `switch` on sealed state |
 | Routes           | `lib/routes/`             | `route.dart` (registry), `go_router.dart` (config)         |
 | Config           | `lib/config/`             | `GlobalConfig` (reading mode, voice mode, first-launch)    |
-| Shared widgets   | `lib/components/`, `lib/common/` | drawers, popups, mic button, top bars, navigation helpers |
+| Shared widgets   | `lib/components/`         | Reusable UI widgets only (drawers, popups, top bar, bottom nav, mic button) |
+| Shared code      | `lib/common/`             | NON-widget shared code (colors, navigation helpers, snackbar, translator) |
 
 ## Conventions to Follow
 
@@ -62,13 +64,15 @@ screens → viewmodel → repositories → (data/local[dao/entity/cache]) → se
   5. Wire any view-model into the `MultiProvider` list in `lib/main.dart`.
 - **Adding DI**: all dependencies (DAOs, repositories, services, view-models) are registered once in `lib/main.dart`; screens resolve them with `context.read<T>()` / `Consumer<T>`.
 - **UI states**: use the sealed-state pattern — a view-model holds exactly one state, screens switch exhaustively. Do not sprinkle `setState` into feature screen logic.
+- **One way to load data**: feature data flows `screen → StatefulViewModel<S> (sealed S) → repository → dao`, consumed via `Consumer<S>`. `FutureBuilder` is reserved for fire-and-forget streams inside a view-model, never for DB/repo loading in widgets. **No `AppDatabase()` in screens** — all DAOs/repos/services/VMs are registered once in `lib/main.dart`; screens use `context.read<T>()`.
+- **Naming**: file name == snake_case of the primary class. Standardize on **`doa`** (not `dua`) across entity/DAO/aggregate/screens/routes (Indonesian singular). User-facing strings are Indonesian; verbs for free functions.
 - **Errors**: keep it simple — view-models surface failure text via `Failure` from `SuccessOrFail<T>` or dedicated state classes. (Typed HTTP exceptions were removed with the backend.)
 - **Drift naming**: `build.yaml` sets `case_from_dart_to_sql: camelCase`.
 - **Style**: `flutter_lints` from `analysis_options.yaml`. Match existing code style; do not reformat large files wholesale.
 
 ## Key Files to Know
 
-- `lib/main.dart` — bootstrap, `MultiProvider` tree (DAOs, repos, services, view-models, toggleable UI controllers), `MaterialApp.router`, and the `MainScaffold` shell (bottom bar, drawers, popups, exit confirmation).
+- `lib/main.dart` — bootstrap, `MultiProvider` tree (DAOs, repos, services, view-models, UI controllers), `MaterialApp.router`, and the `MainScaffold` shell (bottom bar, drawers, popups, exit confirmation).
 - `lib/routes/route.dart` — all route definitions (no auth routes).
 - `lib/data/local/db/app_database.dart` — deletes and re-copies the bundled `quran.db` on every launch (dev/immutable-data design).
 - `lib/viewmodel/surah.dart` — the biggest view-model; manages the in-memory all-ayah cache used by normal/memorize/mushaf screens (`loadSurah`, `loadByPage`, `append/prependBySurah/Juz`, audio playback state).
@@ -76,24 +80,40 @@ screens → viewmodel → repositories → (data/local[dao/entity/cache]) → se
 - `lib/viewmodel/favorites.dart` + `lib/data/local/cache/favorites.dart` — favorites are **local-only** (persisted in `SharedPreferences`; the `ayah.favorite` column is not used because the DB is re-copied on launch).
 - `lib/repositories/stt.dart` + `lib/services/stt.dart` — voice-command flow; new navigable targets must be added in `SttRepository.processTranscription`.
 - `lib/config/global.dart` — `GlobalConfig` singleton (reading mode, voice mode, first-launch) persisted in `SharedPreferences`.
+- `lib/state/stateful_viewmodel.dart` — the **single** `StatefulViewModel<S>` base (with `setState`). All feature view-models extend it.
+- `lib/state/ui_controllers.dart` — the `ToggleableUiController` family (drawer/popup open-close flags). These are deliberate UI-state exceptions, not data view-models.
+
+## Structure & Conventions
+
+This repo follows `TIDYUP.md` — a phased tidy-up plan that defines the target architecture and the rules below. Keep it in sync with reality: after structural changes, update `TIDYUP.md`/`README.md`.
+
+Standard rules (from TIDYUP):
+1. **One way to load data**: `screen → StatefulViewModel<S> (sealed S) → repository → dao`, consumed via `Consumer<S>`. No `FutureBuilder`/`AppDatabase()` in screens.
+2. **Single `StatefulViewModel`** in `lib/state/stateful_viewmodel.dart` (import it from there).
+3. **`doa` naming** everywhere (entity/DAO/aggregate/screens/routes); never `dua`.
+4. **File name == class name**; `common/` holds no widget-building code (widget factories live in `components/`).
+5. **Theme constants** in `AppColors` (`lib/common/app_color.dart`); no raw hex literals in feature code.
+6. **Deliberate exceptions** to the sealed-state pattern: `GlobalConfig` (process-wide config singleton) and the `ToggleableUiController` family in `lib/state/ui_controllers.dart` (pure UI open/close flags).
 
 ## Voice Command Flow (extend carefully)
 
 `MicButton` → `SttViewModel` → `SttService` (wraps `speech_to_text`) → `SttRepository.processTranscription(text)`:
 
 1. Try `fuzzyFindSurahFromText` (tokenized fuzzy match on latin surah names, threshold ~70).
-2. Try `fuzzyFindDuaCategoryFromText` (threshold ~65).
+2. Try `fuzzyFindDoaCategoryFromText` (threshold ~65).
 3. Try `fuzzyMatchCommand` against fixed keyword lists (qibla, prayer times).
 4. Missing match → `throw StateError("Command Tidak Berhasil")` → triggers STT retry.
 
 To add a new voice destination, add a match branch in `SttRepository` and a corresponding `navigateTo...` helper in `lib/common/navigation.dart`.
+
+To add a new DAO to `SttRepository`, add a constructor field, pass it through the `SttRepository(...)` `Provider` in `lib/main.dart`, and register it in the `MultiProvider` tree (`Provider.value(value: db.<dao>)`).
 
 ## Common Gotchas
 
 - **`GlobalConfig()` is a singleton** — reading `GlobalConfig().quranMode` works, but UI must use `context.read<GlobalConfig>()`.
 - App is **Android/iOS-first**. Keep platform-specific code guarded (`dart:io`, `Platform.isAndroid`, etc.) because desktop/web targets exist.
 - **The bundled DB is re-copied on every launch** (`app_database.dart` deletes `db.sqlite` and copies `assets/databases/quran.db`). Never store user data in SQLite — persist it in `SharedPreferences` (like `FavoriteCache`).
-- **Favorites are local-only**: `FavoritesViewModel` reads/writes `FavoriteCache`; screens get ayah rows via `AyahDao.getAyahsFromFavorites`. Don't reintroduce sync or auth gating.
+- **Favorites are local-only**: `FavoritesViewModel` reads/writes `FavoriteCache` and loads the display rows via `AyahDao.getAyahsFromFavorites` into the `FavoritesLoaded` state. Don't reintroduce sync or auth gating.
 - DB queries that join `surah`/`ayah` (`getSurahWithAyah()`, `getAyahsInPage`, etc.) return dense rows; the `AyahWithSurah` aggregate keeps them flat for the in-memory cache.
 - `AppRoutes.getRouteByPath` uses `firstWhere` without `orElse` — it throws if given an unregistered path. Keep routes registered.
 - Query-string navigation to `/surah` uses `Uri(...).toString()`; params (`startSurahId`, `startSurahAyah`, `endSurahId`, `endSurahAyah`, `loadType`) are required and parsed in `SurahScreen._initializeAsync`.
@@ -101,4 +121,4 @@ To add a new voice destination, add a match branch in `SttRepository` and a corr
 
 ## Scope of Changes
 
-When asked to change a feature, trace the full vertical slice before editing: entity/table → DAO → repository → view-model (state) → screen → route → DI registration ✓. Prefer adding tests only where the repo has a real test surface (currently none meaningful) — and confirm with the user before introducing a new test framework.
+When asked to change a feature, trace the full vertical slice before editing: entity/table → DAO → repository → view-model (state) → screen → route → DI registration ✓. The repo has a single splash smoke test (`test/widget_test.dart`); confirm with the user before introducing a new test framework.

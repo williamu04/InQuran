@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/common/navigation.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:inquran/common/navigation.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/components/rounded_card.dart';
+import 'package:inquran/data/local/db/app_database.dart';
+import 'package:inquran/state/doa.dart';
+import 'package:inquran/viewmodel/doa.dart';
+import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
-class DuasListScreen extends StatefulWidget {
-  const DuasListScreen({super.key});
+class DoaListScreen extends StatefulWidget {
+  const DoaListScreen({super.key});
 
   @override
-  State<DuasListScreen> createState() => _DuasListScreenState();
+  State<DoaListScreen> createState() => _DoaListScreenState();
 }
 
-final List<IconData> duaCategoryIcons = [
+final List<IconData> doaCategoryIcons = [
   LucideIcons.baby,
   LucideIcons.moonStar,
   LucideIcons.signpostBig,
@@ -29,17 +33,7 @@ final List<IconData> duaCategoryIcons = [
   LucideIcons.bicepsFlexed,
 ];
 
-class _DuasListScreenState extends State<DuasListScreen> {
-  late final AppDatabase _db;
-  late Future<List<DoaCategoryData>> _futureCategories;
-
-  @override
-  void initState() {
-    super.initState();
-    _db = AppDatabase();
-    _futureCategories = _db.duasDao.getDuasCategory();
-  }
-
+class _DoaListScreenState extends State<DoaListScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -52,38 +46,35 @@ class _DuasListScreenState extends State<DuasListScreen> {
           ),
         ),
         Expanded(
-          child: FutureBuilder<List<DoaCategoryData>>(
-            future: _futureCategories,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Terjadi kesalahan: ${snapshot.error}'),
-                );
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('Belum ada doa.'));
-              }
-
-              final categories = snapshot.data!;
-              return GridView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 2,
+          child: Consumer<DoaListViewModel>(
+            builder: (context, vm, _) {
+              return switch (vm.state) {
+                DoaListLoading() => const Center(
+                  child: CircularProgressIndicator(),
                 ),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  return DuaCategoryCard(
-                    category: categories[index],
-                    index: index,
-                    onTap:
-                        () => navigateToDuaCategory(context, categories[index]),
-                  );
-                },
-              );
+                DoaListError(:final message) => Center(
+                  child: Text('Terjadi kesalahan: $message'),
+                ),
+                DoaListEmpty() => const Center(child: Text('Belum ada doa.')),
+                DoaListSuccess(:final categories) => GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 2,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    return DoaCategoryCard(
+                      category: categories[index],
+                      index: index,
+                      onTap:
+                          () => navigateToDoaCategory(context, categories[index]),
+                    );
+                  },
+                ),
+              };
             },
           ),
         ),
@@ -93,12 +84,12 @@ class _DuasListScreenState extends State<DuasListScreen> {
 }
 
 /// 🔹 Widget terpisah untuk 1 item kategori doa
-class DuaCategoryCard extends StatelessWidget {
+class DoaCategoryCard extends StatelessWidget {
   final DoaCategoryData category;
   final int index;
   final VoidCallback onTap;
 
-  const DuaCategoryCard({
+  const DoaCategoryCard({
     super.key,
     required this.category,
     required this.index,
@@ -108,13 +99,13 @@ class DuaCategoryCard extends StatelessWidget {
   Color _getBackgroundColor(int index) {
     final rowIndex = index ~/ 2;
     return rowIndex % 2 == 0
-        ? const Color(0xff672CBC)
-        : const Color(0xff3B1D77);
+        ? AppColors.primary
+        : AppColors.deepPurple;
   }
 
   IconData _getIcon(int index) {
-    return index < duaCategoryIcons.length
-        ? duaCategoryIcons[index]
+    return index < doaCategoryIcons.length
+        ? doaCategoryIcons[index]
         : LucideIcons.book;
   }
 
@@ -125,7 +116,7 @@ class DuaCategoryCard extends StatelessWidget {
 
     return Semantics(
       label: "Kategori doa: ${category.nama}",
-      hint: "Ketuk dua kali untuk membuka doa tentang ${category.nama}",
+      hint: "Ketuk doa kali untuk membuka doa tentang ${category.nama}",
       button: true,
       child: GestureDetector(
         onTap: onTap,

@@ -54,7 +54,6 @@ The app targets Android and iOS as the primary platforms.
 ### Daily Helper Tools
 - **Prayer times (Waktu Salat)** — fetched live from the Aladhan API based on the device location (with **Jakarta fallback** when location is unavailable), with the ability to paginate through dates.
 - **Qibla compass (Arah Kiblat)** — live compass bearing toward the Kaaba computed from the device's GPS position.
-- **Calendar** screen and **Explore / Etc** utility screens.
 
 ### Du'a Collection (Koleksi Doa-Doa)
 - Bundled collection of **doa categorized** collection (e.g., doa for parents, entering home, before sleep, etc.), rendered as ayah-based cards with Arabic and translation.
@@ -120,16 +119,18 @@ Screens (lib/screens)  ──►  ViewModels (lib/viewmodel)  ──►  Reposit
 - **`lib/data/entity`** — Drift table definitions (`Surah`, `Ayah`, `Doa`, `DoaCategory`).
 - **`lib/data/local/dao`** — Database accessors implementing the SQL queries (see `ayah_dao.dart` for the range queries: pages, juz, next/previous ranges).
 - **`lib/data/local/cache`** — `SharedPreferences` persistence (favorites list used by the favorites feature).
-- **`lib/data/aggregate`** — Read models that join entities (e.g., `SurahWithAyahs`, `AyahWithSurah`, `JuzInfo`, `CompleteDuaData`).
+- **`lib/data/aggregate`** — Read models that join entities (e.g., `SurahWithAyahs`, `AyahWithSurah`, `JuzInfo`, `CompleteDoaData`).
 - **`lib/dto`** — Pure data-transfer objects with entity→DTO converters.
 - **`lib/repositories`** — The only layer screens/view-models talk to; implements all queries against the local database.
 - **`lib/services`** — Stateless infrastructure (audio player, STT, prayer times, location, geocoding, Qibla math, surah filtering).
-- **`lib/viewmodel`** — ChangeNotifier view-models; `StatefulViewModel<S>` exposes a typed `state` and `setState()` with `notifyListeners()`.
-- **`lib/state`** — **sealed** state classes representing every UI state (loading/success/error/empty/…).
+- **`lib/viewmodel`** — `StatefulViewModel<S>` subclasses (sealed-state) that expose a typed `state` and `setState()` with `notifyListeners()`.
+- **`lib/state`** — **sealed** state classes representing every UI state (loading/success/error/empty/…) plus the `StatefulViewModel` base, UI toggle controllers, and the disclosure-button model/action family.
 - **`lib/screens`** — Page widgets, one file per route.
-- **`lib/components`** / **`lib/common`** — Shared widgets and helpers (drawers, popups, top bar, mic button, navigation helpers, du'a translator).
+- **`lib/components`** — Reusable UI widgets (drawers, popups, top bar, bottom nav, mic button, cards, buttons).
+- **`lib/common`** — Non-widget shared code (colors, navigation helpers, snackbar helper, du'a-category translator).
 - **`lib/routes`** — Declarative route registry + GoRouter builder.
 - **`lib/config`** — `GlobalConfig` (app-wide settings incl. voice mode & reading mode).
+- **`lib/models`** — Pure domain models (e.g., `PrayerTime`).
 
 ### State management pattern
 
@@ -211,30 +212,29 @@ Singleton `AppDatabase` backed by `assets/databases/quran.db` (bundled with the 
 │   └── img/                    # logos, basmala, heart, arrow, star
 ├── lib/
 │   ├── main.dart               # Bootstrap + global MultiProvider tree + app shell
-│   ├── common/                 # app colors, translations (du'a), top-bar utils, navigation helpers
-│   ├── components/             # bottom nav, drawers, popups, mic button, transcription text, cards, buttons
+│   ├── common/                 # non-widget shared code (colors, navigation, snackbar, du'a translator)
+│   ├── components/             # UI widgets (bottom nav, drawers, popups, top bar, mic button, cards)
 │   ├── config/                 # GlobalConfig (reading mode, voice mode, first-launch flag)
 │   ├── data/
-│   │   ├── aggregate/          # joined read models (SurahWithAyahs, JuzInfo, CompleteDuaData, …)
+│   │   ├── aggregate/          # joined read models (SurahWithAyahs, JuzInfo, CompleteDoaData, …)
 │   │   ├── entity/             # drift tables: Surah, Ayah, Doa, DoaCategory
 │   │   └── local/
 │   │       ├── cache/          # SharedPreferences caches (favorites)
-│   │       ├── dao/            # SurahDao, AyahDao, JuzDao, DuasDao  (+ *.g.dart)
+│   │       ├── dao/            # SurahDao, AyahDao, JuzDao, DoaDao  (+ *.g.dart)
 │   │       └── db/             # AppDatabase + drift codegen
 │   ├── dto/                    # favorites, juz, surah DTOs
-│   ├── models/                 # prayer, disclosure_button models
-│   ├── providers/              # LocationProvider
-│   ├── repositories/           # surah, ayah, juz, stt
+│   ├── models/                 # pure domain models (prayer)
+│   ├── repositories/           # surah, ayah, juz, doa, stt
 │   ├── routes/                 # AppRoutes registry + GoRouter config
 │   ├── screens/                # one widget per route
-│   ├── services/               # audio, stt, prayer, location, geocode, qibla, surah_filter
-│   ├── state/                  # sealed state families
-│   └── viewmodel/              # ChangeNotifier view-models (+ generic helpers)
+│   ├── services/               # audio, stt, prayer, geocode, qibla, surah_filter
+│   ├── state/                  # sealed state families + stateful_viewmodel base + UI controllers
+│   └── viewmodel/              # StatefulViewModel<S> subclasses
 ├── android/ ios/ linux/ macos/ web/ windows/   # Flutter platform shells
-├── test/widget_test.dart       # boilerplate smoke test (stale – see Testing)
+├── test/widget_test.dart       # splash smoke test
 ├── analysis_options.yaml       # flutter_lints
 ├── build.yaml                  # drift_dev options (camelCase)
-├── pubspec.yaml                # package `mtqmnuns`
+├── pubspec.yaml                # package `inquran`
 └── .tool-versions              # flutter 3.44.0-stable
 ```
 
@@ -252,7 +252,7 @@ Singleton `AppDatabase` backed by `assets/databases/quran.db` (bundled with the 
 ### Favorites (local-only)
 
 - `FavoritesViewModel` owns the favorites list in memory, persisted through `FavoriteCache` (`SharedPreferences`) — **no login and no network needed**.
-- `FavoriteScreen` renders the favorited ayahs by looking up the local `AyahDao` (`getAyahsFromFavorites`).
+- `FavoriteScreen` renders the favorited ayahs from the `FavoritesLoaded` state, which the view-model populates by looking up the local `AyahDao` (`getAyahsFromFavorites`).
 - The heart icon on reading screens adds/removes entries via `FavoritesViewModel.addFavorite` / `deleteFavorite`, immediately reflected in the favorites tab.
 
 ### Voice commands
@@ -285,7 +285,7 @@ Versioning is handled in `pubspec.yaml` (`version: 1.0.0+1`).
 
 Before a release, remember to:
 
-- Rename the Android application label (`android:label` in `AndroidManifest.xml`, currently `mtqmnuns`) and bundle ID (`com.example.mtqmnuns`) to production values.
+- Rename the Android application label (`android:label` in `AndroidManifest.xml`, currently `inquran`) and bundle ID (`com.mtqmn.inquran`) to production values.
 
 ---
 
@@ -295,7 +295,7 @@ Before a release, remember to:
 flutter test
 ```
 
-`test/widget_test.dart` is the default Flutter **counter boilerplate** and no longer compiles against the current `MyApp` signature — treat it as a placeholder. Unit/widget/integration tests for the repositories, view-models, STT matching, and Qibla math are planned and welcome.
+`test/widget_test.dart` is a smoke test that pumps `SplashScreen` and asserts the app title renders. Unit/widget/integration tests for the repositories, view-models, STT matching, and Qibla math are planned and welcome.
 
 ---
 
@@ -305,7 +305,7 @@ flutter test
 - **Favorites live outside SQLite** — because the DB is rebuilt each launch, favorites intentionally persist via `FavoriteCache` (SharedPreferences), not in the `ayah.favorite` column.
 - **Prayer times & Mushaf images are online-only** — these live features need network; the rest of the app works fully offline.
 - **STT error strings** are matched literally (`'error_network'`, `'error_network_timeout'`) — tied to the plugin's message values.
-- The app label/package id are still Flutter placeholders (`mtqmnuns` / `com.example.mtqmnuns`).
+- The app label/package id are still Flutter placeholders (`inquran` / `com.mtqmn.inquran`).
 
 ---
 

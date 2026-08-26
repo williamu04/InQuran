@@ -1,8 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/config/global.dart';
+import 'package:inquran/config/global.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 
 class NormalButton extends StatelessWidget {
@@ -12,7 +13,7 @@ class NormalButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = const Color(0xFF672CBC);
+    final Color color = AppColors.primary;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

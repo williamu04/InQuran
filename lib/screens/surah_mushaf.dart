@@ -2,11 +2,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/dto/surah.dart';
-import 'package:mtqmnuns/state/surah.dart';
-import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:inquran/components/rounded_card.dart';
+import 'package:inquran/dto/surah.dart';
+import 'package:inquran/state/surah.dart';
+import 'package:inquran/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class MushafSurahScreen extends StatefulWidget {
   const MushafSurahScreen({super.key});
@@ -54,7 +55,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
             );
 
           case SurahError(:var message):
-            return Center(child: Text("Error: $message"));
+            return Center(child: Text("Terjadi kesalahan: $message"));
         }
       },
     );
@@ -80,7 +81,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Color(0xFF994EF8),
+                  color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
@@ -109,7 +110,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4),
-            child: Divider(color: Color(0xFF994EF8), thickness: 0.8, height: 1),
+            child: Divider(color: AppColors.primaryLight, thickness: 0.8, height: 1),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -164,7 +165,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Error loading data"),
+              const Text("Gagal memuat data"),
               const SizedBox(height: 16),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
@@ -265,7 +266,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
         child: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF994EF8),
+            backgroundColor: AppColors.primaryLight,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),

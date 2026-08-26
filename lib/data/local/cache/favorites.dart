@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:mtqmnuns/dto/favorites.dart';
+import 'package:inquran/dto/favorites.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteCache {

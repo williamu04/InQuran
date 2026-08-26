@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/components/error_popup.dart';
-import 'package:mtqmnuns/components/popup_modal.dart';
-import 'package:mtqmnuns/dto/favorites.dart';
-import 'package:mtqmnuns/dto/surah.dart';
-import 'package:mtqmnuns/state/favorites.dart';
-import 'package:mtqmnuns/state/success_or_fail.dart';
-import 'package:mtqmnuns/state/surah.dart';
-import 'package:mtqmnuns/viewmodel/favorites.dart';
-import 'package:mtqmnuns/viewmodel/surah.dart';
-import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:inquran/common/snackbar.dart';
+import 'package:inquran/components/popup_modal.dart';
+import 'package:inquran/dto/favorites.dart';
+import 'package:inquran/dto/surah.dart';
+import 'package:inquran/state/favorites.dart';
+import 'package:inquran/state/success_or_fail.dart';
+import 'package:inquran/state/surah.dart';
+import 'package:inquran/viewmodel/favorites.dart';
+import 'package:inquran/viewmodel/surah.dart';
+import 'package:inquran/state/ui_controllers.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:inquran/common/app_color.dart';
 
 class NormalSurahScreen extends StatefulWidget {
   final LoadType loadType;
@@ -148,8 +149,8 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
       children: [
         buildMainScreen(context),
         ErrorPopUpModal(
-          title: "Error", 
-          defaultSubtitle: "Terjadi Kesalhan Tidak Terduga", 
+          title: "Terjadi Kesalahan", 
+          defaultSubtitle: "Terjadi Kesalahan Tidak Terduga", 
           buttonList: [
             ButtonModalModel(
               text: "Ok",
@@ -172,12 +173,12 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
           case SurahLoading():
             return const Center(child: CircularProgressIndicator());
           case SurahError(:var message):
-            return Center(child: Text("Error: $message"));
+            return Center(child: Text("Terjadi kesalahan: $message"));
           case SurahSuccess(:var ayahs, :var warning, :var jumpIndex):
             if (!_hasShownPopup && warning != null) {
               _hasShownPopup = true;
               WidgetsBinding.instance.addPostFrameCallback(
-                (_) => errorPopup(context, warning),
+                (_) => showErrorPopup(context, warning),
               );
             }
 
@@ -197,7 +198,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                       child: Center(
                         child: CircularProgressIndicator(
                           strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation(Color(0xFF672CBC)),
+                          valueColor: AlwaysStoppedAnimation(AppColors.primary),
                         ),
                       ),
                     );
@@ -231,7 +232,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
             Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F9FE),
+                color: AppColors.background,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -240,7 +241,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     width: 32,
                     height: 32,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF672CBC),
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -259,7 +260,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Color(0xff994EF8),
+                      color: AppColors.primaryLight,
                     ),
                     child: Center(
                       child: Text(
@@ -289,12 +290,12 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                                 ? Icon(
                                   LucideIcons.pause,
                                   size: 20,
-                                  color: Color(0xFF672CBC),
+                                  color: AppColors.primary,
                                 )
                                 : Icon(
                                   LucideIcons.play,
                                   size: 20,
-                                  color: Color(0xFF672CBC),
+                                  color: AppColors.primary,
                                 ),
                         onPressed: () {
                           vm.togglePlayback(ayah.number - 1);
@@ -306,7 +307,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     icon: Icon(
                       LucideIcons.share2,
                       size: 20,
-                      color: Color(0xFF672CBC),
+                      color: AppColors.primary,
                     ),
                     onPressed: () {
                       final text =
@@ -326,11 +327,11 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                             icon: const Icon(
                               LucideIcons.heart,
                               size: 20,
-                              color: Color(0xFF672CBC),
+                              color: AppColors.primary,
                             ),
                             onPressed: () {
                               if (state is FavoritesLoadError) {
-                                errorController.open('Error: ${state.message}');
+                                errorController.open('Terjadi kesalahan: ${state.message}');
                               }
                             },
                           );
@@ -349,7 +350,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                                 : const Icon(
                                     LucideIcons.heart,
                                     size: 20,
-                                    color: Color(0xFF672CBC),
+                                    color: AppColors.primary,
                                   ),
                             onPressed: () async {
                               final favorite = FavoriteDto(
@@ -488,7 +489,7 @@ class _AyahCardState extends State<AyahCard> {
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF3B1D77),
+                    color: AppColors.deepPurple,
                     fontFamily: 'Arab Typesetting',
                     height: 1.8,
                   ),
@@ -501,7 +502,7 @@ class _AyahCardState extends State<AyahCard> {
               widget.translationText,
               style: const TextStyle(
                 fontSize: 14,
-                color: Color(0xFF3B1D77),
+                color: AppColors.deepPurple,
                 height: 1.6,
                 letterSpacing: 0.2,
               ),
@@ -535,7 +536,7 @@ class SurahHeaderCard extends StatelessWidget {
       // padding: const EdgeInsets.only(top: 80, left: 40, right: 40, bottom: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF994EF8), Color(0xFF240F4F)],
+          colors: [AppColors.primaryLight, AppColors.darkestPurple],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -594,7 +595,7 @@ class SurahHeaderCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
-            const Divider(thickness: 0.5, color: Color(0xFF994EF8)),
+            const Divider(thickness: 0.5, color: AppColors.primaryLight),
             const SizedBox(height: 16),
 
             // Basmallah

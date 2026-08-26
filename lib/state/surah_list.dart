@@ -1,5 +1,5 @@
-import 'package:mtqmnuns/dto/juz.dart';
-import 'package:mtqmnuns/dto/surah.dart';
+import 'package:inquran/dto/juz.dart';
+import 'package:inquran/dto/surah.dart';
 
 enum SurahContentType { surah, juz }
 

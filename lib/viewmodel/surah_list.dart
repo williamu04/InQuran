@@ -1,10 +1,10 @@
-import 'package:mtqmnuns/dto/juz.dart';
-import 'package:mtqmnuns/dto/surah.dart';
-import 'package:mtqmnuns/repositories/juz.dart';
-import 'package:mtqmnuns/repositories/surah.dart';
-import 'package:mtqmnuns/services/surah_filter.dart';
-import 'package:mtqmnuns/state/surah_list.dart';
-import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
+import 'package:inquran/dto/juz.dart';
+import 'package:inquran/dto/surah.dart';
+import 'package:inquran/repositories/juz.dart';
+import 'package:inquran/repositories/surah.dart';
+import 'package:inquran/services/surah_filter.dart';
+import 'package:inquran/state/surah_list.dart';
+import 'package:inquran/state/stateful_viewmodel.dart';
 
 class SurahListViewModel extends StatefulViewModel<SurahListState> {
   final SurahRepository _surahRepo;
@@ -39,7 +39,7 @@ class SurahListViewModel extends StatefulViewModel<SurahListState> {
         setState(SurahListSuccessTypeJuz(juz: _allJuz));
       }
     } catch (e) {
-      setState(SurahListError('Error loading Quran data: $e'));
+      setState(SurahListError("Gagal memuat data Al-Qur'an: $e"));
     }
   }
 
@@ -48,7 +48,7 @@ class SurahListViewModel extends StatefulViewModel<SurahListState> {
 
     if (_contentType == SurahContentType.surah) {
       if (_allSurahs.isEmpty) {
-        setState(SurahListError("Something went wrong when loading surah data"));
+        setState(SurahListError("Terjadi kesalahan saat memuat data surah"));
         return;
       }
 
@@ -61,7 +61,7 @@ class SurahListViewModel extends StatefulViewModel<SurahListState> {
       }
     } else {
       if (_allJuz.isEmpty) {
-        setState(SurahListError("Something went wrong when loading juz data"));
+        setState(SurahListError("Terjadi kesalahan saat memuat data juz"));
         return;
       }
 

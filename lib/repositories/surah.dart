@@ -1,12 +1,10 @@
-import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
-import 'package:mtqmnuns/dto/surah.dart';
+import 'package:inquran/data/local/dao/surah_dao.dart';
+import 'package:inquran/dto/surah.dart';
 
 class SurahRepository {
   final SurahDao _surahDao;
 
   SurahRepository(this._surahDao);
-
-
 
   Future<SurahWithAyahDto> getSurahWithAyahs(int id) async {
     final surahWithAyahData = await _surahDao.getSurahWithAyahs(id);
@@ -35,7 +33,7 @@ class SurahRepository {
   }
 
   Future<List<SurahInfoDto>> getAllSurahs() async {
-    final entities = await _surahDao.getAllSurahs(); // returns List<SurahData>
+    final entities = await _surahDao.getAllSurahs();
     return entities.map((e) => SurahInfoDto.fromEntity(e)).toList();
   }
 }

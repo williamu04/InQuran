@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/routes/route.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/routes/route.dart';
+import 'package:inquran/common/app_color.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -111,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                             'Suarakan Niat\nDengarkan Ayat\nDekap Hidayah',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Color(0xFF64748B),
+                              color: AppColors.textMuted,
                               fontWeight: FontWeight.w400,
                             ),
                             textAlign: TextAlign.center,

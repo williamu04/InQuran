@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/routes/route.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/routes/route.dart';
+import 'package:inquran/common/app_color.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -48,7 +49,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF672CBC),
+                  color: AppColors.primary,
                 ),
               ),
             ),
@@ -64,7 +65,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF4E2999),
+                  color: AppColors.primaryDark,
                 ),
               ),
             ),
@@ -81,7 +82,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   height: 1.3,
-                  color: Color(0xFF7C8BA0),
+                  color: AppColors.textSecondary,
                 ),
               ),
             ),
@@ -110,7 +111,7 @@ class _IntroScreenState extends State<IntroScreen> {
                         context.go(AppRoutes.home.path);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF672CBC),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -149,9 +150,9 @@ class _IntroScreenState extends State<IntroScreen> {
                         context.go(AppRoutes.home.path);
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF672CBC),
+                        foregroundColor: AppColors.primary,
                         side: const BorderSide(
-                          color: Color(0xFF672CBC),
+                          color: AppColors.primary,
                           width: 1.5,
                         ),
                         shape: RoundedRectangleBorder(

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:mtqmnuns/models/prayer.dart';
+import 'package:inquran/models/prayer.dart';
 
 class PrayerService {
   Future<PrayerTime> getPrayerTimes(

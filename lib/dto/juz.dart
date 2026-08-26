@@ -1,5 +1,5 @@
 
-import 'package:mtqmnuns/data/aggregate/juz.dart';
+import 'package:inquran/data/aggregate/juz.dart';
 
 class JuzInfoDto {
   final int juzNumber;

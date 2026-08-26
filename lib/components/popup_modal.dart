@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:inquran/state/ui_controllers.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class ButtonModalModel {
   final Color buttonColor;
@@ -12,7 +13,7 @@ class ButtonModalModel {
   ButtonModalModel({
     required this.text,
     required this.onButtonPressed,
-    this.buttonColor = const Color(0xFF672CBC),
+    this.buttonColor = AppColors.primary,
     this.textColor = Colors.white,
   });
 }
@@ -57,7 +58,7 @@ class PopUpModal extends StatelessWidget {
           return GestureDetector(
             onTap: backdropClickable ? closeModal : null,
             child: Container(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               child: Center(
                 child: GestureDetector(
                   onTap: () {},

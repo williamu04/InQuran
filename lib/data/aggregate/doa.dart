@@ -1,10 +1,10 @@
-import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:inquran/data/local/db/app_database.dart';
 
-class CompleteDuaData {
+class CompleteDoaData {
   int id;
   DoaCategoryData doaCategory;
   AyahData ayah;
   SurahData? surah;
 
-  CompleteDuaData(this.id, this.doaCategory, this.ayah, this.surah);
+  CompleteDoaData(this.id, this.doaCategory, this.ayah, this.surah);
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/screens/surah_mushaf.dart';
-import 'package:mtqmnuns/screens/surah_normal.dart';
-import 'package:mtqmnuns/state/surah.dart';
-import 'package:mtqmnuns/viewmodel/surah.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/screens/surah_mushaf.dart';
+import 'package:inquran/screens/surah_normal.dart';
+import 'package:inquran/state/surah.dart';
+import 'package:inquran/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/screens/home_main.dart';
-import 'package:mtqmnuns/screens/home_voice.dart';
-import 'package:mtqmnuns/viewmodel/favorites.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/screens/home_main.dart';
+import 'package:inquran/screens/home_voice.dart';
+import 'package:inquran/viewmodel/favorites.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {

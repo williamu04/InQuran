@@ -2,27 +2,27 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:mtqmnuns/data/entity/doa_category.dart';
-import 'package:mtqmnuns/data/entity/doa.dart';
-import 'package:mtqmnuns/data/local/dao/duas_dao.dart';
-import 'package:mtqmnuns/data/local/dao/juz_dao.dart';
+import 'package:inquran/data/entity/doa_category.dart';
+import 'package:inquran/data/entity/doa.dart';
+import 'package:inquran/data/local/dao/doa_dao.dart';
+import 'package:inquran/data/local/dao/juz_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
 
-import 'package:mtqmnuns/data/entity/surah.dart';
-import 'package:mtqmnuns/data/entity/ayah.dart';
+import 'package:inquran/data/entity/surah.dart';
+import 'package:inquran/data/entity/ayah.dart';
 
-import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
-import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
+import 'package:inquran/data/local/dao/surah_dao.dart';
+import 'package:inquran/data/local/dao/ayah_dao.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [Surah, Ayah, Doa, DoaCategory],
-  daos: [SurahDao, AyahDao, JuzDao, DuasDao],
+  daos: [SurahDao, AyahDao, JuzDao, DoaDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());

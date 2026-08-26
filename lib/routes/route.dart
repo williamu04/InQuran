@@ -1,19 +1,16 @@
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/routes/route_model.dart';
-import 'package:mtqmnuns/screens/duas.dart';
-import 'package:mtqmnuns/screens/explore.dart';
-import 'package:mtqmnuns/screens/surah_list.dart';
-import 'package:mtqmnuns/screens/calendar.dart';
-import 'package:mtqmnuns/screens/etc.dart';
-import 'package:mtqmnuns/screens/favorites.dart';
-import 'package:mtqmnuns/screens/intro.dart';
-import 'package:mtqmnuns/screens/qibla.dart';
-import 'package:mtqmnuns/screens/search.dart';
-import 'package:mtqmnuns/screens/duas_list.dart';
-import 'package:mtqmnuns/screens/home.dart';
-import 'package:mtqmnuns/screens/surah.dart';
-import 'package:mtqmnuns/screens/splash.dart';
-import 'package:mtqmnuns/screens/times.dart';
+import 'package:inquran/routes/route_model.dart';
+import 'package:inquran/screens/doa.dart';
+import 'package:inquran/screens/surah_list.dart';
+import 'package:inquran/screens/favorites.dart';
+import 'package:inquran/screens/intro.dart';
+import 'package:inquran/screens/qibla.dart';
+import 'package:inquran/screens/search.dart';
+import 'package:inquran/screens/doa_list.dart';
+import 'package:inquran/screens/home.dart';
+import 'package:inquran/screens/surah.dart';
+import 'package:inquran/screens/splash.dart';
+import 'package:inquran/screens/times.dart';
 
 class AppRoutes {
   static final intro = AppRoute(
@@ -46,9 +43,9 @@ class AppRoutes {
     isHasBottomBar: true,
   );
 
-  static final duasList = AppRoute(
-    path: '/duas/list',
-    pageBuilder: (context, state) => NoTransitionPage(child: DuasListScreen()),
+  static final doaList = AppRoute(
+    path: '/doa/list',
+    pageBuilder: (context, state) => NoTransitionPage(child: DoaListScreen()),
     isHasBottomBar: true,
   );
 
@@ -71,24 +68,6 @@ class AppRoutes {
     isHasBottomBar: true,
   );
 
-  static final calendar = AppRoute(
-    path: '/calendar',
-    pageBuilder: (context, state) => NoTransitionPage(child: CalendarScreen()),
-    isHasBottomBar: true,
-  );
-
-  static final explore = AppRoute(
-    path: '/explore',
-    pageBuilder: (context, state) => NoTransitionPage(child: ExploreScreen()),
-    isHasBottomBar: true,
-  );
-
-  static final etc = AppRoute(
-    path: '/etc',
-    pageBuilder: (context, state) => NoTransitionPage(child: EtcScreen()),
-    isHasBottomBar: true,
-  );
-
   static final surah = AppRoute(
     path: '/surah',
     pageBuilder: (context, state) {
@@ -99,11 +78,11 @@ class AppRoutes {
     isHasBottomBar: false,
   );
 
-  static final duas = AppRoute(
-    path: '/duas',
+  static final doa = AppRoute(
+    path: '/doa',
     pageBuilder: (context, state) {
       return NoTransitionPage(
-        child: DuasScreen(queryParam: state.uri.queryParameters),
+        child: DoaScreen(queryParam: state.uri.queryParameters),
       );
     },
     isHasBottomBar: true,
@@ -113,15 +92,12 @@ class AppRoutes {
     home,
     surahList,
     search,
-    duasList,
+    doaList,
     prayer,
     qibla,
     favorites,
-    calendar,
-    explore,
-    etc,
     surah,
-    duas,
+    doa,
     intro,
     splashScreen,
   ];

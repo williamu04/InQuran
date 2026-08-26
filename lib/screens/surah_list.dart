@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/common/navigation.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/components/search_box.dart';
-import 'package:mtqmnuns/dto/juz.dart';
-import 'package:mtqmnuns/dto/surah.dart';
-import 'package:mtqmnuns/state/surah_list.dart';
-import 'package:mtqmnuns/viewmodel/surah_list.dart';
+import 'package:inquran/common/navigation.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/components/search_box.dart';
+import 'package:inquran/dto/juz.dart';
+import 'package:inquran/dto/surah.dart';
+import 'package:inquran/state/surah_list.dart';
+import 'package:inquran/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class SurahListScreen extends StatefulWidget {
   const SurahListScreen({super.key});
@@ -101,7 +102,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     required bool isActive,
     required VoidCallback onTap,
   }) {
-    const activeColor = Color(0xFF672CBC);
+    const activeColor = AppColors.primary;
     final inactiveColor = Colors.grey;
 
     return GestureDetector(
@@ -137,7 +138,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           case SurahListLoading():
             return Center(child: CircularProgressIndicator());
           case SurahListError(:var message):
-            return Center(child: Text("Error: $message"));
+            return Center(child: Text("Terjadi kesalahan: $message"));
           case SurahListSuccessTypeSurah(:var surahs):
             return SingleChildScrollView(
               controller: _surahScrollController,
@@ -205,12 +206,12 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
             width: 45,
             height: 45,
             fit: BoxFit.cover,
-            color: const Color(0xFF672CBC),
+            color: AppColors.primary,
           ),
           Text(
             '$surahNumber',
             style: const TextStyle(
-              color: Color(0xFF3B1D77),
+              color: AppColors.deepPurple,
               fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
@@ -229,7 +230,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF3B1D77),
+            color: AppColors.deepPurple,
           ),
         ),
         const SizedBox(height: 4),
@@ -237,15 +238,15 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           children: [
             Text(
               surah.place,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
+              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             const Text(
               ' • ',
-              style: TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             Text(
               '${surah.totalAyah} Ayat',
-              style: const TextStyle(fontSize: 12, color: Color(0xFF7C8BA0)),
+              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -259,7 +260,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF672CBC),
+        color: AppColors.primary,
         fontFamily: 'Al Jazeera',
       ),
     );
@@ -326,7 +327,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
               Text(
                 '${juzInfo.juzNumber}',
                 style: const TextStyle(
-                  color: Color(0xFF3B1D77),
+                  color: AppColors.deepPurple,
                   fontSize: 12.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -359,7 +360,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
             ),
             Text(
               'Ayat ${juzInfo.startAyahNumber} - ${juzInfo.endAyahNumber}',
-              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
+              style: const TextStyle(fontSize: 12.0, color: AppColors.primary),
             ),
           ],
         ),
@@ -381,7 +382,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
             ),
             Text(
               'Ayat ${juzInfo.startAyahNumber} - ${juzInfo.startSurahTotalAyah}',
-              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
+              style: const TextStyle(fontSize: 12.0, color: AppColors.primary),
             ),
           ],
         ),
@@ -395,7 +396,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
             ),
             Text(
               'Ayat 1 - ${juzInfo.endAyahNumber}',
-              style: const TextStyle(fontSize: 12.0, color: Color(0xFF672CBC)),
+              style: const TextStyle(fontSize: 12.0, color: AppColors.primary),
             ),
           ],
         ),

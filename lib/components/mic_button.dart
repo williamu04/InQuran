@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/components/error_popup.dart';
-import 'package:mtqmnuns/state/stt.dart';
-import 'package:mtqmnuns/viewmodel/stt.dart';
+import 'package:inquran/common/snackbar.dart';
+import 'package:inquran/state/stt.dart';
+import 'package:inquran/viewmodel/stt.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class MicButton extends StatelessWidget {
   final double size;
@@ -35,7 +36,7 @@ class MicButton extends StatelessWidget {
               border: Border.all(color: Colors.grey.shade300, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF672CBC).withValues(alpha: 0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 25,
                   spreadRadius: 4,
                 ),
@@ -44,7 +45,7 @@ class MicButton extends StatelessWidget {
             child: Center(
               child: Icon(
                 isListening ? LucideIcons.audioLines : LucideIcons.power,
-                color: const Color(0xFF672CBC),
+                color: AppColors.primary,
                 size: size * 0.675,
               ),
             ),
@@ -55,7 +56,7 @@ class MicButton extends StatelessWidget {
   }
 
   void handleMicPressed(BuildContext context, SttViewModel vm) async {
-    void showError() => errorPopup(context, 'microphone permission are needed');
+    void showError() => showErrorPopup(context, 'microphone permission are needed');
 
     var status = await Permission.microphone.status;
     if (status.isDenied) status = await Permission.microphone.request();

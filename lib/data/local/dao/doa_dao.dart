@@ -1,19 +1,19 @@
 import 'package:drift/drift.dart';
-import 'package:mtqmnuns/data/aggregate/doa.dart';
-import 'package:mtqmnuns/data/entity/ayah.dart';
-import 'package:mtqmnuns/data/entity/doa_category.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/data/entity/doa.dart';
+import 'package:inquran/data/aggregate/doa.dart';
+import 'package:inquran/data/entity/ayah.dart';
+import 'package:inquran/data/entity/doa_category.dart';
+import 'package:inquran/data/local/db/app_database.dart';
+import 'package:inquran/data/entity/doa.dart';
 
-part 'duas_dao.g.dart';
+part 'doa_dao.g.dart';
 
 @DriftAccessor(tables: [Doa, DoaCategory, Ayah])
-class DuasDao extends DatabaseAccessor<AppDatabase> with _$DuasDaoMixin {
-  DuasDao(super.db);
+class DoaDao extends DatabaseAccessor<AppDatabase> with _$DoaDaoMixin {
+  DoaDao(super.db);
 
   Future<List<DoaData>> getAllDuas() => select(doa).get();
-  Future<List<DoaCategoryData>> getDuasCategory() => select(doaCategory).get();
-  Future<List<CompleteDuaData>> getAllCompleteDuas() async {
+  Future<List<DoaCategoryData>> getDoaCategories() => select(doaCategory).get();
+  Future<List<CompleteDoaData>> getAllCompleteDuas() async {
     final query = select(doa).join([
       innerJoin(doaCategory, doaCategory.id.equalsExp(doa.categoryId)),
       innerJoin(ayah, ayah.id.equalsExp(doa.ayahId)),
@@ -27,11 +27,11 @@ class DuasDao extends DatabaseAccessor<AppDatabase> with _$DuasDaoMixin {
       final ayahRow = row.readTable(ayah);
       final surahRow = row.readTableOrNull(surah);
 
-      return CompleteDuaData(doaRow.id, categoryRow, ayahRow, surahRow);
+      return CompleteDoaData(doaRow.id, categoryRow, ayahRow, surahRow);
     }).toList();
   }
 
-  Future<List<CompleteDuaData>> getDuasByCategory(int categoryId) async {
+  Future<List<CompleteDoaData>> getDoasByCategory(int categoryId) async {
     final query = select(doa).join([
       innerJoin(doaCategory, doaCategory.id.equalsExp(doa.categoryId)),
       innerJoin(ayah, ayah.id.equalsExp(doa.ayahId)),
@@ -46,7 +46,7 @@ class DuasDao extends DatabaseAccessor<AppDatabase> with _$DuasDaoMixin {
       final ayahRow = row.readTable(ayah);
       final surahRow = row.readTable(surah);
 
-      return CompleteDuaData(
+      return CompleteDoaData(
         doaRow.id,
         categoryRow,
         ayahRow,

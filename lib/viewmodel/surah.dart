@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/dto/surah.dart';
-import 'package:mtqmnuns/repositories/ayah.dart';
-import 'package:mtqmnuns/services/audio_player.dart';
-import 'package:mtqmnuns/state/surah.dart';
-import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
+import 'package:inquran/dto/surah.dart';
+import 'package:inquran/repositories/ayah.dart';
+import 'package:inquran/services/audio_player.dart';
+import 'package:inquran/state/surah.dart';
+import 'package:inquran/state/stateful_viewmodel.dart';
 
 class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   final AyahRepository _ayahRepo;
@@ -127,7 +127,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
       _allAyahsCache = await _ayahRepo.getAllAyahWithSurah();
       _isInitialized = true;
     } catch (e) {
-      setState(SurahError('Failed to initialize: ${e.toString()}'));
+      setState(SurahError('Gagal memuat data: ${e.toString()}'));
       return;
     }
   }
@@ -170,7 +170,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
           }).toList();
 
       if (filteredAyahs.isEmpty) {
-        setState(SurahError('No ayahs found in specified range'));
+        setState(SurahError('Tidak ada ayat dalam rentang yang dipilih'));
         return;
       }
 
@@ -379,7 +379,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
           _allAyahsCache!.where((ayah) => ayah.page == pageNumber).toList();
 
       if (pageAyahs.isEmpty) {
-        setState(SurahError("No ayahs found for page $pageNumber"));
+        setState(SurahError("Tidak ada ayat untuk halaman $pageNumber"));
         return;
       }
 
@@ -412,7 +412,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
           _allAyahsCache!.where((ayah) => ayah.juzNumber == juzNumber).toList();
 
       if (juzAyahs.isEmpty) {
-        setState(SurahError("No ayahs found for juz $juzNumber"));
+        setState(SurahError("Tidak ada ayat untuk juz $juzNumber"));
         return;
       }
 

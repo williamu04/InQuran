@@ -1,29 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/data/aggregate/doa.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/common/translator.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/components/rounded_card.dart';
+import 'package:inquran/common/translator.dart';
+import 'package:inquran/data/aggregate/doa.dart';
+import 'package:inquran/state/doa.dart';
+import 'package:inquran/viewmodel/doa.dart';
+import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
-class DuasScreen extends StatelessWidget {
+class DoaScreen extends StatefulWidget {
   final Map<String, String> queryParam;
 
-  const DuasScreen({super.key, required this.queryParam});
+  const DoaScreen({super.key, required this.queryParam});
+
+  @override
+  State<DoaScreen> createState() => _DoaScreenState();
+}
+
+class _DoaScreenState extends State<DoaScreen> {
+  late final int categoryId;
+  late final String categoryName;
+
+  @override
+  void initState() {
+    super.initState();
+    categoryId = int.tryParse(widget.queryParam['categoryId'] ?? '') ?? 0;
+    categoryName = widget.queryParam['categoryName'] ?? '';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DoaDetailViewModel>().loadDoas(categoryId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final db = AppDatabase();
-    final categoryId = int.tryParse(queryParam['categoryId'] ?? '');
-    final categoryName = queryParam['categoryName'] ?? '';
-
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
         child: Column(
           children: [
-            // 🔹 Topbar
+            // Topbar
             roundedCard(
               child: TopBarUtility.buildPurpleTitleTopbar(
                 leftIcon: TopBarIconModel(
@@ -36,45 +53,44 @@ class DuasScreen extends StatelessWidget {
               ),
             ),
 
-            // 🔹 Konten utama
+            // Konten utama
             Expanded(
-              child: FutureBuilder<List<CompleteDuaData>>(
-                future: db.duasDao.getDuasByCategory(categoryId ?? 0),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text("Error: ${snapshot.error}"));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
+              child: Consumer<DoaDetailViewModel>(
+                builder: (context, vm, _) {
+                  return switch (vm.state) {
+                    DoaDetailLoading() => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    DoaDetailError(:final message) => Center(
+                      child: Text("Terjadi kesalahan: $message"),
+                    ),
+                    DoaDetailEmpty() => const Center(
                       child: Text("Tidak ada doa di kategori ini."),
-                    );
-                  }
-
-                  final duas = snapshot.data!;
-                  return ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 90),
-                    children: [
-                      // 🔹 Judul kategori
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Center(
-                          child: Text(
-                            "Tentang\n${terjemahkanKategori(categoryName)}",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff672CBC),
+                    ),
+                    DoaDetailSuccess(:final doas) => ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 90),
+                      children: [
+                        // Judul kategori
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Center(
+                            child: Text(
+                              "Tentang\n${terjemahkanKategori(categoryName)}",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
-                      // 🔹 List Doa
-                      ...duas.map((dua) => DoaCard(dua: dua)),
-                    ],
-                  );
+                        // List Doa
+                        ...doas.map((doa) => DoaCard(doa: doa)),
+                      ],
+                    ),
+                  };
                 },
               ),
             ),
@@ -87,15 +103,15 @@ class DuasScreen extends StatelessWidget {
 
 /// 🔹 Widget DoaCard terpisah (lebih maintainable + accessible)
 class DoaCard extends StatelessWidget {
-  final CompleteDuaData dua;
+  final CompleteDoaData doa;
 
-  const DoaCard({super.key, required this.dua});
+  const DoaCard({super.key, required this.doa});
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
       label:
-          "Doa dari surah ${dua.surah?.nameLatin ?? ''}, ayat ${dua.ayah.ayahNumber}.",
+          "Doa dari surah ${doa.surah?.nameLatin ?? ''}, ayat ${doa.ayah.ayahNumber}.",
       hint:
           "Geser untuk membaca terjemahan. Gunakan tombol play untuk mendengarkan.",
       child: Card(
@@ -109,32 +125,32 @@ class DoaCard extends StatelessWidget {
               // 🔹 Teks Arab
               ExcludeSemantics(
                 child: Text(
-                  dua.ayah.ayahText,
+                  doa.ayah.ayahText,
                   textAlign: TextAlign.right,
                   style: const TextStyle(
                     fontSize: 28,
                     fontFamily: 'Arab Typesetting',
-                    color: Color(0xFF3B1D77),
+                    color: AppColors.deepPurple,
                   ),
                 ),
               ),
               const SizedBox(height: 8),
 
               // 🔹 Divider
-              const Divider(color: Color(0xFF994EF8), thickness: 1),
+              const Divider(color: AppColors.primaryLight, thickness: 1),
               const SizedBox(height: 8),
 
               // 🔹 Terjemahan (dibaca TalkBack)
               Text(
-                dua.ayah.indoText,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF3B1D77)),
+                doa.ayah.indoText,
+                style: const TextStyle(fontSize: 12, color: AppColors.deepPurple),
               ),
               const SizedBox(height: 8),
 
               // 🔹 Sumber surah
               Text(
-                "[QS ${dua.surah?.nameLatin ?? ''} : ${dua.ayah.ayahNumber}]",
-                style: const TextStyle(fontSize: 12, color: Color(0xff672CBC)),
+                "[QS ${doa.surah?.nameLatin ?? ''} : ${doa.ayah.ayahNumber}]",
+                style: const TextStyle(fontSize: 12, color: AppColors.primary),
               ),
               const SizedBox(height: 12),
 
@@ -153,7 +169,7 @@ class DoaCard extends StatelessWidget {
                     },
                     icon: const Icon(
                       LucideIcons.play,
-                      color: Color(0xFF3B1D77),
+                      color: AppColors.deepPurple,
                     ),
                   ),
                   IconButton(
@@ -167,7 +183,7 @@ class DoaCard extends StatelessWidget {
                     },
                     icon: const Icon(
                       LucideIcons.share2,
-                      color: Color(0xFF3B1D77),
+                      color: AppColors.deepPurple,
                     ),
                   ),
                   IconButton(
@@ -181,7 +197,7 @@ class DoaCard extends StatelessWidget {
                     },
                     icon: const Icon(
                       LucideIcons.heart,
-                      color: Color(0xFF3B1D77),
+                      color: AppColors.deepPurple,
                     ),
                   ),
                 ],

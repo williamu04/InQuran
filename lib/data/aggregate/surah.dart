@@ -1,4 +1,4 @@
-import 'package:mtqmnuns/data/local/db/app_database.dart';
+import 'package:inquran/data/local/db/app_database.dart';
 
 class SurahWithAyahs {
   final SurahData? surah;

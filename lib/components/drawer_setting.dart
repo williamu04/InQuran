@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/components/drawer_generic_helper.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/models/disclosure_button.dart';
-import 'package:mtqmnuns/state/disclosure_button.dart';
-import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:inquran/components/drawer_generic_helper.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/state/disclosure_button.dart';
+import 'package:inquran/state/ui_controllers.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class SettingDrawer extends StatelessWidget {
   const SettingDrawer({super.key});
@@ -26,12 +26,12 @@ class SettingDrawer extends StatelessWidget {
     return [
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Bahasa",
-        color: Color(0xFF994EF8),
+        color: AppColors.primaryLight,
         action: ExpandNestedDrawerAction([]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
         text: "Umum",
-        color: Color(0xFF994EF8),
+        color: AppColors.primaryLight,
         action: ExpandNestedDrawerAction([]),
       ),
       DisclosureButtonModel.withDefaultTextStyle(
@@ -43,7 +43,7 @@ class SettingDrawer extends StatelessWidget {
             fontWeight: FontWeight.w300,
             color:
                 globalConfig.quranMode == QuranMode.normal
-                    ? const Color(0xFF672CBC)
+                    ? AppColors.primary
                     : Colors.grey,
             action: SystemAction(
               () => globalConfig.setQuranMode(QuranMode.normal),
@@ -55,7 +55,7 @@ class SettingDrawer extends StatelessWidget {
             fontWeight: FontWeight.w300,
             color:
                 globalConfig.quranMode == QuranMode.memorize
-                    ? const Color(0xFF672CBC)
+                    ? AppColors.primary
                     : Colors.grey,
             action: SystemAction(
               () => globalConfig.setQuranMode(QuranMode.memorize),
@@ -67,7 +67,7 @@ class SettingDrawer extends StatelessWidget {
             fontWeight: FontWeight.w300,
             color:
                 globalConfig.quranMode == QuranMode.mushaf
-                    ? const Color(0xFF672CBC)
+                    ? AppColors.primary
                     : Colors.grey,
             action: SystemAction(
               () => globalConfig.setQuranMode(QuranMode.mushaf),

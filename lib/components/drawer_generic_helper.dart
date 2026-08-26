@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/components/disclosure_button.dart';
-import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/models/disclosure_button.dart';
-import 'package:mtqmnuns/state/disclosure_button.dart';
-import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:inquran/components/disclosure_button.dart';
+import 'package:inquran/components/rounded_card.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/state/disclosure_button.dart';
+import 'package:inquran/state/ui_controllers.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class GenericDrawer<T extends ToggleableUiController> extends StatefulWidget {
   final Duration duration;
@@ -95,7 +95,7 @@ class _GenericDrawerState<T extends ToggleableUiController>
                   icon: const Icon(
                     LucideIcons.x,
                     size: 30,
-                    color: Color(0xFF672CBC),
+                    color: AppColors.primary,
                   ),
                   onPressed: () => _closeDrawer(),
                 ),

@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/repositories/stt.dart';
-import 'package:mtqmnuns/services/stt.dart';
-import 'package:mtqmnuns/state/stt.dart';
-import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
+import 'package:inquran/repositories/stt.dart';
+import 'package:inquran/services/stt.dart';
+import 'package:inquran/state/stt.dart';
+import 'package:inquran/state/stateful_viewmodel.dart';
 
 class SttViewModel extends StatefulViewModel<SttState> {
   final SttService _sttService;

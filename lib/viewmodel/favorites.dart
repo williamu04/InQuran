@@ -1,11 +1,14 @@
-import 'package:mtqmnuns/data/local/cache/favorites.dart';
-import 'package:mtqmnuns/dto/favorites.dart';
-import 'package:mtqmnuns/state/favorites.dart';
-import 'package:mtqmnuns/state/success_or_fail.dart';
-import 'package:mtqmnuns/viewmodel/stateful_generic_helper.dart';
+import 'package:inquran/data/local/cache/favorites.dart';
+import 'package:inquran/data/local/dao/ayah_dao.dart';
+import 'package:inquran/dto/favorites.dart';
+import 'package:inquran/state/favorites.dart';
+import 'package:inquran/state/success_or_fail.dart';
+import 'package:inquran/state/stateful_viewmodel.dart';
 
 class FavoritesViewModel extends StatefulViewModel<FavoritesLoadState> {
-  FavoritesViewModel() : super(FavoritesLoadLoading());
+  final AyahDao _ayahDao;
+
+  FavoritesViewModel(this._ayahDao) : super(FavoritesLoadLoading());
 
   List<FavoriteDto> _favorites = [];
 
@@ -13,13 +16,14 @@ class FavoritesViewModel extends StatefulViewModel<FavoritesLoadState> {
   Future<void> getAllFavorites() async {
     try {
       _favorites = await FavoriteCache.loadFavorite() ?? [];
-      setState(FavoritesLoaded(_favorites));
+      final ayahs = await _ayahDao.getAyahsFromFavorites(_favorites);
+      setState(FavoritesLoaded(_favorites, ayahs));
     } catch (e) {
       setState(FavoritesLoadError(e.toString()));
     }
   }
 
-  Future<SuccessOrFail> addFavorite(FavoriteDto favorite) async {
+  Future<SuccessOrFail<String>> addFavorite(FavoriteDto favorite) async {
     try {
       final exists = _favorites.any(
         (f) =>
@@ -30,14 +34,15 @@ class FavoritesViewModel extends StatefulViewModel<FavoritesLoadState> {
         _favorites = [..._favorites, favorite];
         await FavoriteCache.saveFavorite(_favorites);
       }
-      setState(FavoritesLoaded(_favorites));
+      final ayahs = await _ayahDao.getAyahsFromFavorites(_favorites);
+      setState(FavoritesLoaded(_favorites, ayahs));
       return Success("OK");
     } catch (e) {
       return Failure(e.toString());
     }
   }
 
-  Future<SuccessOrFail> deleteFavorite(FavoriteDto favorite) async {
+  Future<SuccessOrFail<String>> deleteFavorite(FavoriteDto favorite) async {
     try {
       _favorites = _favorites
           .where(
@@ -47,7 +52,8 @@ class FavoritesViewModel extends StatefulViewModel<FavoritesLoadState> {
           )
           .toList();
       await FavoriteCache.saveFavorite(_favorites);
-      setState(FavoritesLoaded(_favorites));
+      final ayahs = await _ayahDao.getAyahsFromFavorites(_favorites);
+      setState(FavoritesLoaded(_favorites, ayahs));
       return Success("OK");
     } catch (e) {
       return Failure(e.toString());

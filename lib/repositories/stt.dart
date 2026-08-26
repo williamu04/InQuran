@@ -2,33 +2,20 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
-import 'package:mtqmnuns/common/navigation.dart';
-import 'package:mtqmnuns/data/local/dao/surah_dao.dart';
-import 'package:mtqmnuns/data/local/dao/duas_dao.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/dto/surah.dart';
+import 'package:inquran/common/navigation.dart';
+import 'package:inquran/data/local/dao/surah_dao.dart';
+import 'package:inquran/data/local/dao/doa_dao.dart';
+import 'package:inquran/data/local/db/app_database.dart';
+import 'package:inquran/dto/surah.dart';
 
 class SttRepository {
   final SurahDao _surahDao;
-  final DuasDao _duasDao;
-
-  // klo misal mau tambah dao yang lain :
-  //   final AyahDao _ayahDao
+  final DoaDao _doaDao;
 
   SttRepository(
     this._surahDao,
-    this._duasDao,
-    // this._ayahDao
+    this._doaDao,
   );
-
-  // terus di main.dart cari line ini :
-  // Provider(create: (context) => SttRepository(
-  //       context.read<SurahDao>(),
-  //       context.read<AyahDao>(), <- tambah daonya kayak gini
-  //       ....
-
-  //     ),
-  //   ),
 
   Future<void Function(BuildContext context)> processTranscription(
     String input,
@@ -38,9 +25,9 @@ class SttRepository {
       return (context) => navigateToSurah(context, surah);
     }
 
-    final doaCategory = await fuzzyFindDuaCategoryFromText(input);
+    final doaCategory = await fuzzyFindDoaCategoryFromText(input);
     if (doaCategory != null) {
-      return (context) => navigateToDuaCategory(context, doaCategory);
+      return (context) => navigateToDoaCategory(context, doaCategory);
     }
 
     if (fuzzyMatchCommand(input, [
@@ -145,8 +132,8 @@ class SttRepository {
   }
 
   /// Find the doa category that best matches the input. Returns null if none found.
-  Future<DoaCategoryData?> fuzzyFindDuaCategoryFromText(String input) async {
-    final categories = await _duasDao.getDuasCategory();
+  Future<DoaCategoryData?> fuzzyFindDoaCategoryFromText(String input) async {
+    final categories = await _doaDao.getDoaCategories();
     final normalized = input.toLowerCase();
 
     DoaCategoryData? best;

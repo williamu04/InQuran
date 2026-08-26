@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/components/drawer_generic_helper.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/models/disclosure_button.dart';
-import 'package:mtqmnuns/state/disclosure_button.dart';
-import 'package:mtqmnuns/viewmodel/toggleable.dart';
+import 'package:inquran/components/drawer_generic_helper.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/state/disclosure_button.dart';
+import 'package:inquran/state/ui_controllers.dart';
 import 'package:provider/provider.dart';
+import 'package:inquran/common/app_color.dart';
 
 class MenuDrawer extends StatelessWidget {
   const MenuDrawer({super.key});
@@ -35,7 +35,7 @@ class MenuDrawer extends StatelessWidget {
             fontWeight: FontWeight.w300,
             color:
                 globalConfig.isVoiceMode == true
-                    ? const Color(0xFF672CBC)
+                    ? AppColors.primary
                     : Colors.grey,
             action: SystemAction(() => globalConfig.setVoiceMode(true)),
           ),
@@ -45,7 +45,7 @@ class MenuDrawer extends StatelessWidget {
             showIcon: false,
             color:
                 globalConfig.isVoiceMode == false
-                    ? const Color(0xFF672CBC)
+                    ? AppColors.primary
                     : Colors.grey,
             action: SystemAction(() => globalConfig.setVoiceMode(false)),
           ),

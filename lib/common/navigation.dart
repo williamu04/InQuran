@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/dto/juz.dart';
-import 'package:mtqmnuns/dto/surah.dart';
-import 'package:mtqmnuns/routes/route.dart';
+import 'package:inquran/data/local/db/app_database.dart';
+import 'package:inquran/dto/juz.dart';
+import 'package:inquran/dto/surah.dart';
+import 'package:inquran/routes/route.dart';
 
 void navigateToSurah(BuildContext context, SurahInfoDto surah) {
   context.push(
@@ -35,10 +35,10 @@ void navigateToJuz(BuildContext context, JuzInfoDto juz) {
   );
 }
 
-void navigateToDuaCategory(BuildContext context, DoaCategoryData category) {
+void navigateToDoaCategory(BuildContext context, DoaCategoryData category) {
   context.push(
     Uri(
-      path: AppRoutes.duas.path,
+      path: AppRoutes.doa.path,
       queryParameters: {
         'categoryId': category.id.toString(),
         'categoryName': category.nama,

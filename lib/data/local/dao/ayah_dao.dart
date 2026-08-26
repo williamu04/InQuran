@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:mtqmnuns/data/aggregate/surah.dart';
-import 'package:mtqmnuns/data/entity/ayah.dart';
-import 'package:mtqmnuns/data/local/db/app_database.dart';
-import 'package:mtqmnuns/dto/favorites.dart';
+import 'package:inquran/data/aggregate/surah.dart';
+import 'package:inquran/data/entity/ayah.dart';
+import 'package:inquran/data/local/db/app_database.dart';
+import 'package:inquran/dto/favorites.dart';
 
 part 'ayah_dao.g.dart';
 

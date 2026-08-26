@@ -1,5 +1,5 @@
-import 'package:mtqmnuns/data/local/dao/ayah_dao.dart';
-import 'package:mtqmnuns/dto/surah.dart';
+import 'package:inquran/data/local/dao/ayah_dao.dart';
+import 'package:inquran/dto/surah.dart';
 
 class AyahRepository {
   final AyahDao _ayahDao;

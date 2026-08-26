@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:geolocator/geolocator.dart';
-import 'package:mtqmnuns/services/geocode.dart';
+import 'package:inquran/services/geocode.dart';
 
 class QiblaHelper {
   static const double _kaabahLat = 21.4225;

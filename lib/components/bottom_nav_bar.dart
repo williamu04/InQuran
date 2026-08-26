@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/routes/route.dart';
-import 'package:mtqmnuns/routes/route_model.dart';
+import 'package:inquran/routes/route.dart';
+import 'package:inquran/routes/route_model.dart';
+import 'package:inquran/common/app_color.dart';
 
 class BottomNavicon {
   IconData icon;
@@ -19,7 +20,7 @@ class BottomNavBar extends StatelessWidget {
       BottomNavicon(icon: LucideIcons.bookOpen, route: AppRoutes.surahList),
       BottomNavicon(icon: LucideIcons.search, route: AppRoutes.search),
       BottomNavicon(icon: LucideIcons.house, route: AppRoutes.home),
-      BottomNavicon(icon: LucideIcons.handHeart, route: AppRoutes.duasList),
+      BottomNavicon(icon: LucideIcons.handHeart, route: AppRoutes.doaList),
       BottomNavicon(icon: LucideIcons.heart, route: AppRoutes.favorites),
     ];
 
@@ -47,7 +48,7 @@ class BottomNavBar extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Container(
-                color: const Color(0xFFF5F9FE),
+                color: AppColors.background,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 4,
@@ -65,7 +66,7 @@ class BottomNavBar extends StatelessWidget {
                             nav.icon,
                             color:
                                 isSelected
-                                    ? const Color(0xFF3B1D77)
+                                    ? AppColors.deepPurple
                                     : Colors.grey,
                           ),
                           onPressed: () {

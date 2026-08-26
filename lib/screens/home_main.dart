@@ -2,10 +2,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/config/global.dart';
-import 'package:mtqmnuns/routes/route.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/components/rounded_card.dart';
+import 'package:inquran/config/global.dart';
+import 'package:inquran/routes/route.dart';
+import 'package:inquran/common/app_color.dart';
 
 class HomeMenuItem {
   String title;
@@ -29,7 +30,7 @@ class MainHomeScreen extends StatelessWidget {
     HomeMenuItem topItem = HomeMenuItem(
       title: "Baca Al Qur'an",
       icon: LucideIcons.bookOpen,
-      buttonColor: const Color(0xFF672CBC),
+      buttonColor: AppColors.primary,
       action: () => context.push(AppRoutes.surahList.path),
     );
 
@@ -37,37 +38,37 @@ class MainHomeScreen extends StatelessWidget {
       HomeMenuItem(
         title: "Koleksi Doa-Doa",
         icon: LucideIcons.handHeart,
-        buttonColor: const Color(0xFF3B1D77),
-        action: () => context.push(AppRoutes.duasList.path),
+        buttonColor: AppColors.deepPurple,
+        action: () => context.push(AppRoutes.doaList.path),
       ),
       HomeMenuItem(
         title: "Waktu Salat",
         icon: LucideIcons.hourglass,
-        buttonColor: const Color(0xFF3B1D77),
+        buttonColor: AppColors.deepPurple,
         action: () => context.push(AppRoutes.prayer.path),
       ),
       HomeMenuItem(
         title: "Arah Kiblat",
         icon: LucideIcons.compass,
-        buttonColor: const Color(0xFF672CBC),
+        buttonColor: AppColors.primary,
         action: () => context.push(AppRoutes.qibla.path),
       ),
       HomeMenuItem(
         title: "Favorit",
         icon: LucideIcons.bookHeart,
-        buttonColor: const Color(0xFF672CBC),
+        buttonColor: AppColors.primary,
         action: () => context.push(AppRoutes.favorites.path),
       ),
       HomeMenuItem(
         title: "Jelajahi",
         icon: LucideIcons.search,
-        buttonColor: const Color(0xFF3B1D77),
+        buttonColor: AppColors.deepPurple,
         action: () => context.push(AppRoutes.search.path),
       ),
       HomeMenuItem(
         title: "Mode Voice Command",
         icon: LucideIcons.audioLines,
-        buttonColor: const Color(0xFF3B1D77),
+        buttonColor: AppColors.deepPurple,
         action: () => GlobalConfig().setVoiceMode(true),
       ),
     ];
@@ -177,7 +178,7 @@ class MainHomeScreen extends StatelessWidget {
                       fontFamily: 'Plus Jakarta',
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF994EF8),
+                      color: AppColors.primaryLight,
                       height: 1.4,
                     ),
                   ),
@@ -193,7 +194,7 @@ class MainHomeScreen extends StatelessWidget {
                         fontFamily: 'Plus Jakarta',
                         fontSize: 12,
                         fontStyle: FontStyle.italic,
-                        color: Color(0xFF994EF8),
+                        color: AppColors.primaryLight,
                       ),
                     ),
                   ),

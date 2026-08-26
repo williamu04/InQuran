@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mtqmnuns/viewmodel/surah_list.dart';
+import 'package:inquran/viewmodel/surah_list.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
+import 'package:inquran/common/app_color.dart';
 
 class SearchBox extends StatefulWidget {
   const SearchBox({super.key});
@@ -20,7 +21,7 @@ class _SearchBoxState extends State<SearchBox> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Color(0xFFF5F9FE),
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

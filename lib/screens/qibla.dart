@@ -3,13 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:mtqmnuns/common/app_color.dart';
-import 'package:mtqmnuns/common/top_bar_utils.dart';
-import 'package:mtqmnuns/components/rounded_card.dart';
-import 'package:mtqmnuns/services/qibla.dart';
+import 'package:inquran/common/app_color.dart';
+import 'package:inquran/components/top_bar_utils.dart';
+import 'package:inquran/components/rounded_card.dart';
+import 'package:inquran/services/qibla.dart';
 import 'package:vibration/vibration.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:mtqmnuns/providers/location.dart';
+import 'package:inquran/state/location.dart';
+import 'package:inquran/viewmodel/location.dart';
 import 'package:provider/provider.dart';
 
 class QiblaScreen extends StatefulWidget {
@@ -51,6 +52,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
   @override
   void dispose() {
     _compassSubscription?.cancel(); // Cancel compass subscription
+    Vibration.cancel(); // Stop any ongoing vibration
     super.dispose();
   }
 
@@ -85,11 +87,15 @@ class _QiblaScreenState extends State<QiblaScreen> {
           ),
         );
       } else {
-        return Scaffold(body: Center(child: Text("Error: $_error")));
+        return Scaffold(body: Center(child: Text("Terjadi kesalahan: $_error")));
       }
     }
 
-    final locationProvider = context.watch<LocationProvider>();
+    final locationVm = context.watch<LocationViewModel>();
+    final placeName = switch (locationVm.state) {
+      LocationSuccess(:final placeName) => placeName,
+      _ => "Lokasi tidak tersedia",
+    };
 
     return Scaffold(
       body: Column(
@@ -112,7 +118,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
               child: // In _QiblaScreenState build method, update the location container:
                   Semantics(
                 label: 'Lokasi saat ini',
-                value: locationProvider.placeName ?? "Lokasi tidak tersedia",
+                value: placeName,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -128,7 +134,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          locationProvider.placeName ?? "Lokasi tidak tersedia",
+                          placeName,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -148,11 +154,9 @@ class _QiblaScreenState extends State<QiblaScreen> {
               stream: FlutterCompass.events,
               builder: (context, snapshot) {
                 // Store the subscription when the stream is first built
-                if (_compassSubscription == null) {
-                  _compassSubscription = FlutterCompass.events?.listen((event) {
-                    // Empty listener - just to maintain the subscription
-                  });
-                }
+                _compassSubscription ??= FlutterCompass.events?.listen((event) {
+                  // Empty listener - just to maintain the subscription
+                });
 
                 if (snapshot.hasError) {
                   return const Center(
@@ -179,8 +183,11 @@ class _QiblaScreenState extends State<QiblaScreen> {
                 double normalizedDiff = diff > 180 ? 360 - diff : diff;
                 bool isFacingQibla = normalizedDiff < 5;
 
+                // halaman tidak sedang aktif (ditutup / tertutup halaman lain)
+                bool isRouteActive = ModalRoute.of(context)?.isCurrent ?? true;
+
                 // getar sekali saat tepat kiblat
-                if (isFacingQibla && !_hasVibrated) {
+                if (isRouteActive && isFacingQibla && !_hasVibrated) {
                   Vibration.vibrate(duration: 200);
                   _hasVibrated = true;
                 } else if (!isFacingQibla) {
@@ -253,11 +260,11 @@ class QiblaCompass extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
-                colors: [Color(0xff240F4F), Color(0xff863ED5)],
+                colors: [AppColors.darkestPurple, AppColors.purpleAccent],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xff672CBC).withValues(alpha: 0.6),
+                  color: AppColors.primary.withValues(alpha: 0.6),
                   blurRadius: 40,
                   spreadRadius: 10,
                 ),
@@ -322,7 +329,7 @@ class QiblaCaption extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 16,
-            color: Color(0xff3B1D77),
+            color: AppColors.deepPurple,
             fontWeight: FontWeight.w500,
           ),
         ),

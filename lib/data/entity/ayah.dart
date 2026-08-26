@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:mtqmnuns/data/entity/surah.dart';
+import 'package:inquran/data/entity/surah.dart';
 
 class Ayah extends Table {
   IntColumn get id => integer()();
