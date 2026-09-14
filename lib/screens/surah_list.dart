@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inquran/common/navigation.dart';
+import 'package:inquran/components/tab_button.dart';
 import 'package:inquran/components/top_bar_utils.dart';
 import 'package:inquran/components/search_box.dart';
 import 'package:inquran/dto/juz.dart';
@@ -19,28 +20,32 @@ class SurahListScreen extends StatefulWidget {
 class _SurahListScreenState extends State<SurahListScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-      child: Column(
-        children: [
-          TopBarUtility.buildPurpleTitleTopbar(
-            context: context,
-            title: "Baca Al-Qur'an",
-          ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
-                  SearchBox(),
-                  const SizedBox(height: 20),
-                  Expanded(child: SurahListContentWidget()),
-                ],
+    return Semantics(
+      namesRoute: true,
+      label: "Baca Al-Qur'an",
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        child: Column(
+          children: [
+            TopBarUtility.buildPurpleTitleTopbar(
+              context: context,
+              title: "Baca Al-Qur'an",
+            ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    SearchBox(),
+                    const SizedBox(height: 20),
+                    Expanded(child: SurahListContentWidget()),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -75,17 +80,15 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
         return Row(
           children: [
             Expanded(
-              child: _buildTabButton(
+              child: TabButton(
                 label: 'Surah',
-                contentType: SurahContentType.surah,
                 isActive: viewModel.contentType == SurahContentType.surah,
                 onTap: () => viewModel.setContentType(SurahContentType.surah),
               ),
             ),
             Expanded(
-              child: _buildTabButton(
+              child: TabButton(
                 label: 'Juz',
-                contentType: SurahContentType.juz,
                 isActive: viewModel.contentType == SurahContentType.juz,
                 onTap: () => viewModel.setContentType(SurahContentType.juz),
               ),
@@ -96,49 +99,21 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     );
   }
 
-  Widget _buildTabButton({
-    required String label,
-    required SurahContentType contentType,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    const activeColor = AppColors.primary;
-    final inactiveColor = Colors.grey;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            bottom: BorderSide(
-              color: isActive ? activeColor : Colors.grey.shade200,
-              width: 3,
-            ),
-          ),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isActive ? activeColor : inactiveColor,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildTabContent() {
     return Consumer<SurahListViewModel>(
       builder: (context, viewModel, child) {
         switch (viewModel.state) {
           case SurahListLoading():
-            return Center(child: CircularProgressIndicator());
+            return Semantics(
+              liveRegion: true,
+              label: 'Memuat daftar surah',
+              child: const Center(child: CircularProgressIndicator()),
+            );
           case SurahListError(:var message):
-            return Center(child: Text("Terjadi kesalahan: $message"));
+            return Semantics(
+              liveRegion: true,
+              child: Center(child: Text("Terjadi kesalahan: $message")),
+            );
           case SurahListSuccessTypeSurah(:var surahs):
             return SingleChildScrollView(
               controller: _surahScrollController,
@@ -152,7 +127,10 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           case SurahListSuccessEmpty():
             return Padding(
               padding: EdgeInsets.only(top: 20),
-              child: Text("Tidak ditemukan."),
+              child: Semantics(
+                liveRegion: true,
+                child: Text("Tidak ditemukan."),
+              ),
             );
         }
       },
@@ -163,7 +141,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 90, top: 20),
+      padding: const EdgeInsets.only(bottom: 90, top: 12),
       itemCount: surahList.length,
       itemBuilder: (context, index) {
         final surah = surahList[index];
@@ -175,17 +153,24 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
   Widget _buildSurahListItem(BuildContext context, SurahInfoDto surah) {
     return Column(
       children: [
-        InkWell(
-          onTap: () => navigateToSurah(context, surah),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Row(
-              children: [
-                _buildSurahNumberIcon(surah.number),
-                const SizedBox(width: 16),
-                Expanded(child: _buildSurahInfo(surah)),
-                _buildArabicName(surah.name),
-              ],
+        Semantics(
+          button: true,
+          label:
+              'Surah ${surah.nameLatin}, ${surah.place}, ${surah.totalAyah} ayat',
+          hint: 'Ketuk dua kali untuk membuka surah ${surah.nameLatin}',
+          excludeSemantics: true,
+          child: InkWell(
+            onTap: () => navigateToSurah(context, surah),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Row(
+                children: [
+                  _buildSurahNumberIcon(surah.number),
+                  const SizedBox(width: 16),
+                  Expanded(child: _buildSurahInfo(surah)),
+                  _buildArabicName(surah.name),
+                ],
+              ),
             ),
           ),
         ),
@@ -195,28 +180,30 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
   }
 
   Widget _buildSurahNumberIcon(int surahNumber) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(
-            'assets/img/star.png',
-            width: 45,
-            height: 45,
-            fit: BoxFit.cover,
-            color: AppColors.primary,
-          ),
-          Text(
-            '$surahNumber',
-            style: const TextStyle(
-              color: AppColors.deepPurple,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+    return ExcludeSemantics(
+      child: SizedBox(
+        width: 40,
+        height: 40,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              'assets/img/star.png',
+              width: 45,
+              height: 45,
+              fit: BoxFit.cover,
+              color: AppColors.primary,
             ),
-          ),
-        ],
+            Text(
+              '$surahNumber',
+              style: const TextStyle(
+                color: AppColors.deepPurple,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -238,7 +225,10 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
           children: [
             Text(
               surah.place,
-              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
             ),
             const Text(
               ' • ',
@@ -246,7 +236,10 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
             ),
             Text(
               '${surah.totalAyah} Ayat',
-              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),
@@ -270,7 +263,7 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 90, top: 20),
+      padding: const EdgeInsets.only(bottom: 90, top: 12),
       itemCount: juzList.length,
       itemBuilder: (context, index) {
         final juz = juzList[index];
@@ -282,27 +275,38 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
   Widget _buildJuzListItem(JuzInfoDto juzInfo) {
     final isSameSurah = juzInfo.startSurahName == juzInfo.endSurahName;
 
+    final String rangeLabel =
+        isSameSurah
+            ? '${juzInfo.startSurahName}, ayat ${juzInfo.startAyahNumber} sampai ${juzInfo.endAyahNumber}'
+            : '${juzInfo.startSurahName} ayat ${juzInfo.startAyahNumber}, sampai ${juzInfo.endSurahName} ayat ${juzInfo.endAyahNumber}';
+
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8.0),
-        onTap: () {
-          navigateToJuz(context, juzInfo);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildJuzHeader(juzInfo),
-              const SizedBox(height: 16.0),
-              if (isSameSurah)
-                _buildSameSurahRange(juzInfo)
-              else
-                _buildMultipleSurahRange(juzInfo),
-            ],
+      child: Semantics(
+        button: true,
+        label: 'Juz ${juzInfo.juzNumber}, $rangeLabel',
+        hint: 'Ketuk dua kali untuk membuka juz ${juzInfo.juzNumber}',
+        excludeSemantics: true,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8.0),
+          onTap: () {
+            navigateToJuz(context, juzInfo);
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildJuzHeader(juzInfo),
+                const SizedBox(height: 16.0),
+                if (isSameSurah)
+                  _buildSameSurahRange(juzInfo)
+                else
+                  _buildMultipleSurahRange(juzInfo),
+              ],
+            ),
           ),
         ),
       ),
@@ -312,27 +316,29 @@ class _SurahListContentWidgetState extends State<SurahListContentWidget> {
   Widget _buildJuzHeader(JuzInfoDto juzInfo) {
     return Row(
       children: [
-        SizedBox(
-          width: 40,
-          height: 40,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Image.asset(
-                'assets/img/star.png',
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
-              Text(
-                '${juzInfo.juzNumber}',
-                style: const TextStyle(
-                  color: AppColors.deepPurple,
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold,
+        ExcludeSemantics(
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Image.asset(
+                  'assets/img/star.png',
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
                 ),
-              ),
-            ],
+                Text(
+                  '${juzInfo.juzNumber}',
+                  style: const TextStyle(
+                    color: AppColors.deepPurple,
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 16.0),

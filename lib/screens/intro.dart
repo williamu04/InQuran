@@ -18,7 +18,7 @@ class _IntroScreenState extends State<IntroScreen> {
       width: double.infinity,
       height: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,7 +163,7 @@ class _IntroScreenState extends State<IntroScreen> {
                       child: const Text(
                         'Mode Voice Command',
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                         textAlign: TextAlign.center,

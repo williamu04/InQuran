@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:inquran/components/top_bar_utils.dart';
 import 'package:inquran/models/prayer.dart';
 import 'package:inquran/state/prayer_time.dart';
 import 'package:inquran/viewmodel/prayer_time.dart';
@@ -14,41 +16,86 @@ class PrayerTimeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<PrayerTimeViewModel>();
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("Waktu Salat")),
-      body: switch (vm.state) {
-        PrayerTimeLoading() => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        PrayerTimeError() => const Center(child: Text("Gagal memuat data")),
-        PrayerTimeSuccess(
-          :final prayerTime,
-          :final currentLocation,
-          :final selectedDate,
-        ) => Padding(
-          padding: const EdgeInsets.all(32),
+    return Semantics(
+      namesRoute: true,
+      label: 'Waktu Salat',
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           child: Column(
             children: [
-              Text(
-                currentLocation,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black54,
-                ),
+              const PrayerTimeAppBar(),
+              Expanded(
+                child: switch (vm.state) {
+                  PrayerTimeLoading() => Semantics(
+                    liveRegion: true,
+                    label: 'Memuat jadwal salat',
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  PrayerTimeError() => Semantics(
+                    liveRegion: true,
+                    child: Center(
+                      child: Text("Gagal memuat data"),
+                    ),
+                  ),
+                  PrayerTimeSuccess(
+                    :final prayerTime,
+                    :final currentLocation,
+                    :final selectedDate,
+                  ) =>
+                    Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Column(
+                        children: [
+                          Semantics(
+                            label: 'Lokasi saat ini, $currentLocation',
+                            excludeSemantics: true,
+                            child: Text(
+                              currentLocation,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          PrayerHeader(
+                            date: selectedDate,
+                            onPrev: () => vm.changeDate(-1),
+                            onNext: () => vm.changeDate(1),
+                          ),
+                          const SizedBox(height: 10),
+                          Expanded(child: PrayerList(prayerTime: prayerTime)),
+                        ],
+                      ),
+                    ),
+                },
               ),
-              const SizedBox(height: 20),
-              PrayerHeader(
-                date: selectedDate,
-                onPrev: () => vm.changeDate(-1),
-                onNext: () => vm.changeDate(1),
-              ),
-              const SizedBox(height: 20),
-              Expanded(child: PrayerList(prayerTime: prayerTime)),
             ],
           ),
         ),
-      },
+      ),
+    );
+  }
+}
+
+class PrayerTimeAppBar extends StatelessWidget {
+  const PrayerTimeAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TopBarUtility.buildPurpleTitleTopbar(
+      leftIcon: TopBarIconModel(
+        icon: LucideIcons.arrowLeft,
+        onPressed: () => context.pop(),
+        color: Colors.grey,
+        semanticLabel: 'Kembali',
+      ),
+      context: context,
+      title: "Waktu Salat",
     );
   }
 }
@@ -121,8 +168,8 @@ class PrayerCard extends StatelessWidget {
           title: Text(
             title,
             style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
               color: AppColors.background,
             ),
           ),
@@ -145,7 +192,7 @@ class PrayerCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Semantics(
                 button: true,
                 label: "Atur alarm untuk salat $title",
@@ -202,45 +249,52 @@ class PrayerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dayLabel = _getDayLabel();
+    final fullDate = DateFormat('d MMMM yyyy').format(date);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          tooltip: "Hari sebelumnya",
-          icon: const Icon(
-            LucideIcons.chevronLeft,
-            size: 48,
-            color: AppColors.textSecondary,
+    return Semantics(
+      label: 'Jadwal salat untuk $dayLabel, $fullDate',
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            tooltip: "Hari sebelumnya",
+            icon: const Icon(
+              LucideIcons.chevronLeft,
+              size: 48,
+              color: AppColors.textSecondary,
+            ),
+            onPressed: onPrev,
           ),
-          onPressed: onPrev,
-        ),
-        Column(
-          children: [
-            Text(
-              dayLabel,
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w900,
-                color: AppColors.primary,
+          Column(
+            children: [
+              Text(
+                dayLabel,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
               ),
-            ),
-            Text(
-              DateFormat('d MMMM yyyy').format(date),
-              style: const TextStyle(fontSize: 16, color: AppColors.primaryLight),
-            ),
-          ],
-        ),
-        IconButton(
-          tooltip: "Hari berikutnya",
-          icon: const Icon(
-            LucideIcons.chevronRight,
-            size: 48,
-            color: AppColors.textSecondary,
+              Text(
+                fullDate,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.primaryLight,
+                ),
+              ),
+            ],
           ),
-          onPressed: onNext,
-        ),
-      ],
+          IconButton(
+            tooltip: "Hari berikutnya",
+            icon: const Icon(
+              LucideIcons.chevronRight,
+              size: 48,
+              color: AppColors.textSecondary,
+            ),
+            onPressed: onNext,
+          ),
+        ],
+      ),
     );
   }
 }

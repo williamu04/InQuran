@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:inquran/common/announcement.dart';
 import 'package:inquran/dto/surah.dart';
 import 'package:inquran/repositories/ayah.dart';
 import 'package:inquran/services/audio_player.dart';
 import 'package:inquran/state/surah.dart';
 import 'package:inquran/state/stateful_viewmodel.dart';
+
+void _announcePlayback(String message) {
+  announceToScreenReader(message);
+}
 
 class SurahViewModel extends StatefulViewModel<SurahDetailState> {
   final AyahRepository _ayahRepo;
@@ -40,6 +45,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
           playingIndex: index,
           isPlaying: false,
         );
+        _announcePlayback('Audio dijeda.');
         await _audioPlayer.pause();
       } else {
         _updateSuccess(
@@ -47,12 +53,14 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
           playingIndex: index,
           isPlaying: true,
         );
+        _announcePlayback('Melanjutkan audio.');
         await _audioPlayer.resume();
       }
     } else {
       _updateSuccess(currentState.ayahs, playingIndex: index, isPlaying: true);
       final ayah = currentState.ayahs[index];
       debugPrint('Starting playback of ayah ${ayah.number} at index $index');
+      _announcePlayback('Memutar ayat ${ayah.number}.');
       await _audioPlayer.play(ayah.audioLink);
     }
   }
@@ -72,6 +80,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
     if (currentIndex == null || currentIndex >= currentState.ayahs.length - 1) {
       debugPrint('Reached end of ayahs, stopping playback');
       _updateSuccess(currentState.ayahs, playingIndex: null, isPlaying: false);
+      _announcePlayback('Audio selesai.');
     } else {
       final nextIndex = currentIndex + 1;
       final nextAyah = currentState.ayahs[nextIndex];
@@ -82,6 +91,7 @@ class SurahViewModel extends StatefulViewModel<SurahDetailState> {
         playingIndex: nextIndex,
         isPlaying: true,
       );
+      _announcePlayback('Memutar ayat ${nextAyah.number}.');
       _audioPlayer.play(nextAyah.audioLink);
     }
 

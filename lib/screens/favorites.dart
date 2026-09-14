@@ -15,31 +15,47 @@ class FavoriteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-        child: Column(
-          children: [
-            const FavoriteAppBar(),
-            Expanded(
-              child: Consumer<FavoritesViewModel>(
-                builder: (context, favVm, _) {
-                  return switch (favVm.state) {
-                    FavoritesLoadLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    FavoritesLoadError(:final message) => _Message(
-                      text: "Terjadi kesalahan: $message",
-                    ),
-                    FavoritesLoaded(:final ayahs) =>
-                      ayahs.isEmpty
-                          ? const _Message(text: "Belum ada ayat favorit.")
-                          : FavoriteList(ayahs: ayahs),
-                  };
-                },
+    return Semantics(
+      namesRoute: true,
+      label: 'Ayat Favorit',
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          child: Column(
+            children: [
+              const FavoriteAppBar(),
+              Expanded(
+                child: Consumer<FavoritesViewModel>(
+                  builder: (context, favVm, _) {
+                    return switch (favVm.state) {
+                      FavoritesLoadLoading() => Semantics(
+                        liveRegion: true,
+                        label: 'Memuat ayat favorit',
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      FavoritesLoadError(:final message) => Semantics(
+                        liveRegion: true,
+                        child: _Message(
+                          text: "Terjadi kesalahan: $message",
+                        ),
+                      ),
+                      FavoritesLoaded(:final ayahs) =>
+                        ayahs.isEmpty
+                            ? Semantics(
+                              liveRegion: true,
+                              child: const _Message(
+                                text: "Belum ada ayat favorit.",
+                              ),
+                            )
+                            : FavoriteList(ayahs: ayahs),
+                    };
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -56,6 +72,7 @@ class FavoriteAppBar extends StatelessWidget {
         icon: LucideIcons.arrowLeft,
         onPressed: () => context.pop(),
         color: Colors.grey,
+        semanticLabel: 'Kembali',
       ),
       context: context,
       title: "Ayat Favorit",
@@ -70,7 +87,7 @@ class FavoriteList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 20, bottom: 90, left: 16, right: 16),
+      padding: const EdgeInsets.only(top: 12, bottom: 90, left: 4, right: 4),
       itemCount: ayahs.length,
       itemBuilder: (_, i) => FavoriteCard(ayah: ayahs[i]),
     );
@@ -86,21 +103,23 @@ class FavoriteCard extends StatelessWidget {
     final favVm = context.read<FavoritesViewModel>();
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Teks Arab
-            Text(
-              ayah.ayah.ayahText,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 28,
-                fontFamily: 'Arab Typesetting',
-                color: AppColors.deepPurple,
+            // Teks Arab (dikecualikan dari TalkBack, terjemahan yang dibacakan)
+            ExcludeSemantics(
+              child: Text(
+                ayah.ayah.ayahText,
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontFamily: 'Arab Typesetting',
+                  color: AppColors.deepPurple,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -111,7 +130,7 @@ class FavoriteCard extends StatelessWidget {
             // Terjemahan
             Text(
               ayah.ayah.indoText,
-              style: const TextStyle(fontSize: 10, color: AppColors.deepPurple),
+              style: const TextStyle(fontSize: 12, color: AppColors.deepPurple),
             ),
             const SizedBox(height: 8),
 
@@ -129,14 +148,17 @@ class FavoriteCard extends StatelessWidget {
               children: [
                 _ActionIcon(
                   icon: LucideIcons.play,
+                  semanticLabel: 'Putar ayat ${ayah.ayah.ayahNumber}',
                   onPressed: () => _showComingSoon(context),
                 ),
                 _ActionIcon(
                   icon: LucideIcons.share2,
+                  semanticLabel: 'Bagikan ayat ${ayah.ayah.ayahNumber}',
                   onPressed: () => _showComingSoon(context),
                 ),
                 _ActionIcon(
                   icon: LucideIcons.trash2,
+                  semanticLabel: 'Hapus ayat ${ayah.ayah.ayahNumber} dari favorit',
                   onPressed: () async {
                     final favorite = FavoriteDto(
                       ayah.surah.id,
@@ -164,13 +186,19 @@ class FavoriteCard extends StatelessWidget {
 
 class _ActionIcon extends StatelessWidget {
   final IconData icon;
+  final String semanticLabel;
   final VoidCallback onPressed;
-  const _ActionIcon({required this.icon, required this.onPressed});
+  const _ActionIcon({
+    required this.icon,
+    required this.semanticLabel,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
+      tooltip: semanticLabel,
       icon: Icon(icon, color: AppColors.deepPurple),
     );
   }

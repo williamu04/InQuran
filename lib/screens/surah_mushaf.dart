@@ -27,42 +27,57 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SurahViewModel>(
-      builder: (context, vm, child) {
-        final state = vm.state;
+    return Semantics(
+      namesRoute: true,
+      label: "Mode Mushaf",
+      child: Consumer<SurahViewModel>(
+        builder: (context, vm, child) {
+          final state = vm.state;
 
-        switch (state) {
-          case SurahLoading():
-            return Center(child: CircularProgressIndicator());
-          case SurahSuccess(:var ayahs):
-            return Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    child: _buildHeader(ayahs.last),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: _buildMushaf(context, ayahs.last.page),
+          switch (state) {
+            case SurahLoading():
+              return Semantics(
+                liveRegion: true,
+                label: 'Memuat halaman mushaf',
+                child: Center(child: CircularProgressIndicator()),
+              );
+            case SurahSuccess(:var ayahs):
+              return Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      child: _buildHeader(ayahs.last),
                     ),
-                  ),
-                  _buildNavigationWidget(context, ayahs.last),
-                ],
-              ),
-            );
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: _buildMushaf(context, ayahs.last.page, ayahs),
+                      ),
+                    ),
+                    _buildNavigationWidget(context, ayahs.last),
+                  ],
+                ),
+              );
 
-          case SurahError(:var message):
-            return Center(child: Text("Terjadi kesalahan: $message"));
-        }
-      },
+            case SurahError(:var message):
+              return Semantics(
+                liveRegion: true,
+                child: Center(child: Text("Terjadi kesalahan: $message")),
+              );
+          }
+        },
+      ),
     );
   }
 
   Widget _buildHeader(AyahWithSurahDto s) {
-    return roundedCard(
+    return Semantics(
+      label:
+          'Juz ${s.juzNumber}, halaman ${s.page}, surah ${s.nameLatin}, ${s.nameIndo}',
+      excludeSemantics: true,
+      child: roundedCard(
       allRounded: true,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -92,7 +107,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w100,
-                        fontSize: 10,
+                        fontSize: 12,
                       ),
                     ),
                     Text(
@@ -100,7 +115,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
-                        fontSize: 10,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -124,12 +139,12 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
-                        fontSize: 10,
+                        fontSize: 12,
                       ),
                     ),
                     Text(
                       s.nameIndo,
-                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ],
                 ),
@@ -146,45 +161,56 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
-  Widget _buildMushaf(BuildContext context, int page) {
+  Widget _buildMushaf(BuildContext context, int page, List<AyahWithSurahDto> ayahs) {
     final pageStr = page.toString().padLeft(3, '0');
     final imageUrl =
         "https://media.halonopal.space/static/mushaf/page/$pageStr.png";
+    final surahNames =
+        ayahs.map((a) => a.nameLatin).toSet().toList().join(', ');
 
     return Center(
-      child: CachedNetworkImage(
-        key: ValueKey('mushaf_${page}_$_retryCount'), // Unique key for retry
-        imageUrl: imageUrl,
-        fit: BoxFit.contain,
-        placeholder: (context, url) => const CircularProgressIndicator(),
-        errorWidget: (context, error, stackTrace) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text("Gagal memuat data"),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.purple),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+      child: Semantics(
+        image: true,
+        label:
+            'Halaman mushaf $page, berisi surah: $surahNames',
+        child: CachedNetworkImage(
+          key: ValueKey('mushaf_${page}_$_retryCount'), // Unique key for retry
+          imageUrl: imageUrl,
+          fit: BoxFit.contain,
+          placeholder: (context, url) => const CircularProgressIndicator(),
+          errorWidget: (context, error, stackTrace) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Semantics(
+                  liveRegion: true,
+                  child: Text("Gagal memuat data"),
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.purple),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  onPressed: _retryLoadImage,
+                  child: const Text(
+                    "Muat ulang",
+                    style: TextStyle(color: Colors.purple),
+                  ),
                 ),
-                onPressed: _retryLoadImage,
-                child: const Text(
-                  "Retry",
-                  style: TextStyle(color: Colors.purple),
-                ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -205,7 +231,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
                   size: 36,
                 ),
                 label: Text(
-                  'Next Page',
+                  'Halaman berikutnya',
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
@@ -218,7 +244,7 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
                   size: 36,
                 ),
                 label: const Text(
-                  'Previous Page',
+                  'Halaman sebelumnya',
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
                 style: TextButton.styleFrom(foregroundColor: Colors.purple),
@@ -238,17 +264,21 @@ class _MushafSurahScreenState extends State<MushafSurahScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _navButton(
-                    'Next Juz',
-                    () => onNextJuz(context, ayah.surahNumber),
+                    'Juz berikutnya',
+                    // Perbaikan bug: sebelumnya mengirim surahNumber, bukan juzNumber
+                    () => onNextJuz(context, ayah.juzNumber),
                   ),
-                  _navButton('Next Surah', () => onNextSurah(context, ayah)),
                   _navButton(
-                    'Previous Surah',
+                    'Surah berikutnya',
+                    () => onNextSurah(context, ayah),
+                  ),
+                  _navButton(
+                    'Surah sebelumnya',
                     () => onPreviousSurah(context, ayah),
                   ),
                   _navButton(
-                    'Previous Juz',
-                    () => onPreviousJuz(context, ayah.surahNumber),
+                    'Juz sebelumnya',
+                    () => onPreviousJuz(context, ayah.juzNumber),
                   ),
                 ],
               ),

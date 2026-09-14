@@ -7,6 +7,17 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:inquran/common/app_color.dart';
 
+String _semanticLabelForState(SttState state) {
+  return switch (state) {
+    SttIdle() => 'Tombol mikrofon. Ketuk untuk mulai berbicara.',
+    SttListening() => 'Tombol mikrofon. Sedang mendengarkan perintah. Ketuk untuk berhenti.',
+    SttProcessing() => 'Tombol mikrofon. Memproses perintah.',
+    SttRetry() => 'Tombol mikrofon. Perintah tidak dikenali, mendengarkan ulang.',
+    SttSuccess() => 'Tombol mikrofon. Perintah ditemukan.',
+    SttNetworkError() => 'Tombol mikrofon. Tidak ada koneksi internet. Ketuk untuk mencoba lagi.',
+  };
+}
+
 class MicButton extends StatelessWidget {
   final double size;
 
@@ -25,28 +36,32 @@ class MicButton extends StatelessWidget {
           SttNetworkError() => false,
         };
 
-        return GestureDetector(
-          onTap: () => handleMicPressed(context, vm),
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade300, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 25,
-                  spreadRadius: 4,
+        return Semantics(
+          button: true,
+          label: _semanticLabelForState(vm.state),
+          child: GestureDetector(
+            onTap: () => handleMicPressed(context, vm),
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade300, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 25,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  isListening ? LucideIcons.audioLines : LucideIcons.power,
+                  color: AppColors.primary,
+                  size: size * 0.675,
                 ),
-              ],
-            ),
-            child: Center(
-              child: Icon(
-                isListening ? LucideIcons.audioLines : LucideIcons.power,
-                color: AppColors.primary,
-                size: size * 0.675,
               ),
             ),
           ),

@@ -298,4 +298,90 @@ class AyahDao extends DatabaseAccessor<AppDatabase> with _$AyahDaoMixin {
 
     return results;
   }
+
+  Future<List<AyahWithSurah>> searchAyahsByPhrase(
+    String phrase, {
+    int limit = 100,
+  }) async {
+    final query =
+        select(surah).join([innerJoin(ayah, ayah.surahId.equalsExp(surah.id))])
+          ..where(ayah.indoText.like('%$phrase%', escapeChar: '\\'))
+          ..orderBy([
+            OrderingTerm(expression: surah.id),
+            OrderingTerm(expression: ayah.ayahNumber),
+          ])
+          ..limit(limit);
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      return AyahWithSurah(
+        surah: row.readTable(surah),
+        ayah: row.readTable(ayah),
+      );
+    }).toList();
+  }
+
+  Future<List<AyahWithSurah>> searchAyahsByAllTokens(
+    List<String> tokens, {
+    int limit = 100,
+  }) async {
+    if (tokens.isEmpty) return [];
+
+    Expression<bool> condition = ayah.indoText.like(
+      '%${tokens.first}%',
+      escapeChar: '\\',
+    );
+    for (final token in tokens.skip(1)) {
+      condition = condition & ayah.indoText.like('%$token%', escapeChar: '\\');
+    }
+
+    final query =
+        select(surah).join([innerJoin(ayah, ayah.surahId.equalsExp(surah.id))])
+          ..where(condition)
+          ..orderBy([
+            OrderingTerm(expression: surah.id),
+            OrderingTerm(expression: ayah.ayahNumber),
+          ])
+          ..limit(limit);
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      return AyahWithSurah(
+        surah: row.readTable(surah),
+        ayah: row.readTable(ayah),
+      );
+    }).toList();
+  }
+
+  Future<int> countAyahsByPhrase(String phrase) {
+    return _countAyahsWhere(
+      ayah.indoText.like('%$phrase%', escapeChar: '\\'),
+    );
+  }
+
+  Future<int> countAyahsByAllTokens(List<String> tokens) {
+    if (tokens.isEmpty) return Future.value(0);
+
+    Expression<bool> condition = ayah.indoText.like(
+      '%${tokens.first}%',
+      escapeChar: '\\',
+    );
+    for (final token in tokens.skip(1)) {
+      condition = condition & ayah.indoText.like('%$token%', escapeChar: '\\');
+    }
+
+    return _countAyahsWhere(condition);
+  }
+
+  Future<int> _countAyahsWhere(Expression<bool> where) async {
+    final countExpr = ayah.id.count();
+    final row = await (selectOnly(ayah)
+          ..addColumns([countExpr])
+          ..where(where))
+        .getSingle();
+
+    return row.read(countExpr) ?? 0;
+  }
 }

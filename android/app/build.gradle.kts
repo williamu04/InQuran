@@ -16,7 +16,8 @@ kotlin {
 
 android {
     namespace = "com.mtqmn.inquran"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android compiles against SDK 37 (Flutter default is 36).
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

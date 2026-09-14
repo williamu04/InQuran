@@ -36,32 +36,45 @@ final List<IconData> doaCategoryIcons = [
 class _DoaListScreenState extends State<DoaListScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        roundedCard(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-          child: TopBarUtility.buildDefaultTopBar(
-            context: context,
-            title: "Koleksi Doa-Doa",
+    return Semantics(
+      namesRoute: true,
+      label: 'Koleksi Doa-Doa',
+      child: Column(
+        children: [
+          roundedCard(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            child: TopBarUtility.buildDefaultTopBar(
+              context: context,
+              title: "Koleksi Doa-Doa",
+            ),
           ),
-        ),
         Expanded(
           child: Consumer<DoaListViewModel>(
             builder: (context, vm, _) {
               return switch (vm.state) {
-                DoaListLoading() => const Center(
-                  child: CircularProgressIndicator(),
+                DoaListLoading() => Semantics(
+                  liveRegion: true,
+                  label: 'Memuat koleksi doa',
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-                DoaListError(:final message) => Center(
-                  child: Text('Terjadi kesalahan: $message'),
+                DoaListError(:final message) => Semantics(
+                  liveRegion: true,
+                  child: Center(
+                    child: Text('Terjadi kesalahan: $message'),
+                  ),
                 ),
-                DoaListEmpty() => const Center(child: Text('Belum ada doa.')),
+                DoaListEmpty() => Semantics(
+                  liveRegion: true,
+                  child: Center(child: Text('Belum ada doa.')),
+                ),
                 DoaListSuccess(:final categories) => GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 100),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
                     childAspectRatio: 2,
                   ),
                   itemCount: categories.length,
@@ -70,7 +83,8 @@ class _DoaListScreenState extends State<DoaListScreen> {
                       category: categories[index],
                       index: index,
                       onTap:
-                          () => navigateToDoaCategory(context, categories[index]),
+                          () =>
+                              navigateToDoaCategory(context, categories[index]),
                     );
                   },
                 ),
@@ -79,6 +93,7 @@ class _DoaListScreenState extends State<DoaListScreen> {
           ),
         ),
       ],
+      ),
     );
   }
 }
@@ -98,9 +113,7 @@ class DoaCategoryCard extends StatelessWidget {
 
   Color _getBackgroundColor(int index) {
     final rowIndex = index ~/ 2;
-    return rowIndex % 2 == 0
-        ? AppColors.primary
-        : AppColors.deepPurple;
+    return rowIndex % 2 == 0 ? AppColors.primary : AppColors.deepPurple;
   }
 
   IconData _getIcon(int index) {
@@ -141,7 +154,7 @@ class DoaCategoryCard extends StatelessWidget {
                       // ⛔ teks dekoratif tidak dibaca TalkBack
                       child: Text(
                         "Doa tentang",
-                        style: TextStyle(color: Colors.white70, fontSize: 10),
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 4),

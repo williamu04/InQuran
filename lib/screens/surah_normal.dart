@@ -79,7 +79,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
         vm.prependByJuz();
         break;
     }
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _resetPullAnimation();
     });
@@ -97,7 +97,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
         vm.appendByJuz();
         break;
     }
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _resetPullAnimation();
     });
@@ -143,23 +143,18 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
 
     return false;
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         buildMainScreen(context),
         ErrorPopUpModal(
-          title: "Terjadi Kesalahan", 
-          defaultSubtitle: "Terjadi Kesalahan Tidak Terduga", 
-          buttonList: [
-            ButtonModalModel(
-              text: "Ok",
-              onButtonPressed: () {},
-            ),
-          ],
-          controller: errorController
-          )
-
+          title: "Terjadi Kesalahan",
+          defaultSubtitle: "Terjadi Kesalahan Tidak Terduga",
+          buttonList: [ButtonModalModel(text: "Ok", onButtonPressed: () {})],
+          controller: errorController,
+        ),
       ],
     );
   }
@@ -171,9 +166,16 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
 
         switch (state) {
           case SurahLoading():
-            return const Center(child: CircularProgressIndicator());
+            return Semantics(
+              liveRegion: true,
+              label: 'Memuat ayat',
+              child: const Center(child: CircularProgressIndicator()),
+            );
           case SurahError(:var message):
-            return Center(child: Text("Terjadi kesalahan: $message"));
+            return Semantics(
+              liveRegion: true,
+              child: Center(child: Text("Terjadi kesalahan: $message")),
+            );
           case SurahSuccess(:var ayahs, :var warning, :var jumpIndex):
             if (!_hasShownPopup && warning != null) {
               _hasShownPopup = true;
@@ -193,12 +195,16 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                 initialAlignment: _isTopLoading || _isBottomLoading ? 0.05 : 0,
                 itemBuilder: (context, index) {
                   if (_isBottomLoading && index == ayahs.length) {
-                    return Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation(AppColors.primary),
+                    return Semantics(
+                      liveRegion: true,
+                      label: 'Memuat ayat berikutnya',
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            valueColor: AlwaysStoppedAnimation(AppColors.primary),
+                          ),
                         ),
                       ),
                     );
@@ -208,7 +214,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     ayah,
                     padding:
                         index == ayahs.length - 1
-                            ? EdgeInsets.only(bottom: 120)
+                            ? EdgeInsets.only(bottom: 24)
                             : null,
                   );
                 },
@@ -222,7 +228,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   Widget _buildAyahCard(AyahWithSurahDto ayah, {EdgeInsets? padding}) {
     Widget ayahCardContent = Card(
       elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       child: Padding(
         padding: const EdgeInsets.all(0),
         child: Column(
@@ -230,7 +236,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(16),
@@ -245,30 +251,34 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                       shape: BoxShape.circle,
                     ),
                     child: Center(
-                      child: Text(
-                        '${ayah.number}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                      child: ExcludeSemantics(
+                        child: Text(
+                          '${ayah.number}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(width: 10),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: AppColors.primaryLight,
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Juz ${ayah.juzNumber}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                  ExcludeSemantics(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: AppColors.primaryLight,
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Juz ${ayah.juzNumber}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -285,6 +295,10 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                           currentState.playingIndex == ayah.number - 1 &&
                           currentState.isPlaying;
                       return _buildActionButton(
+                        semanticLabel:
+                            isCurrentAyahPlaying
+                                ? 'Jeda ayat ${ayah.number}'
+                                : 'Putar ayat ${ayah.number}',
                         icon:
                             isCurrentAyahPlaying
                                 ? Icon(
@@ -304,6 +318,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                     },
                   ),
                   _buildActionButton(
+                    semanticLabel: 'Bagikan ayat ${ayah.number}',
                     icon: Icon(
                       LucideIcons.share2,
                       size: 20,
@@ -324,6 +339,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                         case FavoritesLoadLoading():
                         case FavoritesLoadError():
                           return _buildActionButton(
+                            semanticLabel: 'Tandai ayat ${ayah.number} sebagai favorit',
                             icon: const Icon(
                               LucideIcons.heart,
                               size: 20,
@@ -331,27 +347,37 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                             ),
                             onPressed: () {
                               if (state is FavoritesLoadError) {
-                                errorController.open('Terjadi kesalahan: ${state.message}');
+                                errorController.open(
+                                  'Terjadi kesalahan: ${state.message}',
+                                );
                               }
                             },
                           );
 
                         case FavoritesLoaded(:final favorites):
-                          final isFav = favorites.any((f) =>
-                              f.surahNumber == ayah.surahNumber && f.ayahNumber == ayah.number);
+                          final isFav = favorites.any(
+                            (f) =>
+                                f.surahNumber == ayah.surahNumber &&
+                                f.ayahNumber == ayah.number,
+                          );
 
                           return _buildActionButton(
-                            icon: isFav
-                                ? Image.asset(
-                                    'assets/img/heart.png',
-                                    height: 18,
-                                    fit: BoxFit.contain,
-                                  )
-                                : const Icon(
-                                    LucideIcons.heart,
-                                    size: 20,
-                                    color: AppColors.primary,
-                                  ),
+                            semanticLabel:
+                                isFav
+                                    ? 'Hapus ayat ${ayah.number} dari favorit'
+                                    : 'Tandai ayat ${ayah.number} sebagai favorit',
+                            icon:
+                                isFav
+                                    ? Image.asset(
+                                      'assets/img/heart.png',
+                                      height: 18,
+                                      fit: BoxFit.contain,
+                                    )
+                                    : const Icon(
+                                      LucideIcons.heart,
+                                      size: 20,
+                                      color: AppColors.primary,
+                                    ),
                             onPressed: () async {
                               final favorite = FavoriteDto(
                                 ayah.surahNumber,
@@ -359,7 +385,9 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                               );
 
                               if (isFav) {
-                                final res = await favVm.deleteFavorite(favorite);
+                                final res = await favVm.deleteFavorite(
+                                  favorite,
+                                );
                                 switch (res) {
                                   case Success():
                                     break;
@@ -379,7 +407,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
                           );
                       }
                     },
-                  )
+                  ),
                 ],
               ),
             ),
@@ -401,7 +429,7 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             child: SurahHeaderCard(
               name: ayah.surahName,
               nameLatin: ayah.nameLatin,
@@ -422,22 +450,30 @@ class _NormalSurahScreenState extends State<NormalSurahScreen>
   }
 
   Widget _buildActionButton({
+    required String semanticLabel,
     required Widget icon,
     required VoidCallback onPressed,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(left: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: onPressed,
-          child: Container(padding: const EdgeInsets.all(8), child: icon),
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      excludeSemantics: true,
+      child: Container(
+        margin: const EdgeInsets.only(left: 4),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: onPressed,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: icon,
+            ),
+          ),
         ),
       ),
     );
   }
-  
 }
 
 // ignore: must_be_immutable
@@ -469,47 +505,57 @@ class _AyahCardState extends State<AyahCard> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: widget.isMemorizeMode ? _toggleArabic : () => {},
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Visibility(
-              visible: widget.showArabic,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  widget.arabText,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.deepPurple,
-                    fontFamily: 'Arab Typesetting',
-                    height: 1.8,
+    return Semantics(
+      button: widget.isMemorizeMode,
+      label: widget.isMemorizeMode
+          ? (widget.showArabic
+              ? 'Sembunyikan teks Arab ayat'
+              : 'Tampilkan teks Arab ayat')
+          : null,
+      child: InkWell(
+        onTap: widget.isMemorizeMode ? _toggleArabic : () => {},
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Visibility(
+                visible: widget.showArabic,
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ExcludeSemantics(
+                    child: Text(
+                      widget.arabText,
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.deepPurple,
+                        fontFamily: 'Arab Typesetting',
+                        height: 1.8,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 8),
 
-            Text(
-              widget.translationText,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.deepPurple,
-                height: 1.6,
-                letterSpacing: 0.2,
+              Text(
+                widget.translationText,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.deepPurple,
+                  height: 1.6,
+                  letterSpacing: 0.2,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -532,82 +578,91 @@ class SurahHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // padding: const EdgeInsets.only(top: 80, left: 40, right: 40, bottom: 20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primaryLight, AppColors.darkestPurple],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return Semantics(
+      header: true,
+      label: 'Surah $nameLatin, $nameIndo',
+      excludeSemantics: true,
+      child: Container(
+        // padding: const EdgeInsets.only(top: 80, left: 40, right: 40, bottom: 20),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.primaryLight, AppColors.darkestPurple],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(24)),
         ),
-        borderRadius: BorderRadius.all(Radius.circular(24)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(36),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Top Row: Latin Name & Arabic Name
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Kolom: Latin + Indo
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        nameLatin,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Top Row: Latin Name & Arabic Name
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Kolom: Latin + Indo
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          nameLatin,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      // const SizedBox(height: 4),
-                      Text(
-                        nameIndo,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Colors.white,
+                        // const SizedBox(height: 4),
+                        Text(
+                          nameIndo,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
-                // Nama Arab
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    name,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                      fontFamily: 'Al Jazeera',
+                  // Nama Arab
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      name,
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontFamily: 'Al Jazeera',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+              const Divider(thickness: 0.5, color: AppColors.primaryLight),
+              const SizedBox(height: 16),
+
+              // Basmallah
+              if (showBasmallah)
+                Center(
+                  child: Semantics(
+                    image: true,
+                    label: 'Bismillahirrahmanirrahim',
+                    child: Image.asset(
+                      'assets/img/basmala.png',
+                      height: 64, // sesuaikan ukuran
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-            const Divider(thickness: 0.5, color: AppColors.primaryLight),
-            const SizedBox(height: 16),
-
-            // Basmallah
-            if (showBasmallah)
-              Center(
-                child: Image.asset(
-                  'assets/img/basmala.png',
-                  height: 64, // sesuaikan ukuran
-                  fit: BoxFit.contain,
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

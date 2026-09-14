@@ -9,13 +9,17 @@ class ButtonModalModel {
   final Color textColor;
   final VoidCallback onButtonPressed;
   final String text;
+  final String? semanticLabel;
 
   ButtonModalModel({
     required this.text,
     required this.onButtonPressed,
     this.buttonColor = AppColors.primary,
     this.textColor = Colors.white,
+    this.semanticLabel,
   });
+
+  String get accessibilityLabel => semanticLabel ?? text;
 }
 
 class PopUpModal extends StatelessWidget {
@@ -55,75 +59,83 @@ class PopUpModal extends StatelessWidget {
             controller.close();
           }
 
-          return GestureDetector(
-            onTap: backdropClickable ? closeModal : null,
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.4),
-              child: Center(
-                child: GestureDetector(
-                  onTap: () {},
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: 400,
-                      maxHeight: MediaQuery.of(context).size.height * 0.8,
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 24),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.black, width: 1.5),
+          return Semantics(
+            namesRoute: true,
+            label: title,
+            child: GestureDetector(
+              onTap: backdropClickable ? closeModal : null,
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.4),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 400,
+                        maxHeight: MediaQuery.of(context).size.height * 0.8,
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    decoration: TextDecoration.none,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.black, width: 1.5),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Semantics(
+                                    header: true,
+                                    child: Text(
+                                      title,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        decoration: TextDecoration.none,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              if (!closeOnlyOnButtonPress)
-                                IconButton(
-                                  icon: const Icon(LucideIcons.x, color: Colors.black),
-                                  onPressed: closeModal, 
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
+                                if (!closeOnlyOnButtonPress)
+                                  IconButton(
+                                    icon: const Icon(LucideIcons.x, color: Colors.black),
+                                    onPressed: closeModal,
+                                    tooltip: 'Tutup',
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8, right: 14),
+                              child: Text(
+                                subtitle,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w300,
+                                  decoration: TextDecoration.none,
                                 ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, right: 14),
-                            child: Text(
-                              subtitle,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w300,
-                                decoration: TextDecoration.none,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 30),
-                          if (customContentSubtitle != null) ...[
-                            customContentSubtitle!,
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 30),
+                            if (customContentSubtitle != null) ...[
+                              customContentSubtitle!,
+                              const SizedBox(height: 20),
+                            ],
+                            Column(
+                              children: buttonList.map((button) => modalButton(context, button, closeModal)).toList(),
+                            )
                           ],
-                          Column(
-                            children: buttonList.map((button) => modalButton(context, button, closeModal)).toList(),
-                          )
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -140,23 +152,27 @@ class PopUpModal extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5),
       width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          model.onButtonPressed();
-          closeModal(); 
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: model.buttonColor,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: Semantics(
+        button: true,
+        label: model.accessibilityLabel,
+        child: ElevatedButton(
+          onPressed: () {
+            model.onButtonPressed();
+            closeModal();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: model.buttonColor,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-        ),
-        child: Text(
-          model.text,
-          style: TextStyle(
-            color: model.textColor,
-            fontWeight: FontWeight.bold,
+          child: Text(
+            model.text,
+            style: TextStyle(
+              color: model.textColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

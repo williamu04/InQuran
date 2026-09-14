@@ -27,24 +27,31 @@ class _SearchBoxState extends State<SearchBox> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              onChanged: (value) {
-                if (_debounce?.isActive ?? false) _debounce!.cancel();
-                _debounce = Timer(const Duration(milliseconds: 300), () {
-                  viewModel.updateSearchQuery(value);
-                });
-              },
-              decoration: InputDecoration(
-                hintText: "Cari nama Surah, Juz, atau Ayat",
-                hintStyle: TextStyle(
-                  fontSize: 12,
-                  color: Color.fromRGBO(0, 0, 0, 0.3),
+            child: Semantics(
+              label: 'Kotak pencarian',
+              hint: 'Cari nama Surah, Juz, atau Ayat',
+              textField: true,
+              child: TextField(
+                onChanged: (value) {
+                  if (_debounce?.isActive ?? false) _debounce!.cancel();
+                  _debounce = Timer(const Duration(milliseconds: 300), () {
+                    viewModel.updateSearchQuery(value);
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: "Cari nama Surah, Juz, atau Ayat",
+                  hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: Color.fromRGBO(0, 0, 0, 0.3),
+                  ),
+                  border: InputBorder.none,
                 ),
-                border: InputBorder.none,
               ),
             ),
           ),
-          Icon(Icons.search, color: Colors.grey[600]),
+          ExcludeSemantics(
+            child: Icon(Icons.search, color: Colors.grey[600]),
+          ),
         ],
       ),
     );

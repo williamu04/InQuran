@@ -67,41 +67,48 @@ class _GenericDrawerState<T extends ToggleableUiController>
   }
 
   Widget _buildDrawerContent(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: Column(
-        children: [
-          // Header
-          roundedCard(
-            padding: const EdgeInsets.only(
-              top: 70,
-              bottom: 25,
-              left: 40,
-              right: 20,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    color: Colors.white,
-                    fontFamily: 'Plus Jakarta',
-                    fontWeight: FontWeight.w900,
+    return Semantics(
+      namesRoute: true,
+      label: widget.title,
+      child: Material(
+        color: Colors.white,
+        child: Column(
+          children: [
+            // Header
+            roundedCard(
+              padding: const EdgeInsets.only(
+                top: 16,
+                bottom: 16,
+                left: 24,
+                right: 12,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        color: Colors.white,
+                        fontFamily: 'Plus Jakarta',
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(
-                    LucideIcons.x,
-                    size: 30,
-                    color: AppColors.primary,
+                  IconButton(
+                    icon: const Icon(
+                      LucideIcons.x,
+                      size: 30,
+                      color: AppColors.primary,
+                    ),
+                    tooltip: 'Tutup',
+                    onPressed: () => _closeDrawer(),
                   ),
-                  onPressed: () => _closeDrawer(),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
@@ -113,8 +120,8 @@ class _GenericDrawerState<T extends ToggleableUiController>
                 final button = buttonList[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 14,
+                    horizontal: 16,
+                    vertical: 8,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,6 +146,7 @@ class _GenericDrawerState<T extends ToggleableUiController>
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -233,10 +241,11 @@ class _GenericDrawerState<T extends ToggleableUiController>
                 return _controller.value > 0
                     ? GestureDetector(
                       onTap: () => _closeDrawer(),
-                      child: Container(
-                        // color: Colors.black.withOpacity(0.5 * _controller.value),
-                        color: Colors.black.withValues(
-                          alpha: 0.5 * _controller.value,
+                      child: ExcludeSemantics(
+                        child: Container(
+                          color: Colors.black.withValues(
+                            alpha: 0.5 * _controller.value,
+                          ),
                         ),
                       ),
                     )

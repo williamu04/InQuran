@@ -34,7 +34,11 @@ class LocationHelper {
   // fungsi konversi koordinat ke nama lokasi
   static Future<String> getPlaceName(double lat, double lon) async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lon);
+      final geocoding = Geocoding();
+      List<Placemark> placemarks = await geocoding.placemarkFromCoordinates(
+        lat,
+        lon,
+      );
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         // bisa pilih detail apa yang mau ditampilkan

@@ -30,7 +30,7 @@ Widget roundedCard({
           ],
     ),
     child: Container(
-      padding: padding ?? const EdgeInsets.only(bottom: 20),
+      padding: padding ?? const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         gradient:
             gradient ??

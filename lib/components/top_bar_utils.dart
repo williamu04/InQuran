@@ -9,7 +9,13 @@ class TopBarIconModel {
   IconData icon;
   VoidCallback onPressed;
   Color color;
-  TopBarIconModel({required this.icon, required this.onPressed, this.color = Colors.white});
+  String semanticLabel;
+  TopBarIconModel({
+    required this.icon,
+    required this.onPressed,
+    this.color = Colors.white,
+    required this.semanticLabel,
+  });
 }
 
 class TopBarUtility {
@@ -17,6 +23,7 @@ class TopBarUtility {
     return IconButton(
       icon: Icon(topBarModel.icon, color: topBarModel.color),
       onPressed: topBarModel.onPressed,
+      tooltip: topBarModel.semanticLabel,
     );
   }
 
@@ -71,11 +78,21 @@ class TopBarUtility {
 
 
   static TopBarIconModel menuIcon({required BuildContext context, Color? buttonColor}) {
-    return TopBarIconModel(icon: LucideIcons.alignLeft, onPressed: () => openMenuDrawer(context), color: buttonColor ?? Colors.white);
+    return TopBarIconModel(
+      icon: LucideIcons.alignLeft,
+      onPressed: () => openMenuDrawer(context),
+      color: buttonColor ?? Colors.white,
+      semanticLabel: 'Buka menu',
+    );
   }
 
   static TopBarIconModel settingIcon({required BuildContext context, Color? buttonColor}) {
-    return TopBarIconModel(icon: LucideIcons.settings, onPressed: () => openSettingDrawer(context), color: buttonColor ?? Colors.white);
+    return TopBarIconModel(
+      icon: LucideIcons.settings,
+      onPressed: () => openSettingDrawer(context),
+      color: buttonColor ?? Colors.white,
+      semanticLabel: 'Buka pengaturan',
+    );
   }
 }
   

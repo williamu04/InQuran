@@ -10,6 +10,7 @@ import 'package:inquran/components/drawer_setting.dart';
 import 'package:inquran/components/mic_button.dart';
 import 'package:inquran/components/popup_modal.dart';
 import 'package:inquran/components/transcription_text.dart';
+import 'package:inquran/components/voice_command_help.dart';
 import 'package:inquran/config/global.dart';
 import 'package:inquran/data/local/dao/ayah_dao.dart';
 import 'package:inquran/data/local/dao/doa_dao.dart';
@@ -19,11 +20,13 @@ import 'package:inquran/data/local/db/app_database.dart';
 import 'package:inquran/repositories/ayah.dart';
 import 'package:inquran/repositories/doa.dart';
 import 'package:inquran/repositories/juz.dart';
+import 'package:inquran/repositories/search.dart';
 import 'package:inquran/repositories/stt.dart';
 import 'package:inquran/repositories/surah.dart';
 import 'package:inquran/routes/go_router.dart';
 import 'package:inquran/routes/route.dart';
 import 'package:inquran/routes/route_model.dart';
+import 'package:inquran/services/ayah_search.dart';
 import 'package:inquran/services/prayer.dart';
 import 'package:inquran/services/stt.dart';
 import 'package:inquran/services/surah_filter.dart';
@@ -32,6 +35,7 @@ import 'package:inquran/viewmodel/doa.dart';
 import 'package:inquran/viewmodel/favorites.dart';
 import 'package:inquran/viewmodel/location.dart';
 import 'package:inquran/viewmodel/prayer_time.dart';
+import 'package:inquran/viewmodel/search.dart';
 import 'package:inquran/viewmodel/stt.dart';
 import 'package:inquran/viewmodel/surah.dart';
 import 'package:inquran/viewmodel/surah_list.dart';
@@ -59,6 +63,12 @@ void main() async {
           Provider.value(value: db.ayahDao),
           Provider.value(value: db.doaDao),
 
+          // Services
+          Provider(create: (_) => SttService()),
+          Provider(create: (_) => SurahFilterService()),
+          Provider(create: (_) => AyahSearchService()),
+          Provider(create: (_) => PrayerService()),
+
           // Repositories
           Provider(
             create: (context) => SurahRepository(context.read<SurahDao>()),
@@ -73,14 +83,16 @@ void main() async {
           Provider(
             create: (context) => SttRepository(
               context.read<SurahDao>(),
+              context.read<JuzDao>(),
               context.read<DoaDao>(),
             ),
           ),
-
-          // Services
-          Provider(create: (_) => SttService()),
-          Provider(create: (_) => SurahFilterService()),
-          Provider(create: (_) => PrayerService()),
+          Provider(
+            create: (context) => SearchRepository(
+              context.read<AyahDao>(),
+              context.read<AyahSearchService>(),
+            ),
+          ),
 
           // ViewModels
           ChangeNotifierProvider(
@@ -89,6 +101,13 @@ void main() async {
                   context.read<SurahRepository>(),
                   context.read<SurahFilterService>(),
                   context.read<JuzRepository>(),
+                ),
+          ),
+          ChangeNotifierProvider(
+            create:
+                (context) => SearchViewModel(
+                  context.read<SearchRepository>(),
+                  context.read<AyahSearchService>(),
                 ),
           ),
           ChangeNotifierProvider(
@@ -128,6 +147,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => ExitCofirmationPopUp()),
           ChangeNotifierProvider(create: (_) => PermissionErrorController()),
           ChangeNotifierProvider(create: (_) => AppSettingErrorController()),
+          ChangeNotifierProvider(create: (_) => VoiceCommandHelpController()),
         ],
         child: const MyApp(),
       ),
@@ -313,6 +333,16 @@ class MainScaffold extends StatelessWidget {
                     },
                   ),
                 ],
+              ),
+              PopUpModal(
+                title: "Perintah Suara",
+                subtitle:
+                    "Ucapkan salah satu perintah berikut setelah menekan mikrofon.",
+                controller: context.read<VoiceCommandHelpController>(),
+                buttonList: [
+                  ButtonModalModel(text: "Ok", onButtonPressed: () {}),
+                ],
+                customContentSubtitle: const VoiceCommandHelpContent(),
               ),
             ],
           ),

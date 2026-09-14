@@ -60,7 +60,11 @@ class _QiblaScreenState extends State<QiblaScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Semantics(
+        liveRegion: true,
+        label: 'Memuat pencari kiblat',
+        child: const Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
     }
 
     if (_error != null) {
@@ -70,9 +74,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "Akses lokasi belum diaktifkan.\nSilakan aktifkan lokasi untuk melanjutkan.",
-                  textAlign: TextAlign.center,
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    "Akses lokasi belum diaktifkan.\nSilakan aktifkan lokasi untuk melanjutkan.",
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -87,7 +94,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
           ),
         );
       } else {
-        return Scaffold(body: Center(child: Text("Terjadi kesalahan: $_error")));
+        return Scaffold(
+          body: Semantics(
+            liveRegion: true,
+            child: Center(child: Text("Terjadi kesalahan: $_error")),
+          ),
+        );
       }
     }
 
@@ -98,53 +110,48 @@ class _QiblaScreenState extends State<QiblaScreen> {
     };
 
     return Scaffold(
-      body: Column(
-        children: [
-          roundedCard(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-            child: TopBarUtility.buildDefaultTopBar(
-              context: context,
-              title: "Pencari Kiblat",
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(16),
+      body: Semantics(
+        namesRoute: true,
+        label: 'Pencari Kiblat',
+        child: Column(
+          children: [
+            roundedCard(
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              child: TopBarUtility.buildDefaultTopBar(
+                context: context,
+                title: "Pencari Kiblat",
               ),
-              child: // In _QiblaScreenState build method, update the location container:
-                  Semantics(
-                label: 'Lokasi saat ini',
-                value: placeName,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.location_on, color: Colors.white),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          placeName,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Semantics(
+              label: 'Lokasi saat ini',
+              value: placeName,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on, color: Colors.white),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        placeName,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -217,6 +224,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -320,7 +328,7 @@ class QiblaCaption extends StatelessWidget {
             : "Putar ponsel Anda hingga panah menghadap target untuk menghadap ke arah kiblat";
 
     return Padding(
-      padding: const EdgeInsets.only(top: 24.0, left: 40, right: 40),
+      padding: const EdgeInsets.only(top: 16.0, left: 24, right: 24),
       child: Semantics(
         label: 'Status arah kiblat',
         value: message,

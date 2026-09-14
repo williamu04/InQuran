@@ -73,23 +73,27 @@ class MainHomeScreen extends StatelessWidget {
       ),
     ];
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 85),
-      child: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          children: [
-            Expanded(flex: 1, child: _homeTitle(context)),
-            Expanded(
-              flex: 1,
-              child: _homeMenu(
-                context: context,
-                topItem: topItem,
-                menuItems: menuItems,
+    return Semantics(
+      namesRoute: true,
+      label: 'Beranda',
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 85),
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            children: [
+              Expanded(flex: 1, child: _homeTitle(context)),
+              Expanded(
+                flex: 1,
+                child: _homeMenu(
+                  context: context,
+                  topItem: topItem,
+                  menuItems: menuItems,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -97,7 +101,7 @@ class MainHomeScreen extends StatelessWidget {
 
   Widget _homeTitle(BuildContext context) {
     return roundedCard(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -105,7 +109,7 @@ class MainHomeScreen extends StatelessWidget {
           TopBarUtility.buildDefaultTopBar(context: context, title: "InQuran"),
           const SizedBox(height: 10),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               children: [
                 Row(
@@ -145,57 +149,41 @@ class MainHomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 Container(
                   width: double.infinity,
                   height: 1,
                   color: Colors.white38,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 // Ayat Al Qur'an → tetap dibacakan
                 const Center(
                   child: AutoSizeText(
                     'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا '
                     'الصَّالِحَاتِ سَيَجْعَلُ لَهُمُ الرَّحْمَٰنُ وُدًّا',
                     textAlign: TextAlign.center,
-                    maxFontSize: 22,
-                    minFontSize: 18,
+                    maxFontSize: 20,
+                    minFontSize: 20,
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
                       color: Colors.white,
                       height: 1.4,
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 const Center(
                   child: AutoSizeText(
-                    '“Sesungguhnya bagi orang-orang yang beriman dan beramal saleh, (Allah) Yang Maha Pengasih akan menanamkan rasa cinta (dalam hati) mereka.”',
+                    '“Sesungguhnya bagi orang-orang yang beriman dan beramal saleh, (Allah) Yang Maha Pengasih akan menanamkan rasa cinta (dalam hati) mereka.” [QS. Maryam: 96]',
                     textAlign: TextAlign.center,
-                    maxFontSize: 10,
-                    minFontSize: 9,
+                    maxFontSize: 12,
+                    minFontSize: 12,
                     style: TextStyle(
                       fontFamily: 'Plus Jakarta',
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w400,
-                      color: AppColors.primaryLight,
+                      color: AppColors.background,
                       height: 1.4,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Referensi ayat → dekoratif, tidak perlu dibaca
-                const ExcludeSemantics(
-                  child: Center(
-                    child: Text(
-                      'Maryam : 96',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Plus Jakarta',
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                        color: AppColors.primaryLight,
-                      ),
                     ),
                   ),
                 ),
@@ -214,7 +202,7 @@ class MainHomeScreen extends StatelessWidget {
     double gap = 8.0,
   }) {
     return Container(
-      padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 15),
+      padding: const EdgeInsets.only(top: 16, left: 8, right: 8, bottom: 12),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final totalHeight = constraints.maxHeight;
@@ -306,8 +294,8 @@ class MainHomeScreen extends StatelessWidget {
                 child: AutoSizeText(
                   item.title,
                   maxLines: 2,
-                  minFontSize: 10,
-                  maxFontSize: 14,
+                  minFontSize: 12,
+                  maxFontSize: 12,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

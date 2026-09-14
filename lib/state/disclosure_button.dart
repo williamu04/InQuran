@@ -23,11 +23,15 @@ class DisclosureButtonModel {
   final DisclosureButtonAction action;
   final bool showIcon;
   final Text textWidget;
+  final String? semanticLabel;
+  final bool? selected;
 
   DisclosureButtonModel({
     required this.action,
     this.showIcon = true,
     required this.textWidget,
+    this.semanticLabel,
+    this.selected,
   });
 
   DisclosureButtonModel.withDefaultTextStyle({
@@ -37,6 +41,8 @@ class DisclosureButtonModel {
     FontWeight fontWeight = FontWeight.bold,
     Color color = AppColors.primary,
     this.showIcon = true,
+    this.semanticLabel,
+    this.selected,
   }) : textWidget = Text(
           text,
           style: TextStyle(
@@ -45,4 +51,6 @@ class DisclosureButtonModel {
             fontWeight: fontWeight,
           ),
         );
+
+  String get accessibilityLabel => semanticLabel ?? textWidget.data ?? '';
 }

@@ -44,3 +44,4 @@ class MenuSlideDrawer extends ToggleableUiController {}
 class ExitCofirmationPopUp extends ToggleableUiController {}
 class PermissionErrorController extends ErrorPopUpController {}
 class AppSettingErrorController extends ErrorPopUpController {}
+class VoiceCommandHelpController extends ToggleableUiController {}

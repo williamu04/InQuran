@@ -37,6 +37,7 @@ class MenuDrawer extends StatelessWidget {
                 globalConfig.isVoiceMode == true
                     ? AppColors.primary
                     : Colors.grey,
+            selected: globalConfig.isVoiceMode == true,
             action: SystemAction(() => globalConfig.setVoiceMode(true)),
           ),
           DisclosureButtonModel.withDefaultTextStyle(
@@ -47,6 +48,7 @@ class MenuDrawer extends StatelessWidget {
                 globalConfig.isVoiceMode == false
                     ? AppColors.primary
                     : Colors.grey,
+            selected: globalConfig.isVoiceMode == false,
             action: SystemAction(() => globalConfig.setVoiceMode(false)),
           ),
         ]),

@@ -17,19 +17,25 @@ class DisclosureButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          model.textWidget,
-          if (model.showIcon)
-            Icon(
-              isExpanded ? LucideIcons.chevronDown : LucideIcons.chevronRight,
-              size: 20,
-              color: model.textWidget.style?.color ??  AppColors.primary,
-            ),
-        ],
+    return Semantics(
+      button: true,
+      label: model.accessibilityLabel,
+      expanded: model.showIcon ? isExpanded : null,
+      selected: model.selected,
+      child: InkWell(
+        onTap: onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            model.textWidget,
+            if (model.showIcon)
+              Icon(
+                isExpanded ? LucideIcons.chevronDown : LucideIcons.chevronRight,
+                size: 20,
+                color: model.textWidget.style?.color ??  AppColors.primary,
+              ),
+          ],
+        ),
       ),
     );
   }

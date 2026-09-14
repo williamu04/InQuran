@@ -45,6 +45,7 @@ class SettingDrawer extends StatelessWidget {
                 globalConfig.quranMode == QuranMode.normal
                     ? AppColors.primary
                     : Colors.grey,
+            selected: globalConfig.quranMode == QuranMode.normal,
             action: SystemAction(
               () => globalConfig.setQuranMode(QuranMode.normal),
             ),
@@ -57,6 +58,7 @@ class SettingDrawer extends StatelessWidget {
                 globalConfig.quranMode == QuranMode.memorize
                     ? AppColors.primary
                     : Colors.grey,
+            selected: globalConfig.quranMode == QuranMode.memorize,
             action: SystemAction(
               () => globalConfig.setQuranMode(QuranMode.memorize),
             ),
@@ -69,6 +71,7 @@ class SettingDrawer extends StatelessWidget {
                 globalConfig.quranMode == QuranMode.mushaf
                     ? AppColors.primary
                     : Colors.grey,
+            selected: globalConfig.quranMode == QuranMode.mushaf,
             action: SystemAction(
               () => globalConfig.setQuranMode(QuranMode.mushaf),
             ),

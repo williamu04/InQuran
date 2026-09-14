@@ -7,8 +7,13 @@ import 'package:inquran/common/app_color.dart';
 
 class BottomNavicon {
   IconData icon;
+  String semanticLabel;
   AppRoute route;
-  BottomNavicon({required this.icon, required this.route});
+  BottomNavicon({
+    required this.icon,
+    required this.semanticLabel,
+    required this.route,
+  });
 }
 
 class BottomNavBar extends StatelessWidget {
@@ -17,11 +22,31 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigations = [
-      BottomNavicon(icon: LucideIcons.bookOpen, route: AppRoutes.surahList),
-      BottomNavicon(icon: LucideIcons.search, route: AppRoutes.search),
-      BottomNavicon(icon: LucideIcons.house, route: AppRoutes.home),
-      BottomNavicon(icon: LucideIcons.handHeart, route: AppRoutes.doaList),
-      BottomNavicon(icon: LucideIcons.heart, route: AppRoutes.favorites),
+      BottomNavicon(
+        icon: LucideIcons.bookOpen,
+        semanticLabel: 'Baca Al-Qur\'an',
+        route: AppRoutes.surahList,
+      ),
+      BottomNavicon(
+        icon: LucideIcons.search,
+        semanticLabel: 'Jelajahi',
+        route: AppRoutes.search,
+      ),
+      BottomNavicon(
+        icon: LucideIcons.house,
+        semanticLabel: 'Beranda',
+        route: AppRoutes.home,
+      ),
+      BottomNavicon(
+        icon: LucideIcons.handHeart,
+        semanticLabel: 'Koleksi Doa-Doa',
+        route: AppRoutes.doaList,
+      ),
+      BottomNavicon(
+        icon: LucideIcons.heart,
+        semanticLabel: 'Ayat Favorit',
+        route: AppRoutes.favorites,
+      ),
     ];
 
     return AnimatedBuilder(
@@ -33,7 +58,7 @@ class BottomNavBar extends StatelessWidget {
         );
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 24, right: 36, left: 36),
+          padding: const EdgeInsets.only(bottom: 16, right: 20, left: 20),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
@@ -69,6 +94,7 @@ class BottomNavBar extends StatelessWidget {
                                     ? AppColors.deepPurple
                                     : Colors.grey,
                           ),
+                          tooltip: nav.semanticLabel,
                           onPressed: () {
                             if (!isSelected) {
                               context.push(nav.route.path);

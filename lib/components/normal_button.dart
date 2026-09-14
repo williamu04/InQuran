@@ -18,22 +18,26 @@ class NormalButton extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        GestureDetector(
-          onTap: () {
-            context.read<GlobalConfig>().setVoiceMode(false);
-          },
-          child: Container(
-            height: size,
-            width: size,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Icon(
-              LucideIcons.house,
-              color: Colors.white,
-              size: size * 0.6,
+        Semantics(
+          button: true,
+          label: 'Kembali ke mode normal',
+          child: GestureDetector(
+            onTap: () {
+              context.read<GlobalConfig>().setVoiceMode(false);
+            },
+            child: Container(
+              height: size,
+              width: size,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                LucideIcons.house,
+                color: Colors.white,
+                size: size * 0.6,
+              ),
             ),
           ),
         ),

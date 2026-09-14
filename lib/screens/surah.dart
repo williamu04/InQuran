@@ -9,10 +9,9 @@ import 'package:inquran/state/surah.dart';
 import 'package:inquran/viewmodel/surah.dart';
 import 'package:provider/provider.dart';
 
-
 class SurahScreen extends StatefulWidget {
   final Map<String, String> queryParam;
-  const SurahScreen({super.key,required this.queryParam});
+  const SurahScreen({super.key, required this.queryParam});
 
   @override
   State<SurahScreen> createState() => _SurahScreenState();
@@ -21,40 +20,50 @@ class SurahScreen extends StatefulWidget {
 class _SurahScreenState extends State<SurahScreen> {
   String title = 'Membaca Al-Quran';
   LoadType loadType = LoadType.surah;
-  bool isLoading = true; 
+  bool isLoading = true;
 
-@override
-void initState() {
-  super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    _initializeAsync();
-  });
-}
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeAsync();
+    });
+  }
 
   Future<void> _initializeAsync() async {
-    final int? startSurahId = int.tryParse(widget.queryParam['startSurahId'] ?? '');
-    final int? startSurahAyah = int.tryParse(widget.queryParam['startSurahAyah'] ?? '');
+    final int? startSurahId = int.tryParse(
+      widget.queryParam['startSurahId'] ?? '',
+    );
+    final int? startSurahAyah = int.tryParse(
+      widget.queryParam['startSurahAyah'] ?? '',
+    );
     final int? endSurahId = int.tryParse(widget.queryParam['endSurahId'] ?? '');
-    final int? endSurahAyah = int.tryParse(widget.queryParam['endSurahAyah'] ?? '');
+    final int? endSurahAyah = int.tryParse(
+      widget.queryParam['endSurahAyah'] ?? '',
+    );
     final String? loadTypeParam = widget.queryParam['loadType'];
-    
+
     if (loadTypeParam == 'juz') {
       loadType = LoadType.juz;
     } else if (loadTypeParam == 'surah') {
       loadType = LoadType.surah;
     }
-    
-    if (startSurahId == null || startSurahAyah == null || endSurahId == null || endSurahAyah == null) {
-      throw ArgumentError('Invalid or missing query parameters for SurahScreen');
+
+    if (startSurahId == null ||
+        startSurahAyah == null ||
+        endSurahId == null ||
+        endSurahAyah == null) {
+      throw ArgumentError(
+        'Invalid or missing query parameters for SurahScreen',
+      );
     }
-    
-    
+
     if (!context.read<SurahViewModel>().isCacheLoaded()) {
       await context.read<SurahViewModel>().initializeCache();
     }
 
     if (!mounted) return;
-    
+
     final quranMode = context.read<GlobalConfig>().quranMode;
     if (quranMode == QuranMode.normal || quranMode == QuranMode.memorize) {
       context.read<SurahViewModel>().loadSurah(
@@ -64,9 +73,12 @@ void initState() {
         endSurahAyah,
       );
     } else {
-      context.read<SurahViewModel>().loadAyahsInPageOf(startSurahId, startSurahAyah);
+      context.read<SurahViewModel>().loadAyahsInPageOf(
+        startSurahId,
+        startSurahAyah,
+      );
     }
-    
+
     setState(() {
       isLoading = false;
     });
@@ -75,15 +87,27 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Semantics(
+        liveRegion: true,
+        label: 'Membuka surah',
+        child: const Center(child: CircularProgressIndicator()),
+      );
     }
 
-    return Column(
+    return Semantics(
+      namesRoute: true,
+      label: title,
+      child: Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           child: TopBarUtility.buildPurpleTitleTopbar(
-            leftIcon: TopBarIconModel(icon: LucideIcons.arrowLeft, onPressed: () => context.pop(), color: Colors.grey),
+            leftIcon: TopBarIconModel(
+              icon: LucideIcons.arrowLeft,
+              onPressed: () => context.pop(),
+              color: Colors.grey,
+              semanticLabel: 'Kembali',
+            ),
             context: context,
             title: title,
           ),
@@ -116,7 +140,8 @@ void initState() {
             },
           ),
         ),
-            ],
-          );
-        }
-      }
+      ],
+      ),
+    );
+  }
+}

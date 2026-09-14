@@ -72,84 +72,95 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8F9FA), Color(0xFFE9ECEF)],
-          ),
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            'InQuran',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF6B46C1),
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Suarakan Niat\nDengarkan Ayat\nDekap Hidayah',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textMuted,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+    return Semantics(
+      namesRoute: true,
+      label: 'Layar pembuka',
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFF8F9FA), Color(0xFFE9ECEF)],
             ),
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Semantics(
+                              header: true,
+                              child: Text(
+                                'InQuran',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF6B46C1),
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                            ),
 
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Center(
-                        child: Image.asset(
-                          'assets/img/logoSplashScreen.png',
-                          height: 200,
-                          width: 200,
-                          fit: BoxFit.contain,
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Suarakan Niat\nDengarkan Ayat\nDekap Hidayah',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textMuted,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+
+              Positioned(
+                bottom: 50,
+                left: 0,
+                right: 0,
+                child: AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: Center(
+                          child: Semantics(
+                            image: true,
+                            label: 'Logo aplikasi InQuran',
+                            child: Image.asset(
+                              'assets/img/logoSplashScreen.png',
+                              height: 200,
+                              width: 200,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:inquran/components/top_bar_utils.dart';
-import 'package:inquran/components/rounded_card.dart';
 import 'package:inquran/common/translator.dart';
 import 'package:inquran/data/aggregate/doa.dart';
 import 'package:inquran/state/doa.dart';
@@ -36,51 +35,54 @@ class _DoaScreenState extends State<DoaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-        child: Column(
-          children: [
-            // Topbar
-            roundedCard(
-              child: TopBarUtility.buildPurpleTitleTopbar(
-                leftIcon: TopBarIconModel(
-                  icon: LucideIcons.arrowLeft,
-                  onPressed: () => context.pop(),
-                  color: Colors.grey,
-                ),
-                context: context,
-                title: "Koleksi Doa-Doa",
-              ),
-            ),
-
-            // Konten utama
-            Expanded(
-              child: Consumer<DoaDetailViewModel>(
-                builder: (context, vm, _) {
-                  return switch (vm.state) {
-                    DoaDetailLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    DoaDetailError(:final message) => Center(
-                      child: Text("Terjadi kesalahan: $message"),
-                    ),
-                    DoaDetailEmpty() => const Center(
-                      child: Text("Tidak ada doa di kategori ini."),
-                    ),
+      body: Semantics(
+        namesRoute: true,
+        label: 'Koleksi Doa-Doa',
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          child: Column(
+            children: [
+              const DoaAppBar(),
+              Expanded(
+                child: Consumer<DoaDetailViewModel>(
+                  builder: (context, vm, _) {
+                    return switch (vm.state) {
+                      DoaDetailLoading() => Semantics(
+                        liveRegion: true,
+                        label: 'Memuat doa',
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      DoaDetailError(:final message) => Semantics(
+                        liveRegion: true,
+                        child: Center(
+                          child: Text("Terjadi kesalahan: $message"),
+                        ),
+                      ),
+                      DoaDetailEmpty() => Semantics(
+                        liveRegion: true,
+                        child: Center(
+                          child: Text("Tidak ada doa di kategori ini."),
+                        ),
+                      ),
                     DoaDetailSuccess(:final doas) => ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 90),
+                      padding: const EdgeInsets.fromLTRB(4, 12, 4, 90),
                       children: [
                         // Judul kategori
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
                           child: Center(
-                            child: Text(
-                              "Tentang\n${terjemahkanKategori(categoryName)}",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                            child: Semantics(
+                              header: true,
+                              child: Text(
+                                "Tentang\n${terjemahkanKategori(categoryName)}",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
                               ),
                             ),
                           ),
@@ -96,7 +98,26 @@ class _DoaScreenState extends State<DoaScreen> {
             ),
           ],
         ),
+        ),
       ),
+    );
+  }
+}
+
+class DoaAppBar extends StatelessWidget {
+  const DoaAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TopBarUtility.buildPurpleTitleTopbar(
+      leftIcon: TopBarIconModel(
+        icon: LucideIcons.arrowLeft,
+        onPressed: () => context.pop(),
+        color: Colors.grey,
+        semanticLabel: 'Kembali',
+      ),
+      context: context,
+      title: "Koleksi Doa-Doa",
     );
   }
 }
@@ -115,10 +136,10 @@ class DoaCard extends StatelessWidget {
       hint:
           "Geser untuk membaca terjemahan. Gunakan tombol play untuk mendengarkan.",
       child: Card(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 12),
         elevation: 4,
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -128,7 +149,7 @@ class DoaCard extends StatelessWidget {
                   doa.ayah.ayahText,
                   textAlign: TextAlign.right,
                   style: const TextStyle(
-                    fontSize: 28,
+                    fontSize: 32,
                     fontFamily: 'Arab Typesetting',
                     color: AppColors.deepPurple,
                   ),
@@ -143,7 +164,10 @@ class DoaCard extends StatelessWidget {
               // 🔹 Terjemahan (dibaca TalkBack)
               Text(
                 doa.ayah.indoText,
-                style: const TextStyle(fontSize: 12, color: AppColors.deepPurple),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.deepPurple,
+                ),
               ),
               const SizedBox(height: 8),
 

@@ -32,6 +32,10 @@ class AppDatabase extends _$AppDatabase {
     return _instance;
   }
 
+  /// Test-only constructor: opens the database with a custom executor
+  /// (e.g. `NativeDatabase.memory()`).
+  AppDatabase.withExecutor(super.executor);
+
   @override
   int get schemaVersion => 4;
 }
